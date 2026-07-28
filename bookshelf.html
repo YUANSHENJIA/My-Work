@@ -195,6 +195,46 @@
     }
     .action-card .content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
     .action-card .content p { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; }
+
+    /* 书架页头：添加按钮 + 统计框 */
+    .add-book-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px;
+      background: var(--on-surface);
+      color: var(--surface-container-lowest);
+      border: none;
+      border-radius: 999px;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+    .add-book-pill:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+    .add-book-pill:active { transform: translateY(0); opacity: 0.9; }
+    .add-book-pill .material-symbols-outlined { font-size: 20px; font-variation-settings: 'wght' 600; }
+
+    .shelf-stat-box {
+      padding: 10px 18px;
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: 14px;
+      text-align: right;
+      white-space: nowrap;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+    .shelf-stat-text {
+      font-size: 13px; font-weight: 500;
+      color: var(--on-surface-variant);
+      letter-spacing: 0.02em;
+    }
+    .shelf-stat-text #total-count {
+      color: var(--on-surface);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 0 2px;
+    }
   </style>
 </head>
 <body>
@@ -232,13 +272,13 @@
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <div class="text-right">
-          <p class="eyebrow mb-1">TOTAL ITEMS</p>
-          <p class="text-3xl font-semibold" id="total-count">0</p>
-        </div>
-        <button class="btn-primary w-12 h-12 rounded-full" id="add-book-btn" aria-label="添加">
+        <button class="add-book-pill" id="add-book-btn" aria-label="添加书籍笔记">
           <span class="material-symbols-outlined">add</span>
+          <span>添加书籍笔记</span>
         </button>
+        <div class="shelf-stat-box">
+          <span class="shelf-stat-text">书架共有 <span id="total-count">0</span> 本书籍笔记</span>
+        </div>
       </div>
     </section>
 
@@ -283,7 +323,7 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="books-grid"></section>
 
     <div class="text-center mt-10 text-xs text-on-surface-variant">
-      <p id="foot-tip">点击 + 号导入你喜欢的书 📚</p>
+      <p id="foot-tip">点击「添加书籍笔记」按钮导入你喜欢的书 📚</p>
     </div>
   </main>
 
