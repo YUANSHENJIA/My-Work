@@ -189,7 +189,11 @@ function loginGuard() {
       // 诗句槽
       var q = document.createElement('div');
       q.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity 0.5s;opacity:1;font-size:16px;line-height:32px;';
-      q.textContent = getDailyQuote();
+      // 从「今日对应的句子」开始，之后每 5s 切到下一句
+      var _qd = new Date();
+      var _qs = new Date(_qd.getFullYear(), 0, 0);
+      var _quoteIdx = Math.floor((_qd - _qs) / 86400000) % QUOTES.length;
+      q.textContent = getDailyQuote(_quoteIdx);
       c.appendChild(q);
 
       // 天气槽
@@ -201,9 +205,13 @@ function loginGuard() {
       TICKER_SLOT_QUOTE = q;
       TICKER_SLOT_WEATHER = w;
 
-      // 每 5 秒交替
+      // 每 5 秒交替：短句 → 天气 → 下一句短句 → 天气 → …，每个保持 5s
       setInterval(function() {
         TICKER_SHOWING_QUOTE = !TICKER_SHOWING_QUOTE;
+        if (TICKER_SHOWING_QUOTE) {
+          _quoteIdx = (_quoteIdx + 1) % QUOTES.length;
+          q.textContent = getDailyQuote(_quoteIdx);
+        }
         q.style.opacity = TICKER_SHOWING_QUOTE ? '1' : '0';
         w.style.opacity = TICKER_SHOWING_QUOTE ? '0' : '1';
       }, 5000);
@@ -259,47 +267,50 @@ function loginGuard() {
     } catch(e) { wElem.textContent = '☀️ 暂无天气数据'; }
   }
 
-  function getDailyQuote() {
+  // 短句库：每天从 dayOfYear 对应的句子开始，之后每 5s 轮换到下一句
+  var QUOTES = [
+    '悟已往之不谏，知来者之可追。',
+    '博观而约取，厚积而薄发。',
+    '不积跬步，无以至千里。',
+    '学而不思则罔，思而不学则殆。',
+    '业精于勤，荒于嬉。',
+    '路漫漫其修远兮，吾将上下而求索。',
+    '长风破浪会有时，直挂云帆济沧海。',
+    '千淘万漉虽辛苦，吹尽狂沙始到金。',
+    '千里之行，始于足下。',
+    '天行健，君子以自强不息。',
+    '纸上得来终觉浅，绝知此事要躬行。',
+    '宝剑锋从磨砺出，梅花香自苦寒来。',
+    '苟日新，日日新，又日新。',
+    '博学之，审问之，慎思之，明辨之，笃行之。',
+    '知之为知之，不知为不知，是知也。',
+    '见贤思齐焉，见不贤而内自省也。',
+    '三人行，必有我师焉。',
+    '山重水复疑无路，柳暗花明又一村。',
+    '沉舟侧畔千帆过，病树前头万木春。',
+    '不畏浮云遮望眼，自缘身在最高层。',
+    '问渠那得清如许？为有源头活水来。',
+    '莫愁前路无知己，天下谁人不识君。',
+    '春风得意马蹄疾，一日看尽长安花。',
+    '大鹏一日同风起，扶摇直上九万里。',
+    '会当凌绝顶，一览众山小。',
+    '欲穷千里目，更上一层楼。',
+    '竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。',
+    '海内存知己，天涯若比邻。',
+    '心之所向，素履以往。',
+    '生如逆旅，一苇以航。',
+    '念念不忘，必有回响。',
+    'Stay hungry, stay foolish.',
+    'The secret of your future is hidden in your daily routine.'
+  ];
+  function getDailyQuote(idx) {
     try {
-      var d = new Date();
-      var start = new Date(d.getFullYear(), 0, 0);
-      var dayOfYear = Math.floor((d - start) / 86400000);
-      var q = [
-        '悟已往之不谏，知来者之可追。',
-        '博观而约取，厚积而薄发。',
-        '不积跬步，无以至千里。',
-        '学而不思则罔，思而不学则殆。',
-        '业精于勤，荒于嬉。',
-        '路漫漫其修远兮，吾将上下而求索。',
-        '长风破浪会有时，直挂云帆济沧海。',
-        '千淘万漉虽辛苦，吹尽狂沙始到金。',
-        '千里之行，始于足下。',
-        '天行健，君子以自强不息。',
-        '纸上得来终觉浅，绝知此事要躬行。',
-        '宝剑锋从磨砺出，梅花香自苦寒来。',
-        '苟日新，日日新，又日新。',
-        '博学之，审问之，慎思之，明辨之，笃行之。',
-        '知之为知之，不知为不知，是知也。',
-        '见贤思齐焉，见不贤而内自省也。',
-        '三人行，必有我师焉。',
-        '山重水复疑无路，柳暗花明又一村。',
-        '沉舟侧畔千帆过，病树前头万木春。',
-        '不畏浮云遮望眼，自缘身在最高层。',
-        '问渠那得清如许？为有源头活水来。',
-        '莫愁前路无知己，天下谁人不识君。',
-        '春风得意马蹄疾，一日看尽长安花。',
-        '大鹏一日同风起，扶摇直上九万里。',
-        '会当凌绝顶，一览众山小。',
-        '欲穷千里目，更上一层楼。',
-        '竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。',
-        '海内存知己，天涯若比邻。',
-        '心之所向，素履以往。',
-        '生如逆旅，一苇以航。',
-        '念念不忘，必有回响。',
-        'Stay hungry, stay foolish.',
-        'The secret of your future is hidden in your daily routine.'
-      ];
-      return q[dayOfYear % q.length];
+      if (idx === undefined) {
+        var d = new Date();
+        var start = new Date(d.getFullYear(), 0, 0);
+        idx = Math.floor((d - start) / 86400000);
+      }
+      return QUOTES[idx % QUOTES.length];
     } catch(e) { return '悟已往之不谏，知来者之可追。'; }
   }
 

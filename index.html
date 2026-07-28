@@ -22,7 +22,7 @@
         style="padding:0;border:none;background:transparent;cursor:pointer;border-radius:9999px;line-height:0;transition:transform .15s ease;">
         <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover block" />
       </button>
-      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">My Work</span>
+      <span id="header-title" class="font-semibold text-lg tracking-tight whitespace-nowrap">My Work</span>
     </div>
     <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
       <div class="header-ticker w-full max-w-xl" id="header-ticker">
@@ -363,6 +363,16 @@
     }
   </script>
 
+  <script>
+    // 主页：头部右侧改为显示当前用户名（app.js 默认会写成 My Work，这里覆盖）
+    // 注册顺序在 app.js 之后，因此 DOMContentLoaded 时本处理器后跑、覆盖成功
+    document.addEventListener('DOMContentLoaded', () => {
+      const name = localStorage.getItem('monolith.userName');
+      const el = document.getElementById('header-title');
+      if (el && name) el.textContent = name;
+    });
+  </script>
+
   <!-- ===== 个人资料编辑弹窗 ===== -->
   <div class="profile-modal-backdrop" id="profile-modal" style="display:none;">
     <div class="profile-modal">
@@ -606,6 +616,8 @@
         } catch (e) {}
         const headerImg = document.querySelector('.app-header img');
         if (headerImg) headerImg.src = profileState.pendingAvatar || DEFAULT_AVATAR;
+        const headerTitle = document.getElementById('header-title');
+        if (headerTitle) headerTitle.textContent = name;
         const greetName = document.getElementById('greeting-name');
         if (greetName) greetName.textContent = name;
         closeProfile();
