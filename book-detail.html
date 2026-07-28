@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>书籍详情 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    /* ===== 详情页顶部返回栏 ===== */
+    .detail-topbar {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 18px 10px 12px;
+      border-radius: 999px;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--outline-variant);
+      color: var(--on-surface);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .back-btn:hover {
+      background: var(--surface-container);
+      transform: translateX(-2px);
+    }
+    .back-btn .material-symbols-outlined { font-size: 20px; }
+
+    /* ===== 阅读区样式（与解析出的 contentHtml 匹配）===== */
+    .book-reader-header {
+      padding: 32px;
+      background: linear-gradient(135deg, var(--surface-container-low) 0%, var(--surface-container) 100%);
+      border: 1px solid var(--outline-variant);
+      border-radius: 20px 20px 0 0;
+      border-bottom: none;
+    }
+    .book-reader-body {
+      padding: 32px;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--outline-variant);
+      border-radius: 0 0 20px 20px;
+    }
+    .book-reader-section { margin-bottom: 32px; }
+    .book-reader-section:last-child { margin-bottom: 0; }
+    .book-reader-section h3 {
+      font-size: 18px; font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--on-surface);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .book-reader-section .section-bar {
+      width: 3px; height: 18px; background: var(--primary);
+      border-radius: 2px;
+    }
+    .insight-box {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(233,69,96,0.06));
+      border: 1px solid var(--outline-variant);
+      border-left: 3px solid var(--primary);
+      border-radius: 12px;
+      font-size: 15px; line-height: 1.7;
+      color: var(--on-surface);
+    }
+    .branch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .branch-card {
+      padding: 16px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: 12px;
+    }
+    .branch-card .icon { font-size: 24px; margin-bottom: 6px; }
+    .branch-card .title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .branch-card .desc { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; }
+    .quote-card {
+      padding: 16px 20px;
+      background: var(--surface-container-low);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 10px;
+    }
+    .quote-card .text { font-size: 15px; line-height: 1.7; font-style: italic; margin-bottom: 4px; }
+    .quote-card .source { font-size: 12px; color: var(--on-surface-variant); text-align: right; }
+    .action-card {
+      display: flex; gap: 12px;
+      padding: 16px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .action-card .num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary); color: var(--on-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .action-card .content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .action-card .content p { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; }
+
+    .detail-empty {
+      padding: 80px 24px;
+      text-align: center;
+      color: var(--on-surface-variant);
+    }
+    .detail-empty .material-symbols-outlined { font-size: 56px; opacity: .4; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">小袁的工作台</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="app-sidebar"></aside>
+
+  <main class="app-main dot-bg">
+    <!-- 左上角返回按钮 -->
+    <div class="detail-topbar fade-in">
+      <button class="back-btn" id="back-btn">
+        <span class="material-symbols-outlined">arrow_back</span>
+        返回书架
+      </button>
+      <button class="back-btn" id="remove-btn" style="color: var(--error); margin-left: auto;">
+        <span class="material-symbols-outlined">delete</span>
+        移除此书
+      </button>
+    </div>
+
+    <!-- 书籍内容 -->
+    <section id="detail-content" class="fade-in"></section>
+  </main>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const BOOKS_KEY = 'monolith.books';
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    function loadBooks() {
+      try {
+        const raw = localStorage.getItem(BOOKS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch(e) {}
+      return [];
+    }
+
+    const params = new URLSearchParams(location.search);
+    const title = params.get('title') || '';
+    const books = loadBooks();
+    const book = books.find(b => b.title === title);
+
+    const container = document.getElementById('detail-content');
+
+    if (book && book.contentHtml) {
+      document.title = book.title + ' · 小袁的工作台';
+      container.innerHTML = book.contentHtml;
+    } else {
+      container.innerHTML =
+        '<div class="detail-empty card">' +
+          '<span class="material-symbols-outlined">menu_book</span>' +
+          '<p class="text-lg font-semibold mb-2">未找到这本书</p>' +
+          '<p class="text-sm">它可能已被删除，请返回书架重新导入。</p>' +
+        '</div>';
+    }
+
+    // 返回按钮
+    document.getElementById('back-btn').addEventListener('click', () => {
+      // 有历史记录则后退，否则直接去书架
+      if (document.referrer && document.referrer.includes('bookshelf')) {
+        history.back();
+      } else {
+        location.href = 'bookshelf.html';
+      }
+    });
+
+    // 移除此书
+    document.getElementById('remove-btn').addEventListener('click', () => {
+      if (!book) { location.href = 'bookshelf.html'; return; }
+      if (!confirm('确定要移除这本书？\n' + book.title)) return;
+      const rest = books.filter(b => b.title !== book.title);
+      try { localStorage.setItem(BOOKS_KEY, JSON.stringify(rest)); } catch(e) {}
+      location.href = 'bookshelf.html';
+    });
+  </script>
+
+  <style>
+    .flex { display: flex; }
+    .flex-1 { flex: 1; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .p-2 { padding: 8px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .text-sm { font-size: 14px; }
+    .text-lg { font-size: 18px; }
+    .text-on-surface-variant { color: var(--on-surface-variant); }
+    .font-semibold { font-weight: 600; }
+    .rounded-full { border-radius: 9999px; }
+    .w-8 { width: 32px; }
+    .h-8 { height: 32px; }
+    .max-w-xl { max-width: 576px; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .whitespace-nowrap { white-space: nowrap; }
+    .shrink-0 { flex-shrink: 0; }
+    .object-cover { object-fit: cover; }
+    .overflow-hidden { overflow: hidden; }
+    .transition-colors { transition: color 0.2s, background 0.2s, border 0.2s; }
+  </style>
+</body>
+</html>

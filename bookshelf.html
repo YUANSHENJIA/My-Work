@@ -267,7 +267,7 @@
           <span class="chip mb-3">每日一学 · 收藏书籍</span>
           <h2 class="headline-lg mb-2" style="color: var(--on-surface);">浏览每日一学完整书单</h2>
           <p class="body-md text-on-surface-variant mb-3">
-            点击 <span class="chip" style="padding: 2px 8px; font-size: 12px;">+</span> 号可从书单导入，完整内容同步到下方。
+            点击 <span class="chip" style="padding: 2px 8px; font-size: 12px;">+</span> 号可从书单导入，导入后点击书籍卡片进入详情页阅读。
             <br>
             <span class="text-xs font-mono text-on-surface-variant opacity-70">yuanshenjia.github.io/meiriyixue</span>
           </p>
@@ -281,9 +281,6 @@
 
     <!-- Books grid -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="books-grid"></section>
-
-    <!-- 当前阅读内容区 -->
-    <section id="reader-area" style="display: none;"></section>
 
     <div class="text-center mt-10 text-xs text-on-surface-variant">
       <p id="foot-tip">点击 + 号导入你喜欢的书 📚</p>
@@ -353,10 +350,12 @@
 
     function bookCard(b) {
       const isImported = b.source === '每日一学';
-      return '<article class="card hover-lift" style="position:relative;">' +
+      return '<article class="card hover-lift book-shelf-card' + (isImported ? ' clickable' : '') + '" style="position:relative;' + (isImported ? 'cursor:pointer;' : '') + '" data-title="' + escapeHtml(b.title) + '">' +
         '<button class="book-delete material-symbols-outlined" style="position:absolute; top:10px; right:10px; font-size:18px; color: var(--on-surface-variant); z-index:2;" aria-label="删除" data-title="' + escapeHtml(b.title) + '">delete</button>' +
         '<div class="aspect-video rounded-lg mb-4 flex items-center justify-center" style="background: ' + b.color + ';">' +
-          (b.icon ? '<span class="material-symbols-outlined" style="font-size: 64px; color: rgba(0,0,0,0.3);">' + b.icon + '</span>' : '<span class="text-xs font-mono uppercase tracking-widest" style="color: rgba(0,0,0,0.4);">' + escapeHtml(b.source) + '</span>') +
+          (isImported && b.emoji
+            ? '<span style="font-size: 52px;">' + escapeHtml(b.emoji) + '</span>'
+            : (b.icon ? '<span class="material-symbols-outlined" style="font-size: 64px; color: rgba(0,0,0,0.3);">' + b.icon + '</span>' : '<span class="text-xs font-mono uppercase tracking-widest" style="color: rgba(0,0,0,0.4);">' + escapeHtml(b.source) + '</span>')) +
         '</div>' +
         (b.status ? '<span class="chip mb-2">' + escapeHtml(b.status) + '</span>' : '') +
         '<h3 class="text-lg font-semibold mb-1 leading-snug">' + escapeHtml(b.title) + '</h3>' +
@@ -365,20 +364,13 @@
           '<div class="progress-bar flex-1"><div class="progress-fill" style="width: ' + b.progress + '%"></div></div>' +
           '<span class="text-sm font-mono">' + b.progress + '%</span>' +
         '</div>' +
-        (isImported ? '<button class="book-read material-symbols-outlined" style="position:absolute; bottom:10px; right:10px; font-size:18px; color: var(--primary); background: var(--surface-container-lowest); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" data-title="' + escapeHtml(b.title) + '" aria-label="阅读">' + (b.readingOpen ? 'expand_less' : 'expand_more') + '</button>' : '') +
+        (isImported ? '<div class="flex items-center gap-1 mt-3 text-primary" style="font-size:13px; font-weight:500;"><span class="material-symbols-outlined" style="font-size:16px;">auto_stories</span>点击卡片阅读全文</div>' : '') +
       '</article>';
     }
 
     function render() {
       document.getElementById('books-grid').innerHTML = books.map(bookCard).join('');
       updateTotal();
-      // 显示当前打开的阅读区
-      const open = books.find(b => b.readingOpen);
-      if (open && open.contentHtml) {
-        renderReader(open);
-      } else {
-        document.getElementById('reader-area').style.display = 'none';
-      }
     }
 
     // ===== 从 meiriyixue 加载并解析 =====
@@ -535,26 +527,12 @@
               '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">open_in_new</span> ' +
               '原网页' +
             '</a>' +
-            '<button class="chip book-collapse" style="cursor:pointer;border:none;">' +
-              '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">expand_less</span> 收起' +
-            '</button>' +
-            '<button class="chip book-remove" style="cursor:pointer;border:none;color:var(--error);">' +
-              '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">delete</span> 移除' +
-            '</button>' +
           '</div>' +
         '</div>';
 
       const bodyHtml = '<div class="book-reader-body">' + insight + branchHtml + charsHtml + knowHtml + quoteHtml + actionHtml + '</div>';
 
       return { title, subtitle, dateBadge, headerHtml, bodyHtml, fullHtml: headerHtml + bodyHtml };
-    }
-
-    function renderReader(book) {
-      const area = document.getElementById('reader-area');
-      if (!book.contentHtml) { area.style.display = 'none'; return; }
-      area.style.display = '';
-      area.innerHTML = '<div class="book-reader" data-title="' + escapeHtml(book.title) + '">' + book.contentHtml + '</div>';
-      area.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // ===== 事件绑定 =====
@@ -607,21 +585,16 @@
           emoji: emoji,
           contentHtml: parsed.fullHtml,
           contentMeta: { title: parsed.title, subtitle: parsed.subtitle, date: parsed.dateBadge },
-          readingOpen: true,
           addedAt: Date.now()
         };
-        // 去重（按 url），并关闭其它书的阅读态
-        books.forEach(b => { b.readingOpen = false; });
+        // 去重（按 url）
         books = books.filter(b => !(b.source === '每日一学' && b.url === url));
         books.unshift(book);
         saveBooks();
         render();
         hideModal();
-        // 平滑滚动到阅读区
-        setTimeout(() => {
-          const ra = document.getElementById('reader-area');
-          if (ra) ra.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        // 跳转到详情页
+        location.href = 'book-detail.html?title=' + encodeURIComponent(book.title);
       } catch (err) {
         alert('导入失败：' + err.message + '\n可能受网络或 CORS 限制');
         btn.innerHTML = orig;
@@ -630,51 +603,25 @@
       }
     });
 
-    // 书架网格：删除 / 阅读展开
+    // 书架网格：删除 / 点击卡片跳详情页
     document.getElementById('books-grid').addEventListener('click', e => {
       const del = e.target.closest('.book-delete');
       if (del) {
+        e.stopPropagation();
         const title = del.dataset.title;
+        if (!confirm('确定要删除这本书？\n' + title)) return;
         books = books.filter(b => b.title !== title);
         saveBooks();
         render();
         return;
       }
-      const rd = e.target.closest('.book-read');
-      if (rd) {
-        const title = rd.dataset.title;
+      const card = e.target.closest('.book-shelf-card.clickable');
+      if (card) {
+        const title = card.dataset.title;
         const book = books.find(b => b.title === title);
-        if (!book) return;
-        // 切换状态
-        const isOpen = !!book.readingOpen;
-        books.forEach(b => { b.readingOpen = false; });
-        if (!isOpen && book.contentHtml) {
-          book.readingOpen = true;
+        if (book && book.contentHtml) {
+          location.href = 'book-detail.html?title=' + encodeURIComponent(title);
         }
-        saveBooks();
-        render();
-        if (book.readingOpen) {
-          setTimeout(() => {
-            document.getElementById('reader-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 50);
-        }
-      }
-    });
-
-    // 阅读区按钮：收起 / 移除
-    document.getElementById('reader-area').addEventListener('click', e => {
-      const wrap = e.target.closest('.book-reader');
-      if (!wrap) return;
-      const title = wrap.dataset.title;
-      if (e.target.closest('.book-collapse')) {
-        const book = books.find(b => b.title === title);
-        if (book) { book.readingOpen = false; saveBooks(); render(); }
-      }
-      if (e.target.closest('.book-remove')) {
-        if (!confirm('确定要移除这本书？\n' + title)) return;
-        books = books.filter(b => b.title !== title);
-        saveBooks();
-        render();
       }
     });
 
