@@ -473,6 +473,12 @@ body {
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }
 .italic { font-style: italic; }
+
+/* 占位符：让 .placeholder:text-on-surface-variant/70 这类工具类真正生效 */
+.placeholder\:text-on-surface-variant\/70::placeholder { color: var(--on-surface-variant); opacity: 0.7; }
+.placeholder\:text-on-surface-variant\/50::placeholder { color: var(--on-surface-variant); opacity: 0.5; }
+.placeholder\:text-on-surface-variant::placeholder { color: var(--on-surface-variant); }
+input::placeholder, textarea::placeholder { color: var(--on-surface-variant); opacity: 0.6; }
 .rounded-full { border-radius: 9999px; }
 .rounded-md { border-radius: var(--r-md); }
 .rounded-lg { border-radius: var(--r-lg); }
