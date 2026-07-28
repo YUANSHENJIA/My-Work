@@ -356,4 +356,66 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
+  // ===== 自动时长统计（专注 / 阅读） =====
+  // 专注时长：任意页面处于「可见 + 2 分钟内有过操作」状态时自动累计
+  // 阅读时长：仅在阅读类页面（书架/书籍详情/内容摘录/热点资讯）时额外累计
+  (function autoTimeTracker() {
+    // 登录页不计时
+    const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    if (page === 'login.html') return;
+
+    const READING_PAGES = ['bookshelf.html', 'book-detail.html', 'excerpts.html', 'news.html'];
+    const isReadingPage = READING_PAGES.includes(page);
+    const IDLE_LIMIT = 2 * 60 * 1000;   // 2 分钟无操作 = 离开
+    const TICK_MS = 15 * 1000;          // 每 15 秒累计一次
+
+    const dayKey = () => new Date().toISOString().slice(0, 10);
+    // 秒级累计存 monolith.seconds.*，满 60 秒进位到 monolith.minutes.*（review 页读取的键）
+    function addSeconds(type, sec) {
+      try {
+        const d = dayKey();
+        const sKey = 'monolith.seconds.' + type + '.' + d;
+        const mKey = 'monolith.minutes.' + type + '.' + d;
+        let s = (parseInt(localStorage.getItem(sKey), 10) || 0) + sec;
+        if (s >= 60) {
+          const inc = Math.floor(s / 60);
+          s = s % 60;
+          const m = (parseInt(localStorage.getItem(mKey), 10) || 0) + inc;
+          localStorage.setItem(mKey, String(m));
+        }
+        localStorage.setItem(sKey, String(s));
+      } catch (e) {}
+    }
+
+    let lastActivity = Date.now();
+    ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'].forEach(ev => {
+      window.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true });
+    });
+
+    let lastTick = Date.now();
+    setInterval(() => {
+      const now = Date.now();
+      const elapsedSec = Math.round((now - lastTick) / 1000);
+      lastTick = now;
+      if (document.visibilityState !== 'visible') return;      // 页面在后台不计
+      if (now - lastActivity > IDLE_LIMIT) return;             // 挂机不计
+      if (elapsedSec <= 0 || elapsedSec > 120) return;         // 异常间隔丢弃（如休眠唤醒）
+      addSeconds('focus', elapsedSec);
+      if (isReadingPage) addSeconds('reading', elapsedSec);
+    }, TICK_MS);
+
+    // 页面隐藏/关闭前把剩余时间也结算进去
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        const now = Date.now();
+        const elapsedSec = Math.round((now - lastTick) / 1000);
+        lastTick = now;
+        if (now - lastActivity <= IDLE_LIMIT && elapsedSec > 0 && elapsedSec <= 120) {
+          addSeconds('focus', elapsedSec);
+          if (isReadingPage) addSeconds('reading', elapsedSec);
+        }
+      }
+    });
+  })();
 })();

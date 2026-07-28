@@ -9,22 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
-  <style>
-    .quick-add-btn {
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: var(--surface-container);
-      color: var(--on-surface);
-      border: 1px solid var(--outline-variant);
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .15s ease, transform .1s ease;
-    }
-    .quick-add-btn:hover { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
-    .quick-add-btn:active { transform: scale(0.95); }
-    .quick-add-btn:disabled { opacity: 0.6; cursor: default; }
-  </style>
 </head>
 <body>
 
@@ -76,18 +60,12 @@
       <div class="card text-center">
         <p class="eyebrow mb-2">阅读时长</p>
         <p class="text-3xl font-semibold mb-1"><span id="rev-reading">0</span><span class="text-base text-on-surface-variant ml-1">m</span></p>
-        <p class="text-xs text-on-surface-variant" id="rev-reading-sub">暂无记录</p>
-        <div class="flex justify-center gap-2 mt-3">
-          <button class="quick-add-btn" data-minutes="10" data-type="reading" type="button">+10 分钟</button>
-        </div>
+        <p class="text-xs text-on-surface-variant" id="rev-reading-sub">自动统计中</p>
       </div>
       <div class="card text-center">
         <p class="eyebrow mb-2">专注时长</p>
         <p class="text-3xl font-semibold mb-1"><span id="rev-focus">0</span><span class="text-base text-on-surface-variant ml-1">m</span></p>
-        <p class="text-xs text-on-surface-variant" id="rev-focus-sub">暂无记录</p>
-        <div class="flex justify-center gap-2 mt-3">
-          <button class="quick-add-btn" data-minutes="25" data-type="focus" type="button">+25 分钟</button>
-        </div>
+        <p class="text-xs text-on-surface-variant" id="rev-focus-sub">自动统计中</p>
       </div>
     </section>
 
@@ -156,13 +134,6 @@
         return raw ? Math.max(0, parseInt(raw, 10) || 0) : 0;
       } catch(e) { return 0; }
     }
-    function addMinutes(type, m) {
-      const key = `${MIN_PREFIX}.${type}.${todayKey()}`;
-      const cur = loadMinutes(type);
-      const next = cur + m;
-      try { localStorage.setItem(key, String(next)); } catch(e) {}
-      return next;
-    }
     // 比较昨日 vs 今日聚焦/阅读分钟，返回变化百分比字符串（无变化 → "—"，上升 → "↑ x%"）
     function yesterdayMinutes(type) {
       const d = new Date(); d.setDate(d.getDate() - 1);
@@ -188,18 +159,18 @@
       const yR = yesterdayMinutes('reading');
       const yF = yesterdayMinutes('focus');
       const rSub = t === 0
-        ? '暂无记录 · 点击下方按钮添加'
+        ? '自动统计 · 浏览书架/摘录/资讯时累计'
         : (yR > 0
             ? (t >= yR ? `↑ ${Math.round((t - yR) / yR * 100)}% vs 昨日` : `↓ ${Math.round((yR - t) / yR * 100)}% vs 昨日`)
-            : '今日新开始');
+            : '今日新开始 · 自动统计');
       document.getElementById('rev-reading-sub').textContent = rSub;
 
       document.getElementById('rev-focus').textContent = fmtMinutes(f);
       const fSub = f === 0
-        ? '暂无记录 · 点击下方按钮添加'
+        ? '自动统计 · 使用工作台时累计'
         : (yF > 0
             ? (f >= yF ? `↑ ${Math.round((f - yF) / yF * 100)}% vs 昨日` : `↓ ${Math.round((yF - f) / yF * 100)}% vs 昨日`)
-            : '今日新开始');
+            : '今日新开始 · 自动统计');
       document.getElementById('rev-focus-sub').textContent = fSub;
     }
 
@@ -234,22 +205,8 @@
     renderFocusReading();
     renderDoneAndWater();
 
-    // 累加按钮
-    document.querySelectorAll('.quick-add-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const type = btn.dataset.type;
-        const m = parseInt(btn.dataset.minutes, 10);
-        if (!type || !m) return;
-        addMinutes(type, m);
-        renderFocusReading();
-        // 即时反馈
-        const original = btn.textContent;
-        btn.textContent = '✓';
-        btn.disabled = true;
-        setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 800);
-      });
-    });
+    // 自动统计：定时刷新本页数字（app.js 后台每 15 秒累计一次）
+    setInterval(() => { renderFocusReading(); renderDoneAndWater(); }, 30 * 1000);
 
     // 跨页面事件：其他页面修改 minutes 时实时刷新
     window.addEventListener('storage', e => {
