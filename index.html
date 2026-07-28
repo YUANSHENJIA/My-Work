@@ -115,47 +115,7 @@
           </div>
           <a href="news.html" class="btn-secondary text-sm py-2 px-4 no-underline">查看全部</a>
         </div>
-        <ul class="flex flex-col gap-4">
-          <li class="flex items-start gap-4 p-4 rounded-lg hover:bg-surface-container-low transition-colors">
-            <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-2xl">memory</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="chip">BREAKING</span>
-                <span class="text-xs text-on-surface-variant">5 mins ago</span>
-              </div>
-              <h3 class="body-md font-semibold mb-1">GPT-5 内部测试数据泄露</h3>
-              <p class="text-sm text-on-surface-variant line-clamp-1">多模态理解能力实现跨代飞跃...</p>
-            </div>
-          </li>
-          <li class="flex items-start gap-4 p-4 rounded-lg hover:bg-surface-container-low transition-colors">
-            <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-2xl">developer_board</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="chip">ANALYSIS</span>
-                <span class="text-xs text-on-surface-variant">2 hours ago</span>
-              </div>
-              <h3 class="body-md font-semibold mb-1">英伟达 Blackwell 架构发布</h3>
-              <p class="text-sm text-on-surface-variant line-clamp-1">训练成本降低 25 倍...</p>
-            </div>
-          </li>
-          <li class="flex items-start gap-4 p-4 rounded-lg hover:bg-surface-container-low transition-colors">
-            <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-2xl">science</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="chip">RESEARCH</span>
-                <span class="text-xs text-on-surface-variant">Yesterday</span>
-              </div>
-              <h3 class="body-md font-semibold mb-1">DeepMind AlphaFold 3</h3>
-              <p class="text-sm text-on-surface-variant line-clamp-1">蛋白质+DNA+RNA 全预测...</p>
-            </div>
-          </li>
-        </ul>
+        <ul id="news-pulse-list" class="flex flex-col gap-4"></ul>
       </div>
 
       <!-- Quick actions -->
@@ -274,5 +234,39 @@
     .overflow-hidden { overflow: hidden; }
     .px-4 { padding-left: 16px; padding-right: 16px; }
   </style>
+
+  <script>
+    // 今日热点：每日北京时间 9:00 由 Actions 自动抓取 + 推送；这里取前 3 条显示
+    (async () => {
+      const list = document.getElementById('news-pulse-list');
+      if (!list) return;
+      function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+      try {
+        const res = await fetch('assets/news.json?_=' + Date.now(), { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const items = (data.items || []).slice(0, 3);
+        if (items.length === 0) throw new Error('empty');
+        list.innerHTML = items.map(n => `
+          <li class="flex items-start gap-4 p-4 rounded-lg hover:bg-surface-container-low transition-colors">
+            <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-2xl">${esc(n.icon || 'memory')}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="chip">${esc(n.tag || 'NEWS')}</span>
+                <span class="text-xs text-on-surface-variant">${esc(n.time || '')}</span>
+              </div>
+              <h3 class="body-md font-semibold mb-1">${esc(n.title || '')}</h3>
+              <p class="text-sm text-on-surface-variant line-clamp-1">${esc(n.excerpt || '')}</p>
+            </div>
+          </li>
+        `).join('');
+      } catch (e) {
+        console.error('News pulse load failed:', e);
+        list.innerHTML = '<li class="text-center text-sm text-on-surface-variant py-6">今日热点加载中...</li>';
+      }
+    })();
+  </script>
 </body>
 </html>

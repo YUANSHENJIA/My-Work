@@ -85,6 +85,14 @@
       </div>
     </section>
 
+    <!-- Clear all -->
+    <section class="flex justify-end mt-4 fade-in">
+      <button id="clear-todos-btn" class="btn-secondary text-sm py-2 px-4">
+        <span class="material-symbols-outlined text-base">delete_sweep</span>
+        <span>清除待办</span>
+      </button>
+    </section>
+
     <p class="text-center text-xs text-on-surface-variant tracking-widest uppercase mt-10">END OF TODAY'S LIST</p>
   </main>
 
@@ -205,6 +213,23 @@
       currentFilter = 'open';
       e.currentTarget.classList.add('active');
       document.getElementById('filter-all').classList.remove('active');
+      render();
+    });
+
+    // 清除所有待办
+    document.getElementById('clear-todos-btn').addEventListener('click', () => {
+      if (todos.length === 0) {
+        const btn = document.getElementById('clear-todos-btn');
+        btn.innerHTML = '<span class="material-symbols-outlined text-base">check_circle</span><span>暂无待办</span>';
+        setTimeout(() => { btn.innerHTML = '<span class="material-symbols-outlined text-base">delete_sweep</span><span>清除待办</span>'; }, 1500);
+        return;
+      }
+      if (!confirm('确认清除所有待办？此操作不可恢复。')) return;
+      todos = [];
+      saveTodos(todos);
+      currentFilter = 'all';
+      document.getElementById('filter-all').classList.add('active');
+      document.getElementById('filter-open').classList.remove('active');
       render();
     });
 
