@@ -339,6 +339,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (e) {}
 
+    // 应用用户头像（优先使用上传的，缺省回退到 assets/images/avatar.jpg）
+    try {
+      const saved = localStorage.getItem('monolith.userAvatar');
+      if (saved) {
+        document.querySelectorAll('img[src="assets/images/avatar.jpg"]').forEach(img => {
+          img.src = saved;
+        });
+      }
+    } catch (e) {}
+
     // Close modal on overlay click
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
       overlay.addEventListener('click', e => {

@@ -43,14 +43,39 @@
       padding: 4px;
       background: linear-gradient(135deg, var(--on-surface), var(--on-surface-variant));
       margin: 0 auto 24px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
+    .avatar-ring:hover { transform: scale(1.04); }
     .avatar-img {
       width: 100%;
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid var(--surface-container-lowest);
+      display: block;
     }
+    .avatar-overlay {
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      border: 3px solid transparent;
+    }
+    .avatar-ring:hover .avatar-overlay { opacity: 1; }
+    .avatar-overlay .material-symbols-outlined { font-size: 22px; }
+    .avatar-overlay span:last-child { font-size: 11px; }
+
     .name-input {
       width: 100%;
       padding: 14px 16px;
@@ -118,6 +143,109 @@
       text-align: center;
       margin-top: 32px;
     }
+
+    /* ====== 头像裁切模态 ====== */
+    .crop-modal-backdrop {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.7);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      animation: fadeIn .2s ease;
+    }
+    .crop-modal {
+      width: 100%; max-width: 480px;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--outline-variant);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      animation: slideUp .25s cubic-bezier(0.16,1,0.3,1);
+    }
+    .crop-modal-header {
+      padding: 20px 24px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .crop-modal-header h2 { font-size: 18px; font-weight: 600; flex: 1; }
+    .crop-modal-body {
+      padding: 24px;
+    }
+    .crop-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    .crop-stage img {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: none;
+      pointer-events: none;
+      -webkit-user-drag: none;
+      will-change: transform;
+    }
+    .crop-circle {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 2px dashed #fff;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+    .crop-circle-hint {
+      position: absolute;
+      bottom: 12px; left: 0; right: 0;
+      text-align: center;
+      color: rgba(255,255,255,0.85);
+      font-size: 12px;
+      pointer-events: none;
+    }
+    .crop-controls {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 20px;
+    }
+    .crop-controls label {
+      font-size: 13px;
+      color: var(--on-surface-variant);
+      white-space: nowrap;
+    }
+    .crop-controls input[type=range] {
+      flex: 1;
+      accent-color: var(--primary);
+    }
+    .crop-actions {
+      display: flex; gap: 12px;
+      padding: 0 24px 24px;
+    }
+    .crop-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--outline-variant);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px;
+    }
+    .crop-actions .primary {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .crop-actions .primary:hover { opacity: 0.85; }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes slideUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
   </style>
 </head>
 <body>
@@ -127,9 +255,14 @@
   </button>
 
   <div class="login-card">
-    <div class="avatar-ring">
-      <img src="assets/images/avatar.jpg" alt="头像" class="avatar-img" />
-    </div>
+    <label class="avatar-ring" for="avatar-input" title="点击上传头像">
+      <img id="avatar-img" src="assets/images/avatar.jpg" alt="头像" class="avatar-img" />
+      <div class="avatar-overlay">
+        <span class="material-symbols-outlined">photo_camera</span>
+        <span>更换</span>
+      </div>
+    </label>
+    <input id="avatar-input" type="file" accept="image/*" style="display:none;" />
 
     <h1 class="headline-lg" style="text-align:center;margin-bottom:8px;">欢迎回来</h1>
     <p class="body-md" style="text-align:center;color:var(--on-surface-variant);margin-bottom:32px;">
@@ -155,12 +288,48 @@
       数据仅保存在本地浏览器
     </p>
 
-    <p class="brand-tag">MONOLITH · v1.2.0</p>
+    <p class="brand-tag">MONOLITH · v1.3.0</p>
+  </div>
+
+  <!-- 头像裁切模态 -->
+  <div class="crop-modal-backdrop" id="crop-modal" style="display:none;">
+    <div class="crop-modal">
+      <div class="crop-modal-header">
+        <span class="material-symbols-outlined">crop_circle</span>
+        <h2>调整头像</h2>
+        <button class="p-2 rounded-full hover:bg-surface-container" id="crop-close" aria-label="关闭" style="background:transparent;border:none;cursor:pointer;color:var(--on-surface-variant);">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="crop-modal-body">
+        <div class="crop-stage" id="crop-stage">
+          <img id="crop-img" alt="" />
+          <div class="crop-circle" id="crop-circle"></div>
+          <div class="crop-circle-hint">拖动图片调整位置</div>
+        </div>
+        <div class="crop-controls">
+          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);">zoom_out</span>
+          <input type="range" id="crop-zoom" min="100" max="400" value="100" step="1" />
+          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);">zoom_in</span>
+        </div>
+      </div>
+      <div class="crop-actions">
+        <button id="crop-cancel" type="button">
+          <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+          <span>取消</span>
+        </button>
+        <button id="crop-confirm" type="button" class="primary">
+          <span class="material-symbols-outlined" style="font-size:18px;">check</span>
+          <span>确认</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
     const NAME_KEY = 'monolith.userName';
     const LOGIN_TIME_KEY = 'monolith.loginTime';
+    const AVATAR_KEY = 'monolith.userAvatar';
 
     // Theme toggle
     const THEME_KEY = 'monolith.theme';
@@ -180,6 +349,176 @@
       const next = cur === 'dark' ? 'light' : 'dark';
       applyTheme(next);
       try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+
+    // 头像：默认 + 用户上传
+    function loadAvatar() {
+      try {
+        const saved = localStorage.getItem(AVATAR_KEY);
+        if (saved) document.getElementById('avatar-img').src = saved;
+      } catch(e) {}
+    }
+    loadAvatar();
+
+    // 头像裁切状态
+    const cropState = {
+      src: null,        // dataURL of the picked image
+      img: null,        // Image object
+      scale: 1,         // current scale multiplier
+      offsetX: 0,       // px offset from center
+      offsetY: 0,
+      baseScale: 1,     // scale at zoom=100 (cover to circle)
+      circleSize: 280,  // circle diameter in px (recomputed on layout)
+      dragging: false,
+      startX: 0, startY: 0,
+      startOffsetX: 0, startOffsetY: 0
+    };
+
+    function openCrop(dataUrl) {
+      cropState.src = dataUrl;
+      cropState.img = new Image();
+      cropState.img.onload = () => {
+        const stage = document.getElementById('crop-stage');
+        const circle = document.getElementById('crop-circle');
+        const stageSize = stage.clientWidth;
+        const circleSize = Math.min(stageSize, 320);
+        circle.style.width = circle.style.height = circleSize + 'px';
+        cropState.circleSize = circleSize;
+        // baseScale: 覆盖裁切圆 (object-fit: cover 等价)
+        const ratio = Math.max(circleSize / cropState.img.naturalWidth, circleSize / cropState.img.naturalHeight);
+        cropState.baseScale = ratio;
+        cropState.scale = 1;
+        cropState.offsetX = 0;
+        cropState.offsetY = 0;
+        document.getElementById('crop-zoom').value = 100;
+        applyCropTransform();
+        document.getElementById('crop-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      };
+      cropState.img.src = dataUrl;
+    }
+
+    function closeCrop() {
+      document.getElementById('crop-modal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function applyCropTransform() {
+      const img = document.getElementById('crop-img');
+      if (!cropState.img) return;
+      const total = cropState.baseScale * cropState.scale;
+      const w = cropState.img.naturalWidth * total;
+      const h = cropState.img.naturalHeight * total;
+      img.style.width = w + 'px';
+      img.style.height = h + 'px';
+      // 限制偏移：图片必须能覆盖整个圆
+      const cs = cropState.circleSize;
+      const maxX = Math.max(0, (w - cs) / 2);
+      const maxY = Math.max(0, (h - cs) / 2);
+      cropState.offsetX = Math.max(-maxX, Math.min(maxX, cropState.offsetX));
+      cropState.offsetY = Math.max(-maxY, Math.min(maxY, cropState.offsetY));
+      img.style.transform = 'translate(calc(-50% + ' + cropState.offsetX + 'px), calc(-50% + ' + cropState.offsetY + 'px))';
+    }
+
+    // 文件选择
+    document.getElementById('avatar-input').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('请选择图片文件');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        openCrop(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      // 重置以便下次选同一文件也能触发
+      e.target.value = '';
+    });
+
+    // 缩放
+    document.getElementById('crop-zoom').addEventListener('input', (e) => {
+      cropState.scale = parseInt(e.target.value, 10) / 100;
+      applyCropTransform();
+    });
+
+    // 拖动
+    const stage = document.getElementById('crop-stage');
+    function getPos(e) {
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX, y: t.clientY };
+    }
+    function onDown(e) {
+      e.preventDefault();
+      cropState.dragging = true;
+      const p = getPos(e);
+      cropState.startX = p.x;
+      cropState.startY = p.y;
+      cropState.startOffsetX = cropState.offsetX;
+      cropState.startOffsetY = cropState.offsetY;
+      stage.style.cursor = 'grabbing';
+    }
+    function onMove(e) {
+      if (!cropState.dragging) return;
+      e.preventDefault();
+      const p = getPos(e);
+      cropState.offsetX = cropState.startOffsetX + (p.x - cropState.startX);
+      cropState.offsetY = cropState.startOffsetY + (p.y - cropState.startY);
+      applyCropTransform();
+    }
+    function onUp() {
+      cropState.dragging = false;
+      stage.style.cursor = 'grab';
+    }
+    stage.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    stage.addEventListener('touchstart', onDown, { passive: false });
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+    stage.style.cursor = 'grab';
+
+    // 确认
+    document.getElementById('crop-confirm').addEventListener('click', () => {
+      if (!cropState.img) return;
+      const cs = cropState.circleSize;
+      const out = 256; // 输出大小
+      const canvas = document.createElement('canvas');
+      canvas.width = out; canvas.height = out;
+      const ctx = canvas.getContext('2d');
+      // 圆形裁切
+      ctx.beginPath();
+      ctx.arc(out/2, out/2, out/2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      // 计算图片在 stage 中的实际位置和大小，然后映射到 canvas
+      const total = cropState.baseScale * cropState.scale;
+      const w = cropState.img.naturalWidth * total;
+      const h = cropState.img.naturalHeight * total;
+      // 圆在 stage 中心，cs 直径；canvas 直径 out
+      // ratio: out / cs
+      const ratio = out / cs;
+      const dx = -cropState.offsetX * ratio - w/2 * ratio + out/2;
+      const dy = -cropState.offsetY * ratio - h/2 * ratio + out/2;
+      ctx.drawImage(cropState.img, dx, dy, w * ratio, h * ratio);
+
+      const dataUrl = canvas.toDataURL('image/png');
+      try { localStorage.setItem(AVATAR_KEY, dataUrl); } catch(e) {}
+      document.getElementById('avatar-img').src = dataUrl;
+      closeCrop();
+    });
+
+    document.getElementById('crop-cancel').addEventListener('click', closeCrop);
+    document.getElementById('crop-close').addEventListener('click', closeCrop);
+    document.getElementById('crop-modal').addEventListener('click', e => {
+      if (e.target.id === 'crop-modal') closeCrop();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && document.getElementById('crop-modal').style.display === 'flex') {
+        closeCrop();
+      }
     });
 
     // Login logic

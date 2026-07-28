@@ -9,6 +9,193 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .book-modal-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      animation: fadeIn .2s ease;
+    }
+    .book-modal {
+      width: 100%; max-width: 560px; max-height: 86vh;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--outline-variant);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.4);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      animation: slideUp .25s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes slideUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+    .book-modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--outline-variant);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .book-modal-header h2 { font-size: 18px; font-weight: 600; flex: 1; }
+    .book-modal-body {
+      flex: 1; overflow-y: auto;
+      padding: 12px 0;
+    }
+    .book-search {
+      padding: 0 20px 12px;
+      border-bottom: 1px solid var(--outline-variant);
+      position: relative;
+    }
+    .book-search input {
+      width: 100%; padding: 10px 12px 10px 38px;
+      border-radius: 10px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      color: var(--on-surface);
+      font-size: 14px;
+      outline: none;
+    }
+    .book-search input:focus { border-color: var(--on-surface); }
+    .book-search .icon {
+      position: absolute; left: 32px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--on-surface-variant);
+      font-size: 18px;
+      pointer-events: none;
+    }
+    .book-list-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 24px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .book-list-item:hover { background: var(--surface-container-low); }
+    .book-list-item .emoji {
+      font-size: 22px; width: 44px; height: 44px;
+      background: var(--surface-container);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .book-list-item .info { flex: 1; min-width: 0; }
+    .book-list-item .name { font-size: 15px; font-weight: 600; color: var(--on-surface); margin-bottom: 2px; }
+    .book-list-item .date { font-size: 12px; color: var(--on-surface-variant); }
+    .book-list-item .add-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--primary);
+      color: var(--on-primary);
+      font-size: 13px;
+      font-weight: 500;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      flex-shrink: 0;
+    }
+    .book-list-item .add-btn .material-symbols-outlined { font-size: 16px; }
+    .book-list-item.added .add-btn { background: var(--surface-container); color: var(--on-surface-variant); }
+    .book-list-item .material-symbols-outlined.spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .book-loading, .book-empty {
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--on-surface-variant);
+      font-size: 14px;
+    }
+    .book-loading .material-symbols-outlined { font-size: 32px; margin-bottom: 8px; animation: spin 1.2s linear infinite; }
+
+    /* 内容区 */
+    .book-reader {
+      margin-top: 24px;
+    }
+    .book-reader-header {
+      padding: 32px;
+      background: linear-gradient(135deg, var(--surface-container-low) 0%, var(--surface-container) 100%);
+      border: 1px solid var(--outline-variant);
+      border-radius: 20px 20px 0 0;
+      border-bottom: none;
+    }
+    .book-reader-body {
+      padding: 32px;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--outline-variant);
+      border-radius: 0 0 20px 20px;
+    }
+    .book-reader-section {
+      margin-bottom: 32px;
+    }
+    .book-reader-section:last-child { margin-bottom: 0; }
+    .book-reader-section h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--on-surface);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .book-reader-section .section-bar {
+      width: 3px; height: 18px; background: var(--primary);
+      border-radius: 2px;
+    }
+    .insight-box {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(233,69,96,0.06));
+      border: 1px solid var(--outline-variant);
+      border-left: 3px solid var(--primary);
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--on-surface);
+    }
+    .branch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .branch-card {
+      padding: 16px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: 12px;
+    }
+    .branch-card .icon { font-size: 24px; margin-bottom: 6px; }
+    .branch-card .title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .branch-card .desc { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; }
+
+    .quote-card {
+      padding: 16px 20px;
+      background: var(--surface-container-low);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 10px;
+    }
+    .quote-card .text {
+      font-size: 15px;
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 4px;
+    }
+    .quote-card .source {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      text-align: right;
+    }
+
+    .action-card {
+      display: flex; gap: 12px;
+      padding: 16px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .action-card .num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary); color: var(--on-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .action-card .content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .action-card .content p { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; }
+  </style>
 </head>
 <body>
 
@@ -33,7 +220,6 @@
   </header>
 
   <!-- ===== Sidebar ===== -->
-  <!-- ===== Sidebar (injected by sidebar.js) ===== -->
   <aside class="app-sidebar"></aside>
 
   <main class="app-main dot-bg">
@@ -42,15 +228,15 @@
         <p class="eyebrow mb-2">Library Collection</p>
         <h1 class="headline-xl mb-2">我的书架</h1>
         <p class="body-lg text-on-surface-variant max-w-2xl">
-          构建个人知识体系的基石。目前共收藏 <strong class="text-primary">14</strong> 个项目，涵盖深度阅读、行业资讯与灵感记录。
+          构建个人知识体系的基石。从每日一学导入，收藏过的书会保留完整内容。
         </p>
       </div>
       <div class="flex items-center gap-3">
         <div class="text-right">
           <p class="eyebrow mb-1">TOTAL ITEMS</p>
-          <p class="text-3xl font-semibold">14</p>
+          <p class="text-3xl font-semibold" id="total-count">0</p>
         </div>
-        <button class="btn-primary w-12 h-12 rounded-full" aria-label="添加">
+        <button class="btn-primary w-12 h-12 rounded-full" id="add-book-btn" aria-label="添加">
           <span class="material-symbols-outlined">add</span>
         </button>
       </div>
@@ -59,16 +245,15 @@
     <!-- Tabs -->
     <section class="flex gap-2 overflow-x-auto no-scrollbar mb-6">
       <button class="chip active">全部</button>
+      <button class="chip">每日一学</button>
       <button class="chip">微信读书</button>
       <button class="chip">Medium</button>
       <button class="chip">Notion Lib</button>
-      <button class="chip">RSS Feed</button>
     </section>
 
     <!-- 我收藏的书籍 -->
     <a href="https://yuanshenjia.github.io/meiriyixue/" target="_blank" rel="noopener noreferrer" class="card fade-in mb-6 block no-underline hover-lift" style="background: linear-gradient(135deg, var(--surface-container-low) 0%, var(--surface-container) 100%); padding: 32px;">
       <div class="flex items-center gap-6">
-        <!-- 装饰封面 -->
         <div class="shrink-0 w-32 h-32 rounded-xl shadow-xl flex items-center justify-center relative" style="background: linear-gradient(135deg, #1a1c1c 0%, #3a3a3a 100%);">
           <div class="text-center px-2">
             <span class="material-symbols-outlined" style="font-size: 36px; color: rgba(255,255,255,0.4);">menu_book</span>
@@ -78,20 +263,17 @@
             <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
           </div>
         </div>
-        <!-- 文案 -->
         <div class="flex-1 min-w-0">
-          <span class="chip mb-3">每日一字 · 收藏书籍</span>
-          <h2 class="headline-lg mb-2" style="color: var(--on-surface);">我收藏的书籍</h2>
+          <span class="chip mb-3">每日一学 · 收藏书籍</span>
+          <h2 class="headline-lg mb-2" style="color: var(--on-surface);">浏览每日一学完整书单</h2>
           <p class="body-md text-on-surface-variant mb-3">
-            每日一字 · 经典读物集 — 精选好文，每日精读。<br>
+            点击 <span class="chip" style="padding: 2px 8px; font-size: 12px;">+</span> 号可从书单导入，完整内容同步到下方。
+            <br>
             <span class="text-xs font-mono text-on-surface-variant opacity-70">yuanshenjia.github.io/meiriyixue</span>
           </p>
           <div class="flex items-center gap-3 flex-wrap">
             <span class="chip">外部链接</span>
             <span class="chip">📖 阅读收藏</span>
-            <span class="text-sm text-on-surface-variant flex items-center gap-1">
-              点击打开 <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
-            </span>
           </div>
         </div>
       </div>
@@ -100,18 +282,46 @@
     <!-- Books grid -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="books-grid"></section>
 
+    <!-- 当前阅读内容区 -->
+    <section id="reader-area" style="display: none;"></section>
+
     <div class="text-center mt-10 text-xs text-on-surface-variant">
-      <p>本周目标：连续 2 本达成！</p>
+      <p id="foot-tip">点击 + 号导入你喜欢的书 📚</p>
     </div>
   </main>
+
+  <!-- 添加书籍模态框 -->
+  <div class="book-modal-backdrop" id="book-modal" style="display: none;">
+    <div class="book-modal" onclick="event.stopPropagation()">
+      <div class="book-modal-header">
+        <span class="material-symbols-outlined">menu_book</span>
+        <h2>从每日一学导入</h2>
+        <button class="p-2 rounded-full hover:bg-surface-container" id="book-modal-close" aria-label="关闭">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="book-search">
+        <span class="material-symbols-outlined icon">search</span>
+        <input type="text" id="book-search-input" placeholder="搜索书名或日期..." />
+      </div>
+      <div class="book-modal-body" id="book-list">
+        <div class="book-loading">
+          <span class="material-symbols-outlined">progress_activity</span>
+          <p>正在加载书单...</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
   <script>
     const BOOKS_KEY = 'monolith.books';
+    const MEIRIYIXUE_BASE = 'https://yuanshenjia.github.io/meiriyixue/';
+    const INDEX_URL = MEIRIYIXUE_BASE;
 
     function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     }
 
     function loadBooks() {
@@ -137,7 +347,12 @@
       try { localStorage.setItem(BOOKS_KEY, JSON.stringify(books)); } catch(e) {}
     }
 
+    function updateTotal() {
+      document.getElementById('total-count').textContent = books.length;
+    }
+
     function bookCard(b) {
+      const isImported = b.source === '每日一学';
       return '<article class="card hover-lift" style="position:relative;">' +
         '<button class="book-delete material-symbols-outlined" style="position:absolute; top:10px; right:10px; font-size:18px; color: var(--on-surface-variant); z-index:2;" aria-label="删除" data-title="' + escapeHtml(b.title) + '">delete</button>' +
         '<div class="aspect-video rounded-lg mb-4 flex items-center justify-center" style="background: ' + b.color + ';">' +
@@ -150,24 +365,327 @@
           '<div class="progress-bar flex-1"><div class="progress-fill" style="width: ' + b.progress + '%"></div></div>' +
           '<span class="text-sm font-mono">' + b.progress + '%</span>' +
         '</div>' +
+        (isImported ? '<button class="book-read material-symbols-outlined" style="position:absolute; bottom:10px; right:10px; font-size:18px; color: var(--primary); background: var(--surface-container-lowest); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" data-title="' + escapeHtml(b.title) + '" aria-label="阅读">' + (b.readingOpen ? 'expand_less' : 'expand_more') + '</button>' : '') +
       '</article>';
     }
 
     function render() {
       document.getElementById('books-grid').innerHTML = books.map(bookCard).join('');
+      updateTotal();
+      // 显示当前打开的阅读区
+      const open = books.find(b => b.readingOpen);
+      if (open && open.contentHtml) {
+        renderReader(open);
+      } else {
+        document.getElementById('reader-area').style.display = 'none';
+      }
     }
 
-    render();
+    // ===== 从 meiriyixue 加载并解析 =====
+    let cachedIndex = null;
+    async function fetchIndex() {
+      if (cachedIndex) return cachedIndex;
+      const res = await fetch(INDEX_URL);
+      if (!res.ok) throw new Error('网络错误 ' + res.status);
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const items = Array.from(doc.querySelectorAll('a.book-card')).map(a => {
+        const emojiEl = a.querySelector('.book-emoji');
+        const nameEl = a.querySelector('.book-name');
+        const dateEl = a.querySelector('.book-date');
+        const href = a.getAttribute('href');
+        return {
+          emoji: emojiEl ? emojiEl.textContent.trim() : '📘',
+          name: nameEl ? nameEl.textContent.trim() : '未知',
+          date: dateEl ? dateEl.textContent.trim() : '',
+          url: new URL(href, INDEX_URL).href
+        };
+      });
+      cachedIndex = items;
+      return items;
+    }
 
-    // 删除单本书籍
+    function renderBookList(items, filter) {
+      const list = document.getElementById('book-list');
+      const q = (filter || '').trim().toLowerCase();
+      const filtered = q
+        ? items.filter(it => it.name.toLowerCase().includes(q) || it.date.toLowerCase().includes(q))
+        : items;
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="book-empty">没有匹配的书籍</div>';
+        return;
+      }
+      const titlesInShelf = new Set(books.filter(b => b.source === '每日一学').map(b => b.title));
+      list.innerHTML = filtered.map(it => {
+        const isAdded = titlesInShelf.has(it.name);
+        return '<div class="book-list-item' + (isAdded ? ' added' : '') + '" data-url="' + escapeHtml(it.url) + '" data-name="' + escapeHtml(it.name) + '" data-emoji="' + escapeHtml(it.emoji) + '" data-date="' + escapeHtml(it.date) + '">' +
+          '<div class="emoji">' + escapeHtml(it.emoji) + '</div>' +
+          '<div class="info">' +
+            '<div class="name">' + escapeHtml(it.name) + '</div>' +
+            '<div class="date">' + escapeHtml(it.date) + '</div>' +
+          '</div>' +
+          '<button class="add-btn">' +
+            '<span class="material-symbols-outlined">' + (isAdded ? 'check' : 'add') + '</span>' +
+            '<span>' + (isAdded ? '已加入' : '加入') + '</span>' +
+          '</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function showModal() {
+      document.getElementById('book-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      const list = document.getElementById('book-list');
+      list.innerHTML = '<div class="book-loading"><span class="material-symbols-outlined">progress_activity</span><p>正在加载书单...</p></div>';
+      fetchIndex()
+        .then(items => renderBookList(items, ''))
+        .catch(err => {
+          list.innerHTML = '<div class="book-empty">加载失败：' + escapeHtml(err.message) + '<br><br>请检查网络后重试</div>';
+        });
+    }
+
+    function hideModal() {
+      document.getElementById('book-modal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // ===== 解析书籍详情 =====
+    async function fetchAndParseBook(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('获取内容失败 ' + res.status);
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+
+      const title = (doc.querySelector('.title') || doc.querySelector('h1') || {}).textContent?.trim() || '';
+      const subtitle = (doc.querySelector('.subtitle') || {}).textContent?.trim() || '';
+      const dateBadge = (doc.querySelector('.date-badge') || {}).textContent?.trim() || '';
+
+      // 核心洞见
+      let insight = '';
+      const insSec = doc.querySelector('.insight-section');
+      if (insSec) {
+        const label = insSec.querySelector('.insight-label')?.textContent?.trim() || '';
+        const txt = insSec.querySelector('.insight-text')?.innerHTML?.trim() || '';
+        insight = '<div class="book-reader-section"><h3><span class="section-bar"></span>' + escapeHtml(label || '核心洞见') + '</h3><div class="insight-box">' + txt + '</div></div>';
+      }
+
+      // 思维导图 (.branch)
+      const branches = Array.from(doc.querySelectorAll('.branch')).map(b => ({
+        icon: b.querySelector('.branch-icon')?.textContent?.trim() || '',
+        title: b.querySelector('.branch-title')?.textContent?.trim() || '',
+        desc: b.querySelector('.branch-desc')?.textContent?.trim() || ''
+      }));
+      const branchHtml = branches.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>思维导图</h3><div class="branch-grid">' +
+        branches.map(b => '<div class="branch-card"><div class="icon">' + escapeHtml(b.icon) + '</div><div class="title">' + escapeHtml(b.title) + '</div><div class="desc">' + escapeHtml(b.desc) + '</div></div>').join('') +
+        '</div></div>' : '';
+
+      // 核心驱动 / 角色 (.char-card)
+      const chars = Array.from(doc.querySelectorAll('.char-card')).map(c => ({
+        emoji: c.querySelector('.char-emoji')?.textContent?.trim() || '',
+        name: c.querySelector('.char-name')?.textContent?.trim() || '',
+        type: c.querySelector('.char-type')?.textContent?.trim() || '',
+        desc: c.querySelector('.char-desc')?.textContent?.trim() || ''
+      }));
+      const charsHtml = chars.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>核心要素</h3><div class="branch-grid">' +
+        chars.map(c => '<div class="branch-card"><div class="icon">' + escapeHtml(c.emoji) + '</div><div class="title">' + escapeHtml(c.name) + '</div><div class="desc"><em style="opacity:.7;">' + escapeHtml(c.type) + '</em><br>' + escapeHtml(c.desc) + '</div></div>').join('') +
+        '</div></div>' : '';
+
+      // 主要知识点 (.knowledge-card)
+      const knowledges = Array.from(doc.querySelectorAll('.knowledge-card')).map(k => {
+        const h4 = k.querySelector('h4');
+        const p = k.querySelector('p');
+        return {
+          title: h4 ? h4.textContent.replace(/^\s*\d+\s*/, '').trim() : '',
+          desc: p ? p.textContent.trim() : ''
+        };
+      });
+      const knowHtml = knowledges.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>主要知识点</h3><div class="branch-grid">' +
+        knowledges.map(k => '<div class="branch-card"><div class="title">' + escapeHtml(k.title) + '</div><div class="desc">' + escapeHtml(k.desc) + '</div></div>').join('') +
+        '</div></div>' : '';
+
+      // 经典金句 (.quote-card)
+      const quotes = Array.from(doc.querySelectorAll('.quote-card')).map(q => ({
+        text: q.querySelector('.quote-text')?.textContent?.trim() || '',
+        source: q.querySelector('.quote-source')?.textContent?.trim() || ''
+      }));
+      const quoteHtml = quotes.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>经典金句</h3>' +
+        quotes.map(q => '<div class="quote-card"><div class="text">' + escapeHtml(q.text) + '</div><div class="source">' + escapeHtml(q.source) + '</div></div>').join('') +
+        '</div>' : '';
+
+      // 行动建议 (.action-card)
+      const actions = Array.from(doc.querySelectorAll('.action-card')).map(a => {
+        const h4 = a.querySelector('h4');
+        const p = a.querySelector('p');
+        return {
+          title: h4 ? h4.textContent.trim() : '',
+          desc: p ? p.textContent.trim() : ''
+        };
+      });
+      const actionHtml = actions.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>行动建议</h3>' +
+        actions.map(a => '<div class="action-card"><div class="num">●</div><div class="content"><h4>' + escapeHtml(a.title) + '</h4><p>' + escapeHtml(a.desc) + '</p></div></div>').join('') +
+        '</div>' : '';
+
+      const headerHtml =
+        '<div class="book-reader-header">' +
+          (dateBadge ? '<span class="chip mb-2">' + escapeHtml(dateBadge.replace(/\s+/g, ' ')) + '</span>' : '') +
+          '<h2 class="headline-xl mb-2" style="margin-top:8px;">' + escapeHtml(title) + '</h2>' +
+          (subtitle ? '<p class="body-md text-on-surface-variant">' + escapeHtml(subtitle) + '</p>' : '') +
+          '<div class="flex items-center gap-3 mt-4">' +
+            '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none;">' +
+              '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">open_in_new</span> ' +
+              '原网页' +
+            '</a>' +
+            '<button class="chip book-collapse" style="cursor:pointer;border:none;">' +
+              '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">expand_less</span> 收起' +
+            '</button>' +
+            '<button class="chip book-remove" style="cursor:pointer;border:none;color:var(--error);">' +
+              '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">delete</span> 移除' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+
+      const bodyHtml = '<div class="book-reader-body">' + insight + branchHtml + charsHtml + knowHtml + quoteHtml + actionHtml + '</div>';
+
+      return { title, subtitle, dateBadge, headerHtml, bodyHtml, fullHtml: headerHtml + bodyHtml };
+    }
+
+    function renderReader(book) {
+      const area = document.getElementById('reader-area');
+      if (!book.contentHtml) { area.style.display = 'none'; return; }
+      area.style.display = '';
+      area.innerHTML = '<div class="book-reader" data-title="' + escapeHtml(book.title) + '">' + book.contentHtml + '</div>';
+      area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ===== 事件绑定 =====
+    document.getElementById('add-book-btn').addEventListener('click', showModal);
+    document.getElementById('book-modal-close').addEventListener('click', hideModal);
+    document.getElementById('book-modal').addEventListener('click', e => {
+      if (e.target.id === 'book-modal') hideModal();
+    });
+    document.getElementById('book-search-input').addEventListener('input', async (e) => {
+      try {
+        const items = await fetchIndex();
+        renderBookList(items, e.target.value);
+      } catch (err) {}
+    });
+
+    // 模态框列表点击（加入/已加入）
+    document.getElementById('book-list').addEventListener('click', async (e) => {
+      const item = e.target.closest('.book-list-item');
+      if (!item) return;
+      const name = item.dataset.name;
+      const url = item.dataset.url;
+      const emoji = item.dataset.emoji;
+      const date = item.dataset.date;
+
+      // 已加入则高亮跳过
+      if (item.classList.contains('added')) {
+        hideModal();
+        return;
+      }
+
+      // 改成 loading
+      const btn = item.querySelector('.add-btn');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined spin">progress_activity</span><span>导入中</span>';
+      btn.disabled = true;
+      item.style.pointerEvents = 'none';
+
+      try {
+        const parsed = await fetchAndParseBook(url);
+        const book = {
+          title: parsed.title || name,
+          author: parsed.subtitle || date || '每日一学',
+          source: '每日一学',
+          progress: 0,
+          status: '已加入',
+          color: '#e8e0f5',
+          icon: 'menu_book',
+          url: url,
+          date: date,
+          emoji: emoji,
+          contentHtml: parsed.fullHtml,
+          contentMeta: { title: parsed.title, subtitle: parsed.subtitle, date: parsed.dateBadge },
+          readingOpen: true,
+          addedAt: Date.now()
+        };
+        // 去重（按 url），并关闭其它书的阅读态
+        books.forEach(b => { b.readingOpen = false; });
+        books = books.filter(b => !(b.source === '每日一学' && b.url === url));
+        books.unshift(book);
+        saveBooks();
+        render();
+        hideModal();
+        // 平滑滚动到阅读区
+        setTimeout(() => {
+          const ra = document.getElementById('reader-area');
+          if (ra) ra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      } catch (err) {
+        alert('导入失败：' + err.message + '\n可能受网络或 CORS 限制');
+        btn.innerHTML = orig;
+        btn.disabled = false;
+        item.style.pointerEvents = '';
+      }
+    });
+
+    // 书架网格：删除 / 阅读展开
     document.getElementById('books-grid').addEventListener('click', e => {
       const del = e.target.closest('.book-delete');
-      if (!del) return;
-      const title = del.dataset.title;
-      books = books.filter(b => b.title !== title);
-      saveBooks();
-      render();
+      if (del) {
+        const title = del.dataset.title;
+        books = books.filter(b => b.title !== title);
+        saveBooks();
+        render();
+        return;
+      }
+      const rd = e.target.closest('.book-read');
+      if (rd) {
+        const title = rd.dataset.title;
+        const book = books.find(b => b.title === title);
+        if (!book) return;
+        // 切换状态
+        const isOpen = !!book.readingOpen;
+        books.forEach(b => { b.readingOpen = false; });
+        if (!isOpen && book.contentHtml) {
+          book.readingOpen = true;
+        }
+        saveBooks();
+        render();
+        if (book.readingOpen) {
+          setTimeout(() => {
+            document.getElementById('reader-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
+        }
+      }
     });
+
+    // 阅读区按钮：收起 / 移除
+    document.getElementById('reader-area').addEventListener('click', e => {
+      const wrap = e.target.closest('.book-reader');
+      if (!wrap) return;
+      const title = wrap.dataset.title;
+      if (e.target.closest('.book-collapse')) {
+        const book = books.find(b => b.title === title);
+        if (book) { book.readingOpen = false; saveBooks(); render(); }
+      }
+      if (e.target.closest('.book-remove')) {
+        if (!confirm('确定要移除这本书？\n' + title)) return;
+        books = books.filter(b => b.title !== title);
+        saveBooks();
+        render();
+      }
+    });
+
+    // ESC 关闭模态
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && document.getElementById('book-modal').style.display === 'flex') {
+        hideModal();
+      }
+    });
+
+    render();
   </script>
 
   <style>
@@ -191,7 +709,9 @@
     .mb-8 { margin-bottom: 32px; }
     .mt-1 { margin-top: 4px; }
     .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
     .mt-10 { margin-top: 40px; }
+    .p-2 { padding: 8px; }
     .p-4 { padding: 16px; }
     .p-6 { padding: 24px; }
     .text-xs { font-size: 12px; }
@@ -203,6 +723,7 @@
     .text-on-surface { color: var(--on-surface); }
     .text-on-surface-variant { color: var(--on-surface-variant); }
     .text-primary { color: var(--primary); }
+    .text-error { color: var(--error); }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .font-semibold { font-weight: 600; }
     .font-bold { font-weight: 700; }
@@ -234,6 +755,10 @@
     .aspect-video { aspect-ratio: 16 / 9; }
     .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
     .border-t { border-top-width: 1px; border-top-style: solid; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    .block { display: block; }
+    .hidden { display: none; }
     @media (min-width: 768px) { .md\:hidden { display: none; } .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .md\:col-span-2 { grid-column: span 2 / span 2; } }
   </style>
 </body>
