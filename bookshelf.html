@@ -321,21 +321,29 @@
       return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     }
 
+    // 旧版预置的演示书籍标题（一次性清除）
+    const LEGACY_SEED_TITLES = new Set([
+      'Generative AI and the Future of Work',
+      'Morning Brew: Tech Edition',
+      'Personal Knowledge Management',
+      '置身事内：中国政府与经济发展',
+      'Atomic Habits',
+      'The Pragmatic Programmer'
+    ]);
+
     function loadBooks() {
+      let list = [];
       try {
         const raw = localStorage.getItem(BOOKS_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) list = JSON.parse(raw);
       } catch(e) {}
-      const seed = [
-        { title: 'Generative AI and the Future of Work', author: 'Exploring the intersection of human creativity...', source: 'Medium', progress: 100, status: '已读完', color: '#f0f0f0' },
-        { title: 'Morning Brew: Tech Edition', author: 'Last updated: 2 hours ago', source: 'RSS Feed', progress: 25, status: '', color: '#e8e8e8', icon: 'rss_feed' },
-        { title: 'Personal Knowledge Management', author: 'Collection of notes on Zettelkasten...', source: 'Notion', progress: 40, status: '', color: '#dadada', icon: 'description' },
-        { title: '置身事内：中国政府与经济发展', author: '兰小欢 · 深度阅读系列', source: '微信读书', progress: 88, status: '', color: '#d4c5a0' },
-        { title: 'Atomic Habits', author: 'James Clear · 中英对照', source: '微信读书', progress: 55, status: '', color: '#c7b89c' },
-        { title: 'The Pragmatic Programmer', author: 'David Thomas, Andrew Hunt', source: 'Medium', progress: 100, status: '已读完', color: '#e0e0e0' }
-      ];
-      try { localStorage.setItem(BOOKS_KEY, JSON.stringify(seed)); } catch(e) {}
-      return seed;
+      if (!Array.isArray(list)) list = [];
+      // 迁移：清除旧版演示书籍
+      const cleaned = list.filter(b => !(b && LEGACY_SEED_TITLES.has(b.title) && b.source !== '每日一学'));
+      if (cleaned.length !== list.length) {
+        try { localStorage.setItem(BOOKS_KEY, JSON.stringify(cleaned)); } catch(e) {}
+      }
+      return cleaned;
     }
 
     let books = loadBooks();
