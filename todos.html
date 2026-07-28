@@ -164,8 +164,8 @@
           </button>
           <div class="flex-1 min-w-0 flex items-center gap-3">
             <p class="text-sm ${t.done ? 'line-through text-on-surface-variant' : 'text-on-surface'}">${escapeHtml(t.text)}</p>
-            <span class="text-[10px] font-mono uppercase text-on-surface-variant shrink-0">${tagLabels[t.tag] || t.tag}</span>
-            ${t.time ? `<span class="text-[10px] text-on-surface-variant shrink-0">· ${t.time}</span>` : ''}
+            <span class="text-sm font-mono uppercase text-on-surface-variant shrink-0">${tagLabels[t.tag] || t.tag}</span>
+            ${t.time ? `<span class="text-sm text-on-surface-variant shrink-0">· ${t.time}</span>` : ''}
           </div>
           <button class="todo-delete text-on-surface-variant hover:text-on-surface" aria-label="删除">
             <span class="material-symbols-outlined text-lg">delete</span>
