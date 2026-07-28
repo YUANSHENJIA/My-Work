@@ -37,8 +37,8 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .avatar-ring {
-      width: 88px;
-      height: 88px;
+      width: 176px;
+      height: 176px;
       border-radius: 50%;
       padding: 4px;
       background: linear-gradient(135deg, var(--on-surface), var(--on-surface-variant));
@@ -50,8 +50,8 @@
     .avatar-ring:hover { transform: scale(1.04); }
     .avatar-zone {
       position: relative;
-      width: 88px;
-      height: 88px;
+      width: 176px;
+      height: 176px;
       margin: 0 auto 24px;
     }
     .avatar-img {
@@ -62,28 +62,30 @@
       border: 3px solid var(--surface-container-lowest);
       display: block;
     }
-    /* 底部中央圆形更换按钮（常显） */
+    /* 底部中央"添加头像"药丸按钮（常显） */
     .avatar-change-btn {
       position: absolute;
       left: 50%;
-      bottom: 18px;
+      bottom: -4px;
       transform: translateX(-50%);
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
+      padding: 6px 16px;
+      border-radius: 999px;
       background: var(--on-surface);
       color: var(--surface-container-lowest);
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0,0,0,0.25);
       transition: transform .15s ease, box-shadow .15s ease;
       border: 2px solid var(--surface-container-lowest);
       z-index: 2;
     }
-    .avatar-change-btn:hover { transform: translateX(-50%) scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,0.35); }
-    .avatar-change-btn .material-symbols-outlined { font-size: 16px; font-variation-settings: 'wght' 600; }
+    .avatar-change-btn:hover { transform: translateX(-50%) scale(1.06); box-shadow: 0 4px 10px rgba(0,0,0,0.35); }
 
     .name-input {
       width: 100%;
@@ -268,9 +270,7 @@
     <label class="avatar-ring" for="avatar-input" title="点击上传头像">
       <img id="avatar-img" src="assets/images/avatar.jpg" alt="头像" class="avatar-img" />
     </label>
-    <label class="avatar-change-btn" for="avatar-input" title="更换头像" aria-label="更换头像">
-      <span class="material-symbols-outlined">photo_camera</span>
-    </label>
+    <label class="avatar-change-btn" for="avatar-input" title="添加头像" aria-label="添加头像">添加头像</label>
   </div>
     <input id="avatar-input" type="file" accept="image/*" style="display:none;" />
 
