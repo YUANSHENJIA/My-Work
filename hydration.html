@@ -53,13 +53,13 @@
         <div class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(0,0,0,0.04), transparent 70%);"></div>
 
         <!-- Ring -->
-        <div class="relative" style="width: 380px; height: 380px;">
-          <svg id="water-ring" width="380" height="380" viewBox="0 0 280 280" class="transform -rotate-90 absolute inset-0">
+        <div class="water-ring-wrap">
+          <svg id="water-ring" viewBox="0 0 280 280" class="water-ring-svg transform -rotate-90">
             <circle cx="140" cy="140" r="120" stroke="var(--outline-variant)" stroke-width="14" fill="none" opacity="0.3" />
             <circle id="water-progress" cx="140" cy="140" r="120" stroke="var(--primary)" stroke-width="14" fill="none"
                     stroke-linecap="round" stroke-dasharray="753.98" stroke-dashoffset="301.59" class="transition-all duration-700" />
           </svg>
-          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <div class="water-ring-center">
             <p class="eyebrow mb-2" style="font-size: 13px;">当前摄入量</p>
             <p class="font-semibold tracking-tight" style="color: var(--on-surface); font-size: 4.5rem; line-height: 1;"><span id="current-amount">0</span><span class="ml-1" style="color: var(--on-surface-variant); font-size: 1.5rem;">ml</span></p>
             <p class="chip mt-3" id="percent-label" style="font-size: 11px;">0% COMPLETED</p>
@@ -84,15 +84,15 @@
       <div class="flex flex-col gap-6">
 
         <!-- Quick add -->
-        <div class="card fade-in flex-1" style="padding: 32px;">
+        <div class="card fade-in flex-1 water-quick-card">
           <p class="eyebrow mb-4">快速记录</p>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-3">
             <button class="water-add-btn" data-add="150"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 150ml</span></button>
             <button class="water-add-btn" data-add="250"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 250ml</span></button>
             <button class="water-add-btn" data-add="350"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 350ml</span></button>
             <button class="water-add-btn" data-add="500"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 500ml</span></button>
           </div>
-          <button id="reset-water" class="mt-5 w-full text-sm text-on-surface-variant hover:text-on-surface transition-colors py-2 rounded-lg hover:bg-surface-container">重置今日饮水</button>
+          <button id="reset-water" class="water-reset-btn">重置今日饮水</button>
         </div>
 
         <!-- Reminder settings -->
@@ -393,6 +393,51 @@
     .water-add-btn .material-symbols-outlined {
       font-size: 22px;
       color: var(--primary);
+    }
+    /* 圆环容器：SVG 填满，中央文字用 transform 完美居中 */
+    .water-ring-wrap {
+      position: relative;
+      width: 380px;
+      height: 380px;
+      max-width: 100%;
+    }
+    .water-ring-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .water-ring-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      pointer-events: none;
+    }
+    /* 快速记录卡片：足够 padding，避免重置按钮与按钮网格重叠 */
+    .water-quick-card {
+      padding: 36px 28px;
+    }
+    .water-reset-btn {
+      margin-top: 24px;
+      width: 100%;
+      font-size: 14px;
+      color: var(--on-surface-variant);
+      padding: 10px 16px;
+      border-radius: var(--r-lg);
+      background: transparent;
+      border: 1px solid var(--outline-variant);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .water-reset-btn:hover {
+      color: var(--on-surface);
+      background: var(--surface-container-low);
     }
     @media (min-width: 768px) { .md\:hidden { display: none; } }
   </style>
