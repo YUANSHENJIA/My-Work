@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>喝水时间 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">小袁的工作台</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <!-- ===== Sidebar (injected by sidebar.js) ===== -->
+  <aside class="app-sidebar"></aside>
+
+  <main class="app-main dot-bg">
+    <section class="mb-6 fade-in text-center">
+      <p class="eyebrow mb-2">Workspace / Hydration</p>
+      <h1 class="headline-xl mb-2">喝水时间</h1>
+      <p class="body-lg text-on-surface-variant max-w-2xl mx-auto">
+        持续补水，保持专注。健康的小习惯带来巨大的复利。
+      </p>
+    </section>
+
+    <!-- Two-column layout: ring left, quick/reminder right -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="min-height: calc(100vh - 200px);">
+
+      <!-- Left: Ring + Stats (2/3) -->
+      <div class="lg:col-span-2 card fade-in relative flex flex-col items-center justify-center" style="padding: 32px 24px;">
+        <div class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(0,0,0,0.04), transparent 70%);"></div>
+
+        <!-- Ring -->
+        <div class="relative flex flex-col items-center">
+          <svg id="water-ring" width="260" height="260" viewBox="0 0 280 280" class="transform -rotate-90">
+            <circle cx="140" cy="140" r="120" stroke="var(--outline-variant)" stroke-width="14" fill="none" opacity="0.3" />
+            <circle id="water-progress" cx="140" cy="140" r="120" stroke="var(--primary)" stroke-width="14" fill="none"
+                    stroke-linecap="round" stroke-dasharray="753.98" stroke-dashoffset="301.59" class="transition-all duration-700" />
+          </svg>
+          <div class="absolute" style="text-align:center;">
+            <p class="eyebrow mb-1" style="font-size:12px;">当前摄入量</p>
+            <p class="text-6xl font-semibold tracking-tight" style="color: var(--on-surface);"><span id="current-amount">1200</span><span class="text-xl ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            <p class="chip mt-2" id="percent-label">60% COMPLETED</p>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex items-center gap-8 mt-6">
+          <div class="text-center">
+            <p class="eyebrow mb-1" style="font-size:11px;">目标摄入</p>
+            <p class="text-2xl font-semibold"><span id="goal-amount">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+          </div>
+          <div class="w-px h-10" style="background: var(--outline-variant); opacity:0.3;"></div>
+          <div class="text-center">
+            <p class="eyebrow mb-1" style="font-size:11px;">还需饮水</p>
+            <p class="text-2xl font-semibold"><span id="remaining">800</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Quick record + Reminder (1/3) -->
+      <div class="flex flex-col gap-6">
+
+        <!-- Quick add -->
+        <div class="card fade-in flex-1 flex flex-col justify-center" style="padding: 24px;">
+          <p class="eyebrow mb-3">快速记录</p>
+          <div class="grid grid-cols-2 gap-3">
+            <button class="btn-secondary" data-add="150"><span class="material-symbols-outlined mr-1">local_drink</span>+ 150ml</button>
+            <button class="btn-secondary" data-add="250"><span class="material-symbols-outlined mr-1">local_drink</span>+ 250ml</button>
+            <button class="btn-secondary" data-add="350"><span class="material-symbols-outlined mr-1">local_drink</span>+ 350ml</button>
+            <button class="btn-secondary" data-add="500"><span class="material-symbols-outlined mr-1">local_drink</span>+ 500ml</button>
+          </div>
+          <button id="reset-water" class="mt-3 text-xs text-on-surface-variant hover:text-on-surface transition-colors">重置今日饮水</button>
+        </div>
+
+        <!-- Reminder settings -->
+        <div class="card fade-in" style="padding: 24px;">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="eyebrow mb-1" style="font-size:11px;">提醒设置</p>
+              <p class="text-lg font-semibold" style="color:var(--on-surface);">定时喝水提醒</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="reminder-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-on-surface-variant">提醒间隔</span>
+            <span class="text-xs font-semibold" id="interval-value">45 分钟</span>
+          </div>
+          <input type="range" id="interval-slider" min="15" max="120" step="15" value="45" class="w-full">
+
+          <div class="mt-4 p-3 rounded-xl flex items-center gap-3" style="background:var(--surface-container-low);cursor:pointer;">
+            <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined" style="font-size:18px;">vibration</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium" style="color:var(--on-surface);">智能振动提醒</p>
+              <p class="text-xs text-on-surface-variant">仅在佩戴手表时提醒</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const CIRC = 2 * Math.PI * 120; // ≈ 753.98
+    const todayKey = () => new Date().toISOString().slice(0, 10);
+    const WATER_KEY = 'monolith.waterLog';
+    const GOAL_KEY = 'monolith.waterGoal';
+    const INTERVAL_KEY = 'monolith.waterInterval';
+
+    function loadLog() { try { return JSON.parse(localStorage.getItem(WATER_KEY) || '{}'); } catch(e) { return {}; } }
+    function saveLog(log) { try { localStorage.setItem(WATER_KEY, JSON.stringify(log)); } catch(e) {} }
+    function getGoal() { return parseInt(localStorage.getItem(GOAL_KEY) || '2000', 10); }
+    function setGoal(v) { try { localStorage.setItem(GOAL_KEY, String(v)); } catch(e) {} }
+
+    function getToday() {
+      const log = loadLog();
+      return log[todayKey()] || 0;
+    }
+
+    function setToday(v) {
+      const log = loadLog();
+      log[todayKey()] = Math.max(0, v);
+      saveLog(log);
+    }
+
+    function render() {
+      const cur = getToday();
+      const goal = getGoal();
+      const pct = Math.min(100, (cur / goal) * 100);
+      const offset = CIRC * (1 - pct / 100);
+
+      document.getElementById('current-amount').textContent = cur;
+      document.getElementById('goal-amount').textContent = goal;
+      document.getElementById('remaining').textContent = Math.max(0, goal - cur);
+      document.getElementById('percent-label').textContent = `${Math.round(pct)}% COMPLETED`;
+      const ring = document.getElementById('water-progress');
+      ring.setAttribute('stroke-dashoffset', offset);
+
+      // animate the ring if hit goal
+      if (cur >= goal) {
+        document.getElementById('percent-label').textContent = '🎉 目标达成';
+      }
+    }
+
+    document.querySelectorAll('[data-add]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const add = parseInt(btn.dataset.add, 10);
+        setToday(getToday() + add);
+        render();
+        // tiny burst animation
+        btn.animate(
+          [{ transform: 'scale(1)' }, { transform: 'scale(0.95)' }, { transform: 'scale(1)' }],
+          { duration: 200 }
+        );
+      });
+    });
+
+    document.getElementById('reset-water').addEventListener('click', () => {
+      if (confirm('确定要重置今日饮水记录吗？')) {
+        setToday(0);
+        render();
+      }
+    });
+
+    // Goal can be edited by clicking on goal-amount
+    document.getElementById('goal-amount').parentElement.parentElement.addEventListener('click', () => {
+      const v = prompt('设置每日饮水目标 (ml):', getGoal());
+      if (v && !isNaN(v) && v > 0) {
+        setGoal(parseInt(v, 10));
+        render();
+      }
+    });
+
+    // Reminder interval
+    const slider = document.getElementById('interval-slider');
+    const valueLabel = document.getElementById('interval-value');
+    const savedInterval = parseInt(localStorage.getItem(INTERVAL_KEY) || '45', 10);
+    slider.value = savedInterval;
+    valueLabel.textContent = `${savedInterval} 分钟`;
+    slider.addEventListener('input', () => {
+      valueLabel.textContent = `${slider.value} 分钟`;
+      localStorage.setItem(INTERVAL_KEY, slider.value);
+    });
+
+    render();
+  </script>
+
+  <style>
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .mb-1 { margin-bottom: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mt-10 { margin-top: 40px; }
+    .ml-1 { margin-left: 4px; }
+    .p-2 { padding: 8px; }
+    .p-4 { padding: 16px; }
+    .p-6 { padding: 24px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .py-4 { padding-top: 16px; padding-bottom: 16px; }
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-lg { font-size: 18px; }
+    .text-xl { font-size: 20px; }
+    .text-2xl { font-size: 24px; }
+    .text-3xl { font-size: 30px; }
+    .text-6xl { font-size: 60px; }
+    .text-7xl { font-size: 72px; }
+    .gap-8 { gap: 32px; }
+    .text-on-surface { color: var(--on-surface); }
+    .text-on-surface-variant { color: var(--on-surface-variant); }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-md { border-radius: var(--r-md); }
+    .rounded-lg { border-radius: var(--r-lg); }
+    .rounded-xl { border-radius: var(--r-xl); }
+    .border { border-width: 1px; border-style: solid; }
+    .border-outline-variant { border-color: var(--outline-variant); }
+    .border-outline-variant\/30 { border-color: rgba(207, 196, 197, 0.3); }
+    .bg-primary { background: var(--primary); }
+    .bg-surface-container { background: var(--surface-container); }
+    .grid { display: grid; }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (min-width: 640px) { .sm\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .h-8 { height: 32px; }
+    .w-8 { width: 32px; }
+    .w-10 { width: 40px; }
+    .h-10 { height: 40px; }
+    .w-full { width: 100%; }
+    .max-w-md { max-width: 448px; }
+    .max-w-2xl { max-width: 672px; }
+    .max-w-xl { max-width: 576px; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .text-center { text-align: center; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .transition-colors { transition: color 0.2s, background 0.2s, border 0.2s; }
+    .transition-all { transition: all 0.7s; }
+    .cursor-pointer { cursor: pointer; }
+    .absolute { position: absolute; }
+    .relative { position: relative; }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--surface-container);
+      border-radius: 9999px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 4px;
+      top: 4px;
+      background: white;
+      border-radius: 9999px;
+      transition: 0.3s;
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--primary);
+    }
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+    }
+    [data-theme="dark"] .toggle-slider::before {
+      background: var(--on-primary);
+    }
+
+    /* Range slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      height: 6px;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      background: var(--surface-container);
+      border-radius: 9999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-top: -7px;
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-track {
+      height: 6px;
+      background: var(--surface-container);
+      border-radius: 9999px;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border: none;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+    }
+    .mr-1 { margin-right: 4px; }
+    @media (min-width: 768px) { .md\:hidden { display: none; } }
+  </style>
+</body>
+</html>

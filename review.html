@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日复盘 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">小袁的工作台</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <!-- ===== Sidebar (injected by sidebar.js) ===== -->
+  <aside class="app-sidebar"></aside>
+
+  <main class="app-main dot-bg">
+    <section class="mb-6 fade-in">
+      <p class="eyebrow mb-2">Daily Reflection</p>
+      <h1 class="headline-xl mb-2">今日复盘</h1>
+      <p class="body-lg text-on-surface-variant max-w-2xl">
+        回顾今日所做的事、所学的知识、所犯的错误。把每天的复盘变成成长的杠杆。
+      </p>
+    </section>
+
+    <!-- Quick stats -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="card text-center">
+        <p class="eyebrow mb-2">完成度</p>
+        <p class="text-3xl font-semibold mb-1">75%</p>
+        <p class="text-xs text-on-surface-variant">3/4 待办</p>
+      </div>
+      <div class="card text-center">
+        <p class="eyebrow mb-2">饮水量</p>
+        <p class="text-3xl font-semibold mb-1">1.2L</p>
+        <p class="text-xs text-on-surface-variant">目标 2.0L</p>
+      </div>
+      <div class="card text-center">
+        <p class="eyebrow mb-2">阅读时长</p>
+        <p class="text-3xl font-semibold mb-1">42m</p>
+        <p class="text-xs text-on-surface-variant">继续前进</p>
+      </div>
+      <div class="card text-center">
+        <p class="eyebrow mb-2">专注时长</p>
+        <p class="text-3xl font-semibold mb-1">3h 25m</p>
+        <p class="text-xs text-on-surface-variant">↑ 12%</p>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Three questions -->
+      <section class="card fade-in">
+        <h2 class="headline-lg mb-2">三个问题</h2>
+        <p class="text-on-surface-variant mb-6">每天回答这三个问题，是建立自我反馈循环的简单方式。</p>
+
+        <div class="flex flex-col gap-6">
+          <div>
+            <label class="eyebrow mb-2 block" style="color: var(--primary);">今天做了什么？</label>
+            <textarea id="review-q1" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" placeholder="记录你今天完成的具体事情..."
+                      style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
+          </div>
+
+          <div>
+            <label class="eyebrow mb-2 block" style="color: var(--primary);">今天学到了什么？</label>
+            <textarea id="review-q2" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" placeholder="今天的新认知、新技能、新视角..."
+                      style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
+          </div>
+
+          <div>
+            <label class="eyebrow mb-2 block" style="color: var(--primary);">明天要改进什么？</label>
+            <textarea id="review-q3" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" placeholder="明天希望改变的一件事..."
+                      style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
+          </div>
+
+          <button id="save-review-btn" class="btn-primary self-start">
+            <span class="material-symbols-outlined">save</span>
+            <span>保存今日复盘</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Past reviews -->
+      <section class="fade-in">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="eyebrow mb-1">History</p>
+            <h2 class="headline-lg">历史复盘</h2>
+          </div>
+          <a href="#" class="text-sm text-on-surface-variant hover:text-on-surface">查看全部</a>
+        </div>
+        <div id="history-list" class="flex flex-col gap-3"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    // Today's review save
+    const REVIEW_KEY = 'monolith.reviews';
+    function loadReviews() { try { return JSON.parse(localStorage.getItem(REVIEW_KEY) || '{}'); } catch(e){ return {}; } }
+    function saveReviews(r) { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(r)); } catch(e) {} }
+
+    const todayKey = () => new Date().toISOString().slice(0, 10);
+
+    document.getElementById('save-review-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const q1 = (document.getElementById('review-q1').value || '').trim();
+      const q2 = (document.getElementById('review-q2').value || '').trim();
+      const q3 = (document.getElementById('review-q3').value || '').trim();
+      if (!q1 && !q2 && !q3) {
+        const btn = document.getElementById('save-review-btn');
+        btn.innerHTML = '<span class="material-symbols-outlined">warning</span><span>请先填写内容</span>';
+        setTimeout(() => { btn.innerHTML = '<span class="material-symbols-outlined">save</span><span>保存今日复盘</span>'; }, 1500);
+        return;
+      }
+      const reviews = loadReviews();
+      reviews[todayKey()] = { q1, q2, q3, savedAt: new Date().toISOString() };
+      saveReviews(reviews);
+      const btn = document.getElementById('save-review-btn');
+      const originalHTML = '<span class="material-symbols-outlined">save</span><span>保存今日复盘</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span><span>已保存 ✓</span>';
+      btn.animate([{transform:'scale(1)'},{transform:'scale(0.95)'},{transform:'scale(1)'}], {duration:280,easing:'ease-out'});
+      setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+      renderHistory(); // 刷新历史列表
+    });
+
+    // Render history from localStorage
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      if (!list) return;
+      const reviews = loadReviews();
+      const today = todayKey();
+      // 排序：今天的优先，再按日期倒序
+      const keys = Object.keys(reviews).sort((a, b) => b.localeCompare(a));
+
+      if (keys.length === 0) {
+        list.innerHTML = '<p class="text-center text-sm text-on-surface-variant" style="padding:32px;">还没有历史复盘。完成今天的复盘后会出现在这里。</p>';
+        return;
+      }
+
+      list.innerHTML = keys.map(date => {
+        const r = reviews[date];
+        const isToday = date === today;
+        const dateLabel = date.replace(/-/g, '.').replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, '$1.$2.$3');
+        const fullText = [r.q1, r.q2, r.q3].filter(Boolean).join(' · ');
+        const preview = fullText.substring(0, 80) + (fullText.length > 80 ? '...' : '');
+        const chip = isToday ? 'TODAY' : (date === today ? 'CONTINUOUS' : 'SAVED');
+        return '<article class="card hover-lift">' +
+          '<div class="flex items-center justify-between mb-3 flex-wrap gap-2">' +
+            '<span class="text-sm font-mono text-on-surface-variant">' + dateLabel + '</span>' +
+            '<span class="chip">' + chip + '</span>' +
+          '</div>' +
+          (r.q1 ? '<h3 class="text-base font-semibold mb-1">' + escapeHtml(r.q1.substring(0, 40)) + (r.q1.length > 40 ? '...' : '') + '</h3>' : '') +
+          '<p class="text-sm text-on-surface-variant line-clamp-2">' + escapeHtml(preview) + '</p>' +
+        '</article>';
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    // Load today's saved review if exists
+    const saved = (loadReviews())[todayKey()];
+    if (saved) {
+      if (saved.q1) document.getElementById('review-q1').value = saved.q1;
+      if (saved.q2) document.getElementById('review-q2').value = saved.q2;
+      if (saved.q3) document.getElementById('review-q3').value = saved.q3;
+    }
+
+    // Initial history render
+    renderHistory();
+  </script>
+<style>
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .items-end { align-items: flex-end; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    .mb-1 { margin-bottom: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .p-2 { padding: 8px; }
+    .p-4 { padding: 16px; }
+    .p-6 { padding: 24px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .py-3 { padding-top: 12px; padding-bottom: 12px; }
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-lg { font-size: 18px; }
+    .text-3xl { font-size: 30px; }
+    .text-on-surface { color: var(--on-surface); }
+    .text-on-surface-variant { color: var(--on-surface-variant); }
+    .text-primary { color: var(--primary); }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-xl { border-radius: var(--r-xl); }
+    .border-outline-variant { border-color: var(--outline-variant); }
+    .border-outline-variant\/30 { border-color: rgba(207, 196, 197, 0.3); }
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (min-width: 768px) { .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (min-width: 1024px) { .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .w-8 { width: 32px; }
+    .h-8 { height: 32px; }
+    .w-full { width: 100%; }
+    .max-w-xl { max-width: 576px; }
+    .max-w-2xl { max-width: 672px; }
+    .text-center { text-align: center; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .tracking-widest { letter-spacing: 0.2em; }
+    .uppercase { text-transform: uppercase; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .leading-snug { line-height: 1.375; }
+    .transition-colors { transition: color 0.2s, background 0.2s, border 0.2s; }
+    .cursor-pointer { cursor: pointer; }
+    .outline-none { outline: none; }
+    .resize-none { resize: none; }
+    .self-start { align-self: flex-start; }
+    .block { display: block; }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+    @media (min-width: 768px) { .md\:hidden { display: none; } }
+  </style>
+</body>
+</html>

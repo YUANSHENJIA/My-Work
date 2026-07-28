@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    html, body { height: 100%; }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--background);
+      background-image: radial-gradient(var(--outline-variant) 0.5px, transparent 0.5px);
+      background-size: 24px 24px;
+    }
+    [data-theme="dark"] body {
+      background-image: radial-gradient(#262626 0.5px, transparent 0.5px);
+    }
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 48px 40px;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--outline-variant);
+      border-radius: 24px;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.1);
+      animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .avatar-ring {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, var(--on-surface), var(--on-surface-variant));
+      margin: 0 auto 24px;
+    }
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--surface-container-lowest);
+    }
+    .name-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      color: var(--on-surface);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .name-input:focus {
+      border-color: var(--on-surface);
+      background: var(--surface-container-lowest);
+    }
+    .name-input::placeholder {
+      color: var(--on-surface-variant);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: var(--on-primary);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .login-btn:hover { opacity: 0.85; }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .theme-toggle-mini {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-container-low);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .theme-toggle-mini:hover {
+      background: var(--surface-container);
+    }
+    .hint {
+      font-size: 13px;
+      color: var(--on-surface-variant);
+      text-align: center;
+      margin-top: 16px;
+    }
+    .brand-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle-mini" id="theme-toggle" aria-label="主题切换">
+    <span class="material-symbols-outlined" id="theme-icon">light_mode</span>
+  </button>
+
+  <div class="login-card">
+    <div class="avatar-ring">
+      <img src="assets/images/avatar.jpg" alt="头像" class="avatar-img" />
+    </div>
+
+    <h1 class="headline-lg" style="text-align:center;margin-bottom:8px;">欢迎回来</h1>
+    <p class="body-md" style="text-align:center;color:var(--on-surface-variant);margin-bottom:32px;">
+      请输入你的名字，开始今天的工作
+    </p>
+
+    <form id="login-form">
+      <input
+        type="text"
+        id="name-input"
+        class="name-input"
+        placeholder="输入你的名字..."
+        autocomplete="off"
+        autofocus
+        maxlength="20"
+      />
+      <div style="height: 16px;"></div>
+      <button type="submit" class="login-btn" id="login-btn">进入工作台 →</button>
+    </form>
+
+    <p class="hint">
+      <span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">lock</span>
+      数据仅保存在本地浏览器
+    </p>
+
+    <p class="brand-tag">MONOLITH · v1.2.0</p>
+  </div>
+
+  <script>
+    const NAME_KEY = 'monolith.userName';
+    const LOGIN_TIME_KEY = 'monolith.loginTime';
+
+    // Theme toggle
+    const THEME_KEY = 'monolith.theme';
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
+    }
+    function initTheme() {
+      let saved;
+      try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+      if (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      applyTheme(saved);
+    }
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+
+    // Login logic
+    initTheme();
+
+    // Prefill last name if exists
+    const lastName = localStorage.getItem(NAME_KEY);
+    if (lastName) {
+      document.getElementById('name-input').value = lastName;
+    }
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('name-input');
+      const name = input.value.trim();
+      if (!name) {
+        input.focus();
+        return;
+      }
+      try {
+        localStorage.setItem(NAME_KEY, name);
+        localStorage.setItem(LOGIN_TIME_KEY, new Date().toISOString());
+      } catch (e) {}
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.textContent = '登录中...';
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 400);
+    });
+  </script>
+</body>
+</html>

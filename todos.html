@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日待办 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">小袁的工作台</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <!-- ===== Sidebar (injected by sidebar.js) ===== -->
+  <aside class="app-sidebar"></aside>
+
+  <main class="app-main dot-bg">
+
+    <section class="mb-6 fade-in">
+      <p class="eyebrow mb-2">Workspace / Tasks</p>
+      <h1 class="headline-xl mb-2">今日待办</h1>
+      <p class="body-lg text-on-surface-variant max-w-2xl">
+        管理你的一天，从记录每一件小事开始。保持专注，稳步前行。
+      </p>
+    </section>
+
+    <!-- New todo creator -->
+    <section class="card mb-6 fade-in">
+      <form id="todo-form" class="flex items-center gap-3">
+        <input id="todo-input" type="text" placeholder="新建待办 (按 Enter 添加)" autocomplete="off"
+               class="flex-1 bg-transparent outline-none text-base placeholder:text-on-surface-variant/50 py-3" />
+        <select id="todo-priority" class="bg-surface-container rounded-lg px-3 py-2 text-sm outline-none cursor-pointer">
+          <option value="priority-high">HIGH</option>
+          <option value="planning">PLANNING</option>
+          <option value="routine">ROUTINE</option>
+          <option value="communication">COMMUNICATION</option>
+        </select>
+        <button type="submit" class="btn-primary text-sm py-2 px-4">添加</button>
+      </form>
+    </section>
+
+    <!-- Filter / stats -->
+    <section class="flex items-center justify-between mb-4 px-2 fade-in">
+      <div class="flex items-center gap-3">
+        <span class="eyebrow">CURRENT STACK</span>
+        <span id="todo-counter" class="chip">0 / 0</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="filter-all" class="chip active">全部</button>
+        <button id="filter-open" class="chip">仅看未完成</button>
+      </div>
+    </section>
+
+    <!-- Todo list -->
+    <section class="card fade-in" id="todo-list-wrap" style="padding: 0;">
+      <ul id="todo-list" class="divide-y divide-outline-variant/10"></ul>
+      <div id="todo-empty" class="p-12 text-center" hidden>
+        <div class="w-20 h-20 mx-auto rounded-full bg-surface-container flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-3xl text-on-surface-variant">task_alt</span>
+        </div>
+        <h3 class="headline-lg mb-2">暂无待办</h3>
+        <p class="text-on-surface-variant">在上面输入框添加第一项，开启你的一天。</p>
+      </div>
+    </section>
+
+    <p class="text-center text-xs text-on-surface-variant tracking-widest uppercase mt-10">END OF TODAY'S LIST</p>
+  </main>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    // ----------------- TODO LOGIC -----------------
+    const STORAGE_KEY = 'monolith.todos';
+
+    const todayKey = () => new Date().toISOString().slice(0, 10);
+
+    const seedTodos = () => ([
+      { id: 't1', text: '深挖 AI 工作流自动化方案', tag: 'priority-high', done: false, date: todayKey(), createdAt: Date.now() - 3 * 3600_000, time: '09:30 AM' },
+      { id: 't2', text: '整理 2026 Q3 季度规划文档', tag: 'planning', done: false, date: todayKey(), createdAt: Date.now() - 2 * 3600_000, time: 'Updated 2h ago' },
+      { id: 't3', text: '每日健康饮水 (2000ml)', tag: 'routine', done: true, date: todayKey(), createdAt: Date.now() - 4 * 3600_000, time: '' },
+      { id: 't4', text: '回复核心客户关于项目进度的邮件', tag: 'communication', done: false, date: todayKey(), createdAt: Date.now() - 1 * 3600_000, time: '' }
+    ]);
+
+    function loadTodos() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const seed = seedTodos();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+          return seed;
+        }
+        return JSON.parse(raw);
+      } catch (e) { return []; }
+    }
+
+    function saveTodos(list) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    let todos = loadTodos();
+    let currentFilter = 'all';
+
+    const tagLabels = {
+      'priority-high': 'PRIORITY / HIGH',
+      'planning': 'PLANNING',
+      'routine': 'ROUTINE',
+      'communication': 'COMMUNICATION'
+    };
+
+    function render() {
+      const list = document.getElementById('todo-list');
+      const empty = document.getElementById('todo-empty');
+      const counter = document.getElementById('todo-counter');
+
+      const todayTodos = todos.filter(t => t.date === todayKey());
+      const visible = currentFilter === 'open' ? todayTodos.filter(t => !t.done) : todayTodos;
+      const done = todayTodos.filter(t => t.done).length;
+
+      counter.textContent = `${done} / ${todayTodos.length}`;
+
+      if (visible.length === 0) {
+        list.innerHTML = '';
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+
+      list.innerHTML = visible.map(t => `
+        <li class="flex items-center gap-3 p-3 group hover:bg-surface-container-low transition-colors" data-id="${t.id}">
+          <button class="todo-check shrink-0 w-5 h-5 rounded-full ${t.done ? 'bg-primary' : 'border-2 border-outline-variant bg-transparent'} flex items-center justify-center transition-all" aria-label="勾选">
+            ${t.done ? '<span class="material-symbols-outlined" style="font-size:12px;line-height:1;color:var(--on-primary);">check</span>' : ''}
+          </button>
+          <div class="flex-1 min-w-0 flex items-center gap-3">
+            <p class="text-sm ${t.done ? 'line-through text-on-surface-variant' : 'text-on-surface'}">${escapeHtml(t.text)}</p>
+            <span class="text-[10px] font-mono uppercase text-on-surface-variant shrink-0">${tagLabels[t.tag] || t.tag}</span>
+            ${t.time ? `<span class="text-[10px] text-on-surface-variant shrink-0">· ${t.time}</span>` : ''}
+          </div>
+          <button class="todo-delete opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-on-surface" aria-label="删除">
+            <span class="material-symbols-outlined text-lg">delete</span>
+          </button>
+        </li>
+      `).join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    // events
+    document.getElementById('todo-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const input = document.getElementById('todo-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const tag = document.getElementById('todo-priority').value;
+      todos.push({ id: 't' + Date.now(), text, tag, done: false, date: todayKey(), createdAt: Date.now() });
+      saveTodos(todos);
+      input.value = '';
+      render();
+    });
+
+    document.getElementById('todo-list').addEventListener('click', e => {
+      const li = e.target.closest('li[data-id]');
+      if (!li) return;
+      const id = li.dataset.id;
+      if (e.target.closest('.todo-check')) {
+        const t = todos.find(x => x.id === id);
+        if (t) t.done = !t.done;
+      } else if (e.target.closest('.todo-delete')) {
+        todos = todos.filter(x => x.id !== id);
+      }
+      saveTodos(todos);
+      render();
+    });
+
+    document.getElementById('filter-all').addEventListener('click', e => {
+      currentFilter = 'all';
+      e.currentTarget.classList.add('active');
+      document.getElementById('filter-open').classList.remove('active');
+      render();
+    });
+    document.getElementById('filter-open').addEventListener('click', e => {
+      currentFilter = 'open';
+      e.currentTarget.classList.add('active');
+      document.getElementById('filter-all').classList.remove('active');
+      render();
+    });
+
+    render();
+  </script>
+
+  <style>
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .items-end { align-items: flex-end; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mb-10 { margin-bottom: 40px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-10 { margin-top: 40px; }
+    .p-2 { padding: 8px; }
+    .p-4 { padding: 16px; }
+    .p-5 { padding: 20px; }
+    .p-6 { padding: 24px; }
+    .p-12 { padding: 48px; }
+    .px-2 { padding-left: 8px; padding-right: 8px; }
+    .px-3 { padding-left: 12px; padding-right: 12px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .py-2 { padding-top: 8px; padding-bottom: 8px; }
+    .py-4 { padding-top: 16px; padding-bottom: 16px; }
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-lg { font-size: 18px; }
+    .text-3xl { font-size: 30px; }
+    .text-on-surface { color: var(--on-surface); }
+    .text-on-surface-variant { color: var(--on-surface-variant); }
+    .text-primary { color: var(--primary); }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-bold { font-weight: 700; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-md { border-radius: var(--r-md); }
+    .rounded-lg { border-radius: var(--r-lg); }
+    .rounded-xl { border-radius: var(--r-xl); }
+    .border { border-width: 1px; border-style: solid; }
+    .border-2 { border-width: 2px; border-style: solid; }
+    .border-outline-variant { border-color: var(--outline-variant); }
+    .border-outline-variant\/30 { border-color: rgba(207, 196, 197, 0.3); }
+    .border-outline-variant\/20 { border-color: rgba(207, 196, 197, 0.2); }
+    .border-primary { border-color: var(--primary); }
+    .bg-primary { background: var(--primary); }
+    .bg-surface-container { background: var(--surface-container); }
+    .bg-surface-container-low { background: var(--surface-container-low); }
+    .bg-transparent { background: transparent; }
+    .w-5 { width: 20px; }
+    .h-5 { height: 20px; }
+    .w-6 { width: 24px; }
+    .h-6 { height: 24px; }
+    .w-8 { width: 32px; }
+    .h-8 { height: 32px; }
+    .w-12 { width: 48px; }
+    .h-12 { height: 48px; }
+    .w-20 { width: 80px; }
+    .h-20 { height: 80px; }
+    .w-full { width: 100%; }
+    .max-w-xl { max-width: 576px; }
+    .max-w-2xl { max-width: 672px; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .block { display: block; }
+    .shrink-0 { flex-shrink: 0; }
+    .min-w-0 { min-width: 0; }
+    .text-center { text-align: center; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .tracking-widest { letter-spacing: 0.2em; }
+    .uppercase { text-transform: uppercase; }
+    .line-through { text-decoration: line-through; }
+    .transition-colors { transition: color 0.2s, background 0.2s, border 0.2s; }
+    .transition-all { transition: all 0.2s; }
+    .cursor-pointer { cursor: pointer; }
+    .outline-none { outline: none; }
+    .divide-y > * + * { border-top: 1px solid rgba(207, 196, 197, 0.1); }
+    [data-theme="dark"] .divide-y > * + * { border-top-color: rgba(64, 64, 64, 0.4); }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+    @media (min-width: 768px) { .md\:hidden { display: none; } }
+  </style>
+</body>
+</html>

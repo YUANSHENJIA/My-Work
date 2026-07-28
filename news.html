@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日热点资讯 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">小袁的工作台</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <!-- ===== Sidebar (injected by sidebar.js) ===== -->
+  <aside class="app-sidebar"></aside>
+
+  <main class="app-main dot-bg">
+    <section class="mb-6 fade-in flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <p class="eyebrow mb-2 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">bolt</span> AI Pulse
+        </p>
+        <h1 class="headline-xl mb-2">今日热点资讯</h1>
+        <p class="body-lg text-on-surface-variant max-w-2xl">
+          实时追踪全球人工智能领域最具影响力的技术突破与商业变革。
+        </p>
+      </div>
+      <div class="flex gap-2 overflow-x-auto no-scrollbar">
+        <button class="chip active">全部</button>
+        <button class="chip">技术</button>
+        <button class="chip">商业</button>
+        <button class="chip">研究</button>
+        <button class="chip">产品</button>
+      </div>
+    </section>
+
+    <div id="news-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+    <p class="text-center text-xs text-on-surface-variant tracking-widest uppercase mt-10">FETCHING DEEPER INSIGHTS</p>
+  </main>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const news = [
+      {
+        tag: 'BREAKING', time: '5 mins ago', category: '技术', source: 'THE TECH TIMES',
+        title: 'GPT-5 内部测试数据泄露：多模态理解能力实现跨代飞跃',
+        excerpt: '据匿名消息人士透露，下一代模型在逻辑推理与长文本保持一致性方面表现惊人，其原生多模态架构允许系统以类感官创造的方式处理视觉与实时音频。',
+        gradient: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+        icon: 'memory',
+        featured: true
+      },
+      {
+        tag: 'ANALYSIS', time: '2 hours ago', category: '商业', source: 'BLOOMBERG',
+        title: '英伟达发布 Blackwell 架构：训练成本降低 25 倍',
+        excerpt: '黄仁勋表示，我们正在进入物理 AI 时代，Blackwell 不仅是芯片，也是现代工业革命的引擎，为万亿参数模型而生。',
+        gradient: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+        icon: 'developer_board'
+      },
+      {
+        tag: 'RESEARCH', time: 'Yesterday', category: '研究', source: 'Nature',
+        title: 'DeepMind 提出新款蛋白质折叠模型 AlphaFold 3',
+        excerpt: '新模型不仅能预测蛋白质结构，还能预测 DNA、RNA 及配套的相互作用，将药物研发周期缩短数倍。',
+        gradient: 'linear-gradient(135deg, #2a2a2a 0%, #404040 100%)',
+        icon: 'science'
+      },
+      {
+        tag: 'PRODUCT', time: '2 days ago', category: '产品', source: 'TechCrunch',
+        title: 'Anthropic 推出 Claude 4.5：上下文窗口突破 100 万 tokens',
+        excerpt: '新一轮的模型升级带来了对长文档理解的革命性能力，可一次性分析整本书籍或数十万行代码库。',
+        gradient: 'linear-gradient(135deg, #1f1f1f 0%, #2f2f2f 100%)',
+        icon: 'token'
+      },
+      {
+        tag: 'INSIGHT', time: '3 days ago', category: '商业', source: 'Forbes',
+        title: 'AI 独角兽估值破千亿：企业级 LLM 平台迎来整合期',
+        excerpt: '随着基础模型层趋于成熟，应用层的护城河成为新的竞争焦点。市场开始重新审视估值模型。',
+        gradient: 'linear-gradient(135deg, #232323 0%, #353535 100%)',
+        icon: 'trending_up'
+      }
+    ];
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    const list = document.getElementById('news-list');
+
+    function newsCard(n) {
+      return '<article class="card hover-lift fade-in flex flex-col gap-4" style="padding: 24px;">' +
+        '<div class="flex items-center justify-between">' +
+          '<span class="chip">' + n.tag + '</span>' +
+          '<span class="text-xs text-on-surface-variant">' + n.time + '</span>' +
+        '</div>' +
+        '<div class="flex items-center gap-3">' +
+          '<div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--surface-container);">' +
+            '<span class="material-symbols-outlined" style="font-size: 22px; color: var(--on-surface-variant);">' + n.icon + '</span>' +
+          '</div>' +
+          '<div class="flex-1 min-w-0">' +
+            '<p class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">' + n.category + ' · ' + n.source + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<h3 class="text-lg font-semibold leading-snug" style="color: var(--on-surface);">' + escapeHtml(n.title) + '</h3>' +
+        '<p class="text-sm leading-relaxed line-clamp-3" style="color: var(--on-surface-variant);">' + escapeHtml(n.excerpt) + '</p>' +
+        '<div class="flex items-center justify-between mt-auto pt-3" style="border-top: 1px solid var(--outline-variant);">' +
+          '<span class="text-xs text-on-surface-variant">阅读全文</span>' +
+          '<div class="flex gap-1">' +
+            '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="收藏"><span class="material-symbols-outlined" style="font-size:18px;">bookmark</span></button>' +
+            '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="分享"><span class="material-symbols-outlined" style="font-size:18px;">share</span></button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }
+
+    list.innerHTML = news.map(n => newsCard(n)).join('');
+
+    // Auto-fetch check
+    setTimeout(() => {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      if (h >= 21 || (h === 9 && m < 5)) {
+        const badge = document.createElement('span');
+        badge.className = 'chip';
+        badge.textContent = '🔄 今日最新更新';
+        document.getElementById('news-list').before(badge);
+      }
+    }, 1000);
+
+    // Manual refresh button
+    const header = document.querySelector('.eyebrow');
+    const refreshBtn = document.createElement('button');
+    refreshBtn.className = 'chip ml-auto';
+    refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
+    refreshBtn.addEventListener('click', () => {
+      refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> 刷新中...';
+      setTimeout(() => {
+        const shuffled = [...news];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        list.innerHTML = shuffled.map(n => newsCard(n)).join('');
+        refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
+        refreshBtn.animate([{transform:'rotate(360deg)'}], {duration:300});
+      }, 600);
+    });
+    header.parentElement.appendChild(refreshBtn);
+
+    // Filter
+    document.querySelectorAll('.chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        const cat = c.textContent.trim();
+        document.querySelectorAll('#news-list article').forEach((el, i) => {
+          const show = cat === '全部' || news[i].category === cat;
+          el.style.display = show ? '' : 'none';
+        });
+      });
+    });
+  </script>
+
+  <style>
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+    .items-end { align-items: flex-end; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .gap-5 { gap: 20px; }
+    .gap-6 { gap: 24px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mt-auto { margin-top: auto; }
+    .mt-10 { margin-top: 40px; }
+    .pt-3 { padding-top: 12px; }
+    .pt-4 { padding-top: 16px; }
+    .p-2 { padding: 8px; }
+    .p-8 { padding: 32px; }
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-lg { font-size: 18px; }
+    .text-2xl { font-size: 24px; }
+    .text-on-surface { color: var(--on-surface); }
+    .text-on-surface-variant { color: var(--on-surface-variant); }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-xl { border-radius: var(--r-xl); }
+    .border-outline-variant { border-color: var(--outline-variant); }
+    .border-outline-variant\/30 { border-color: rgba(207, 196, 197, 0.3); }
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    @media (min-width: 768px) { .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .md\:hidden { display: none; } }
+    @media (min-width: 1024px) { .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .h-8 { height: 32px; }
+    .w-8 { width: 32px; }
+    .w-10 { width: 40px; }
+    .h-10 { height: 40px; }
+    .max-w-xl { max-width: 576px; }
+    .max-w-2xl { max-width: 672px; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .text-center { text-align: center; }
+    .leading-snug { line-height: 1.375; }
+    .leading-relaxed { line-height: 1.625; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .tracking-widest { letter-spacing: 0.2em; }
+    .uppercase { text-transform: uppercase; }
+    .transition-colors { transition: color 0.2s, background 0.2s, border 0.2s; }
+    .ml-auto { margin-left: auto; }
+    .min-w-0 { min-width: 0; }
+    .shrink-0 { flex-shrink: 0; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .animate-spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .absolute { position: absolute; }
+    .relative { position: relative; }
+    .top-4 { top: 16px; }
+    .left-4 { left: 16px; }
+    .right-4 { right: 16px; }
+    .bottom-4 { bottom: 16px; }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+
+    /* 顶栏 ticker — 防止被某些样式覆盖 */
+    .header-ticker {
+      position: relative;
+      overflow: hidden;
+      height: 32px;
+      min-height: 32px;
+    }
+    .ticker-item {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+    .ticker-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  </style>
+</body>
+</html>

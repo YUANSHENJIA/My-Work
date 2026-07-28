@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>收藏夹 · 小袁的工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">小袁的工作台</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <!-- ===== Sidebar (injected by sidebar.js) ===== -->
+  <aside class="app-sidebar"></aside>
+
+  <main class="app-main dot-bg">
+    <section class="mb-12 fade-in">
+      <p class="eyebrow mb-2">Archive 01</p>
+      <h1 class="headline-xl">我的收藏夹</h1>
+      <p class="text-9xl font-bold absolute right-10 top-20 pointer-events-none" style="color: rgba(0,0,0,0.05); font-family: 'Inter', sans-serif; letter-spacing: -0.05em;">FAV</p>
+    </section>
+
+    <!-- Add favorite URL bar -->
+    <section class="card mb-6 fade-in" id="add-bar">
+      <form id="fav-form" class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-on-surface-variant">link</span>
+        <input id="fav-url" type="url" placeholder="粘贴链接 — 文章 / 推文 / 视频 / 任何想法..." class="flex-1 bg-transparent outline-none text-base placeholder:text-on-surface-variant/50" required>
+        <button type="submit" class="btn-primary text-sm py-2 px-4">收藏</button>
+      </form>
+    </section>
+
+    <!-- Empty state -->
+    <section id="empty-state" class="card flex flex-col items-center justify-center py-20 fade-in">
+      <div class="w-32 h-32 rounded-full flex items-center justify-center mb-6" style="background: var(--surface-container-low);">
+        <span class="material-symbols-outlined text-5xl text-on-surface-variant">folder_open</span>
+      </div>
+      <h2 class="headline-lg mb-3">空空如也</h2>
+      <p class="text-on-surface-variant max-w-md text-center">这里还没有任何收藏内容。点击下方的按钮，开启你的灵感收集之旅。</p>
+      <button class="btn-primary mt-6" onclick="document.getElementById('fav-url').focus()">
+        <span class="material-symbols-outlined">add</span>
+        <span>添加收藏</span>
+      </button>
+    </section>
+
+    <!-- Favorites list (hidden by default) -->
+    <section id="favs-list" class="flex flex-col gap-3" style="display: none;"></section>
+
+    <p class="text-center text-sm font-mono uppercase tracking-widest text-on-surface-variant mt-12">STATUS: AWAITING_INPUT.</p>
+
+    <div class="flex items-center justify-between mt-16 pt-6" style="border-top: 1px solid var(--outline-variant); opacity: 0.3;">
+      <div class="flex gap-6 text-sm font-mono uppercase tracking-widest text-on-surface-variant">
+        <span>FILTER</span><span>SORT</span><span>VIEW</span>
+      </div>
+      <p class="text-sm font-mono text-on-surface-variant">v1.0.4-LATEST</p>
+    </div>
+  </main>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const STORAGE_KEY = 'monolith.favorites';
+    const seed = [
+      { url: 'https://example.com/article-1', title: 'The Future of Personal Knowledge Management', source: 'medium.com', addedAt: Date.now() - 86400000, icon: 'description' },
+      { url: 'https://example.com/tweet-1', title: 'GPT-5 Architecture Deep Dive', source: 'twitter.com', addedAt: Date.now() - 2 * 86400000, icon: 'alternate_email' },
+      { url: 'https://example.com/youtube-1', title: '深度工作：在分心的世界里构建专注力', source: 'youtube.com', addedAt: Date.now() - 3 * 86400000, icon: 'play_circle' }
+    ];
+
+    function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || []; } catch(e) { return []; } }
+    function save(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {} }
+
+    let favs = load();
+    // If first time, seed with examples so user sees something
+    if (favs.length === 0) {
+      favs = seed;
+      save(favs);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    function extractHostname(url) {
+      try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return url; }
+    }
+
+    function extractTitle(url) {
+      try {
+        const u = new URL(url);
+        const path = u.pathname.split('/').filter(Boolean).pop() || u.hostname;
+        return decodeURIComponent(path.replace(/[-_]/g, ' ')).slice(0, 60);
+      } catch(e) { return url.slice(0, 60); }
+    }
+
+    function render() {
+      const list = document.getElementById('favs-list');
+      const empty = document.getElementById('empty-state');
+
+      if (favs.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+      list.style.display = '';
+
+      list.innerHTML = favs.map(f => `
+        <article class="card hover-lift flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" style="background: var(--surface-container-low);">
+            <span class="material-symbols-outlined text-on-surface-variant">${f.icon || 'link'}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base font-semibold mb-1 truncate">${escapeHtml(f.title)}</h3>
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+              <span class="font-mono">${escapeHtml(f.source)}</span>
+              <span>·</span>
+              <span>${new Date(f.addedAt).toLocaleDateString('zh-CN')}</span>
+            </div>
+          </div>
+          <a href="${escapeHtml(f.url)}" target="_blank" class="p-2 hover:bg-surface-container rounded-full transition-colors" aria-label="打开">
+            <span class="material-symbols-outlined">open_in_new</span>
+          </a>
+          <button class="remove-fav p-2 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant" data-id="${escapeHtml(f.url)}" aria-label="删除">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </article>
+      `).join('');
+    }
+
+    document.getElementById('fav-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const url = document.getElementById('fav-url').value.trim();
+      if (!url) return;
+      const title = extractTitle(url);
+      favs.unshift({ url, title, source: extractHostname(url), addedAt: Date.now(), icon: 'link' });
+      save(favs);
+      document.getElementById('fav-url').value = '';
+      render();
+    });
+
+    document.getElementById('favs-list').addEventListener('click', e => {
+      const btn = e.target.closest('.remove-fav');
+      if (!btn) return;
+      const url = btn.dataset.id;
+      favs = favs.filter(f => f.url !== url);
+      save(favs);
+      render();
+    });
+
+    render();
+  </script>
+
+  <style>
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .items-end { align-items: flex-end; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    .mb-1 { margin-bottom: 4px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-12 { margin-bottom: 48px; }
+    .mt-6 { margin-top: 24px; }
+    .mt-12 { margin-top: 48px; }
+    .mt-16 { margin-top: 64px; }
+    .p-2 { padding: 8px; }
+    .p-4 { padding: 16px; }
+    .p-6 { padding: 24px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .py-4 { padding-top: 16px; padding-bottom: 16px; }
+    .py-20 { padding-top: 80px; padding-bottom: 80px; }
+    .pt-6 { padding-top: 24px; }
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-5xl { font-size: 48px; }
+    .text-9xl { font-size: 160px; }
+    .text-on-surface { color: var(--on-surface); }
+    .text-on-surface-variant { color: var(--on-surface-variant); }
+    .text-primary { color: var(--primary); }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-lg { border-radius: var(--r-lg); }
+    .border-outline-variant { border-color: var(--outline-variant); }
+    .border-outline-variant\/30 { border-color: rgba(207, 196, 197, 0.3); }
+    .bg-surface-container { background: var(--surface-container); }
+    .bg-transparent { background: transparent; }
+    .w-8 { width: 32px; }
+    .h-8 { height: 32px; }
+    .w-12 { width: 48px; }
+    .h-12 { height: 48px; }
+    .w-32 { width: 128px; }
+    .h-32 { height: 128px; }
+    .max-w-md { max-width: 448px; }
+    .max-w-xl { max-width: 576px; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .text-center { text-align: center; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .tracking-widest { letter-spacing: 0.2em; }
+    .uppercase { text-transform: uppercase; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .transition-colors { transition: color 0.2s, background 0.2s, border 0.2s; }
+    .cursor-pointer { cursor: pointer; }
+    .outline-none { outline: none; }
+    .shrink-0 { flex-shrink: 0; }
+    .min-w-0 { min-width: 0; }
+    .absolute { position: absolute; }
+    .relative { position: relative; }
+    .top-20 { top: 80px; }
+    .right-10 { right: 40px; }
+    .pointer-events-none { pointer-events: none; }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+    @media (min-width: 768px) { .md\:hidden { display: none; } }
+  </style>
+</body>
+</html>
