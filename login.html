@@ -387,6 +387,10 @@
     function openCrop(dataUrl) {
       cropState.src = dataUrl;
       cropState.img = new Image();
+      // 图片解码失败（如 HEIC/损坏文件）时给出明确提示，而不是无反应
+      cropState.img.onerror = () => {
+        alert('无法读取这张图片。\n可能是浏览器不支持的格式（如 iPhone 的 HEIC）或文件已损坏。\n请改用 JPG / PNG / WebP 格式的图片。');
+      };
       cropState.img.onload = () => {
         const stage = document.getElementById('crop-stage');
         const circle = document.getElementById('crop-circle');
@@ -438,10 +442,21 @@
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       if (!file.type.startsWith('image/')) {
-        alert('请选择图片文件');
+        alert('请选择图片文件（JPG / PNG / WebP）');
+        e.target.value = '';
+        return;
+      }
+      // 大小限制：超过 15MB 的原图读取/解码容易卡死或失败，明确提醒
+      const MAX_FILE_MB = 15;
+      if (file.size > MAX_FILE_MB * 1024 * 1024) {
+        alert('图片太大（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）。\n请选择小于 ' + MAX_FILE_MB + 'MB 的图片。');
+        e.target.value = '';
         return;
       }
       const reader = new FileReader();
+      reader.onerror = () => {
+        alert('读取图片失败，请重试或换一张图片。');
+      };
       reader.onload = (ev) => {
         openCrop(ev.target.result);
       };
@@ -517,8 +532,35 @@
       const dy = -cropState.offsetY * ratio - h/2 * ratio + out/2;
       ctx.drawImage(cropState.img, dx, dy, w * ratio, h * ratio);
 
-      const dataUrl = canvas.toDataURL('image/png');
-      try { localStorage.setItem(AVATAR_KEY, dataUrl); } catch(e) {}
+      // 圆形裁切区外是透明的，先铺白底再导出 JPEG（比 PNG 小一个量级，避免超出 localStorage 容量）
+      const flat = document.createElement('canvas');
+      flat.width = out; flat.height = out;
+      const fctx = flat.getContext('2d');
+      fctx.fillStyle = '#ffffff';
+      fctx.fillRect(0, 0, out, out);
+      fctx.beginPath();
+      fctx.arc(out/2, out/2, out/2, 0, Math.PI * 2);
+      fctx.closePath();
+      fctx.clip();
+      fctx.drawImage(canvas, 0, 0);
+      let dataUrl = flat.toDataURL('image/jpeg', 0.88);
+
+      // 保存；若仍超出 localStorage 容量则降质重试，最终失败必须提醒用户
+      let saved = false;
+      try {
+        localStorage.setItem(AVATAR_KEY, dataUrl);
+        saved = true;
+      } catch (err) {
+        try {
+          dataUrl = flat.toDataURL('image/jpeg', 0.6);
+          localStorage.setItem(AVATAR_KEY, dataUrl);
+          saved = true;
+        } catch (err2) {}
+      }
+      if (!saved) {
+        alert('头像保存失败：图片过大，超出了浏览器本地存储容量。\n请换一张更小的图片，或先清理浏览器缓存后再试。');
+        return;
+      }
       document.getElementById('avatar-img').src = dataUrl;
       closeCrop();
     });
