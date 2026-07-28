@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = localStorage.getItem('monolith.userName');
       const titleEl = document.querySelector('.app-header .font-semibold');
       if (titleEl && name) {
-        titleEl.textContent = `${name}的工作台`;
+        titleEl.textContent = `My Work`;
       }
     } catch (e) {}
 
