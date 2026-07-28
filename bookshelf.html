@@ -108,33 +108,66 @@
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
   <script>
-    const books = [
-      { title: 'Generative AI and the Future of Work', author: 'Exploring the intersection of human creativity...', source: 'Medium', progress: 100, status: '已读完', color: '#f0f0f0' },
-      { title: 'Morning Brew: Tech Edition', author: 'Last updated: 2 hours ago', source: 'RSS Feed', progress: 25, status: '', color: '#e8e8e8', icon: 'rss_feed' },
-      { title: 'Personal Knowledge Management', author: 'Collection of notes on Zettelkasten...', source: 'Notion', progress: 40, status: '', color: '#dadada', icon: 'description' },
-      { title: '置身事内：中国政府与经济发展', author: '兰小欢 · 深度阅读系列', source: '微信读书', progress: 88, status: '', color: '#d4c5a0' },
-      { title: 'Atomic Habits', author: 'James Clear · 中英对照', source: '微信读书', progress: 55, status: '', color: '#c7b89c' },
-      { title: 'The Pragmatic Programmer', author: 'David Thomas, Andrew Hunt', source: 'Medium', progress: 100, status: '已读完', color: '#e0e0e0' }
-    ];
+    const BOOKS_KEY = 'monolith.books';
 
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     }
 
-    document.getElementById('books-grid').innerHTML = books.map(b => `
-      <article class="card hover-lift">
-        <div class="aspect-video rounded-lg mb-4 flex items-center justify-center" style="background: ${b.color};">
-          ${b.icon ? `<span class="material-symbols-outlined" style="font-size: 64px; color: rgba(0,0,0,0.3);">${b.icon}</span>` : '<span class="text-xs font-mono uppercase tracking-widest" style="color: rgba(0,0,0,0.4);">' + escapeHtml(b.source) + '</span>'}
-        </div>
-        ${b.status ? `<span class="chip mb-2">${escapeHtml(b.status)}</span>` : ''}
-        <h3 class="text-lg font-semibold mb-1 leading-snug">${escapeHtml(b.title)}</h3>
-        <p class="text-sm text-on-surface-variant mb-4 line-clamp-2">${escapeHtml(b.author)}</p>
-        <div class="flex items-center gap-3">
-          <div class="progress-bar flex-1"><div class="progress-fill" style="width: ${b.progress}%"></div></div>
-          <span class="text-sm font-mono">${b.progress}%</span>
-        </div>
-      </article>
-    `).join('');
+    function loadBooks() {
+      try {
+        const raw = localStorage.getItem(BOOKS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch(e) {}
+      const seed = [
+        { title: 'Generative AI and the Future of Work', author: 'Exploring the intersection of human creativity...', source: 'Medium', progress: 100, status: '已读完', color: '#f0f0f0' },
+        { title: 'Morning Brew: Tech Edition', author: 'Last updated: 2 hours ago', source: 'RSS Feed', progress: 25, status: '', color: '#e8e8e8', icon: 'rss_feed' },
+        { title: 'Personal Knowledge Management', author: 'Collection of notes on Zettelkasten...', source: 'Notion', progress: 40, status: '', color: '#dadada', icon: 'description' },
+        { title: '置身事内：中国政府与经济发展', author: '兰小欢 · 深度阅读系列', source: '微信读书', progress: 88, status: '', color: '#d4c5a0' },
+        { title: 'Atomic Habits', author: 'James Clear · 中英对照', source: '微信读书', progress: 55, status: '', color: '#c7b89c' },
+        { title: 'The Pragmatic Programmer', author: 'David Thomas, Andrew Hunt', source: 'Medium', progress: 100, status: '已读完', color: '#e0e0e0' }
+      ];
+      try { localStorage.setItem(BOOKS_KEY, JSON.stringify(seed)); } catch(e) {}
+      return seed;
+    }
+
+    let books = loadBooks();
+
+    function saveBooks() {
+      try { localStorage.setItem(BOOKS_KEY, JSON.stringify(books)); } catch(e) {}
+    }
+
+    function bookCard(b) {
+      return '<article class="card hover-lift" style="position:relative;">' +
+        '<button class="book-delete material-symbols-outlined" style="position:absolute; top:10px; right:10px; font-size:18px; color: var(--on-surface-variant); z-index:2;" aria-label="删除" data-title="' + escapeHtml(b.title) + '">delete</button>' +
+        '<div class="aspect-video rounded-lg mb-4 flex items-center justify-center" style="background: ' + b.color + ';">' +
+          (b.icon ? '<span class="material-symbols-outlined" style="font-size: 64px; color: rgba(0,0,0,0.3);">' + b.icon + '</span>' : '<span class="text-xs font-mono uppercase tracking-widest" style="color: rgba(0,0,0,0.4);">' + escapeHtml(b.source) + '</span>') +
+        '</div>' +
+        (b.status ? '<span class="chip mb-2">' + escapeHtml(b.status) + '</span>' : '') +
+        '<h3 class="text-lg font-semibold mb-1 leading-snug">' + escapeHtml(b.title) + '</h3>' +
+        '<p class="text-sm text-on-surface-variant mb-4 line-clamp-2">' + escapeHtml(b.author) + '</p>' +
+        '<div class="flex items-center gap-3">' +
+          '<div class="progress-bar flex-1"><div class="progress-fill" style="width: ' + b.progress + '%"></div></div>' +
+          '<span class="text-sm font-mono">' + b.progress + '%</span>' +
+        '</div>' +
+      '</article>';
+    }
+
+    function render() {
+      document.getElementById('books-grid').innerHTML = books.map(bookCard).join('');
+    }
+
+    render();
+
+    // 删除单本书籍
+    document.getElementById('books-grid').addEventListener('click', e => {
+      const del = e.target.closest('.book-delete');
+      if (!del) return;
+      const title = del.dataset.title;
+      books = books.filter(b => b.title !== title);
+      saveBooks();
+      render();
+    });
   </script>
 
   <style>

@@ -71,6 +71,11 @@
       let lastUpdated = '';
       let sourceLabel = '';
 
+      // 本地隐藏：被用户删除的新闻 link 集合（刷新后同批次仍隐藏；每天 Action 重写后内容不同，隐藏即对当天有效）
+      let hidden = new Set();
+      try { hidden = new Set(JSON.parse(localStorage.getItem('monolith.news.hidden') || '[]')); } catch(e) {}
+      function persistHidden() { try { localStorage.setItem('monolith.news.hidden', JSON.stringify([...hidden])); } catch(e) {} }
+
       function escapeHtml(s) {
         return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
       }
@@ -96,6 +101,7 @@
             '<div class="flex gap-1">' +
               '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="收藏"><span class="material-symbols-outlined" style="font-size:18px;">bookmark</span></button>' +
               '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="分享"><span class="material-symbols-outlined" style="font-size:18px;">share</span></button>' +
+              '<button class="news-delete p-1.5 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant" data-link="' + escapeHtml(n.link) + '" aria-label="删除"><span class="material-symbols-outlined" style="font-size:18px;">delete</span></button>' +
             '</div>' +
           '</div>' +
         '</article>';
@@ -130,7 +136,7 @@
         const res = await fetch(url, { cache: 'no-cache' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-        news = data.items || [];
+        news = (data.items || []).filter(n => !hidden.has(n.link));
         lastUpdated = data.updated_at_local || data.updated_at || '';
         sourceLabel = data.source_label || '';
         render();
@@ -143,6 +149,17 @@
           c.classList.add('active');
           applyFilter(c.dataset.cat || c.textContent.trim());
         });
+      });
+
+      // 删除单条新闻（本地隐藏）
+      list.addEventListener('click', e => {
+        const del = e.target.closest('.news-delete');
+        if (!del) return;
+        const link = del.dataset.link;
+        hidden.add(link);
+        persistHidden();
+        news = news.filter(n => n.link !== link);
+        render();
       });
 
       // 加载

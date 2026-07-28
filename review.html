@@ -168,7 +168,8 @@
         const fullText = [r.q1, r.q2, r.q3].filter(Boolean).join(' · ');
         const preview = fullText.substring(0, 80) + (fullText.length > 80 ? '...' : '');
         const chip = isToday ? 'TODAY' : (date === today ? 'CONTINUOUS' : 'SAVED');
-        return '<article class="card hover-lift">' +
+        return '<article class="card hover-lift" style="position:relative;">' +
+          '<button class="review-delete material-symbols-outlined" style="position:absolute; top:12px; right:12px; font-size:18px; color: var(--on-surface-variant);" aria-label="删除" data-date="' + date + '">delete</button>' +
           '<div class="flex items-center justify-between mb-3 flex-wrap gap-2">' +
             '<span class="text-sm font-mono text-on-surface-variant">' + dateLabel + '</span>' +
             '<span class="chip">' + chip + '</span>' +
@@ -178,6 +179,17 @@
         '</article>';
       }).join('');
     }
+
+    // 删除单条历史复盘
+    document.getElementById('history-list').addEventListener('click', e => {
+      const del = e.target.closest('.review-delete');
+      if (!del) return;
+      const date = del.dataset.date;
+      const reviews = loadReviews();
+      delete reviews[date];
+      saveReviews(reviews);
+      renderHistory();
+    });
 
     function escapeHtml(s) {
       return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
