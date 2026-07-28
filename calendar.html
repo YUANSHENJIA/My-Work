@@ -38,19 +38,23 @@
 
   <main class="app-main dot-bg">
     <section class="mb-6 fade-in">
-      <p class="eyebrow mb-2">Workstation Schedule</p>
-      <h1 class="headline-xl flex items-center gap-4 mb-3">
-        <span id="cal-month-title">July 2026</span>
-        <span class="text-outline-variant font-light" id="cal-month-short">/ 07</span>
-      </h1>
-      <div class="flex items-center gap-2">
-        <button id="prev-month" class="p-2 hover:bg-surface-container rounded-full transition-colors">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-        <button id="next-month" class="p-2 hover:bg-surface-container rounded-full transition-colors">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-        <button id="today-btn" class="chip ml-2">回到今天</button>
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <p class="eyebrow mb-2">Workstation Schedule</p>
+          <h1 class="headline-xl flex items-center gap-4">
+            <span id="cal-month-title">July 2026</span>
+            <span class="text-outline-variant font-light" id="cal-month-short">/ 07</span>
+          </h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="prev-month" class="p-2 hover:bg-surface-container rounded-full transition-colors" aria-label="上个月">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button id="next-month" class="p-2 hover:bg-surface-container rounded-full transition-colors" aria-label="下个月">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+          <button id="today-btn" class="chip ml-2">回到今天</button>
+        </div>
       </div>
     </section>
 
@@ -105,6 +109,27 @@
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
   <script>
+    // 2026 中国法定节假日 / 重要节日
+    const HOLIDAYS = {
+      '2026-01-01': '元旦',
+      '2026-02-16': '除夕', '2026-02-17': '春节', '2026-02-18': '初二', '2026-02-19': '初三',
+      '2026-02-20': '初四', '2026-02-21': '初五', '2026-02-22': '初六', '2026-02-23': '初七',
+      '2026-02-24': '初八',
+      '2026-03-08': '妇女节',
+      '2026-04-04': '清明', '2026-04-05': '清明', '2026-04-06': '清明',
+      '2026-05-01': '劳动节', '2026-05-02': '劳动节', '2026-05-03': '劳动节',
+      '2026-05-04': '青年节',
+      '2026-06-01': '儿童节',
+      '2026-06-19': '端午', '2026-06-20': '端午', '2026-06-21': '端午',
+      '2026-09-10': '教师节',
+      '2026-09-25': '中秋', '2026-09-26': '中秋', '2026-09-27': '中秋',
+      '2026-10-01': '国庆', '2026-10-02': '国庆', '2026-10-03': '国庆',
+      '2026-10-04': '国庆', '2026-10-05': '国庆', '2026-10-06': '国庆', '2026-10-07': '国庆',
+      '2026-10-08': '寒露',
+      '2026-12-24': '平安夜', '2026-12-25': '圣诞节',
+      '2026-11-26': '感恩节'
+    };
+
     const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const MONTHS_NU = ['01','02','03','04','05','06','07','08','09','10','11','12'];
     const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
@@ -161,16 +186,19 @@
         const isSelected = (selectedDay.getFullYear() === y && selectedDay.getMonth() === m && selectedDay.getDate() === d);
         const hasTask = daysWithTasks.has(k);
         const wasSigned = signedSet.has(k);
+        const holiday = HOLIDAYS[k];
+        const isWeekend = (new Date(y, m, d).getDay() === 0 || new Date(y, m, d).getDay() === 6);
 
         html += `
-          <div class="group h-28 p-3 cursor-pointer transition-all relative border-r border-b border-outline-variant/10
+          <div class="group h-28 p-2 cursor-pointer transition-all relative border-r border-b border-outline-variant/10
                       ${isSelected ? 'bg-surface-container-high' : 'hover:bg-surface-container-low'}
                       ${isToday ? 'border-primary border-2' : ''}"
                data-day="${d}">
             <div class="flex justify-between items-start">
-              <span class="font-mono text-sm ${isSelected || isToday ? 'text-primary font-bold' : 'text-on-surface-variant'}">${String(d).padStart(2,'0')}</span>
+              <span class="font-mono text-sm ${isSelected || isToday ? 'text-primary font-bold' : (holiday || isWeekend) ? 'text-primary' : 'text-on-surface-variant'}">${String(d).padStart(2,'0')}</span>
               ${hasTask ? '<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse-dot"></span>' : ''}
             </div>
+            ${holiday ? `<span class="text-[10px] mt-1 inline-block px-1.5 py-0.5 rounded font-mono ${isToday ? 'bg-primary text-on-primary' : 'bg-surface-container text-primary'}">${escapeHtml(holiday)}</span>` : ''}
             ${isSelected ? '<div class="absolute bottom-2 left-3 right-3 h-1 bg-primary rounded-full"></div>' : ''}
             ${wasSigned ? '<div class="absolute top-2 right-2 text-xs text-primary">✓</div>' : ''}
           </div>`;

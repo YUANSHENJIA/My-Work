@@ -159,17 +159,17 @@
     }
 
     function cardHtml(e) {
-      return '<div class="p-6 rounded-2xl cursor-pointer transition-all ' + (e.active ? 'shadow-sm border-l-4' : 'hover:bg-surface-container-low') + '"' +
-        ' style="' + (e.active ? 'background: var(--surface-container-lowest); border-color: var(--primary);' : 'background: rgba(243,243,243,0.5);') + '"' +
-        ' data-key="' + escapeHtml(e.date + '|' + e.title) + '">' +
-        '<div class="flex justify-between items-start mb-2">' +
-          '<span class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">' + escapeHtml(e.date) + '</span>' +
-          '<button class="excerpt-delete material-symbols-outlined text-base text-on-surface-variant" aria-label="删除" data-key="' + escapeHtml(e.date + '|' + e.title) + '">delete</button>' +
-        '</div>' +
-        '<h3 class="text-xl font-semibold mb-2 line-clamp-1">' + escapeHtml(e.title) + '</h3>' +
-        '<p class="text-sm text-on-surface-variant line-clamp-2 mb-3">' + escapeHtml((e.excerpt || '').substring(0, 50) + ((e.excerpt || '').length > 50 ? '...' : '')) + '</p>' +
-        '<div class="flex gap-2">' + e.tags.map(function(t) { return '<span class="text-xs font-mono text-on-surface-variant">' + escapeHtml(t) + '</span>'; }).join('') + '</div>' +
-      '</div>';
+      return '<div class="p-6 rounded-2xl cursor-pointer transition-all shadow-sm border-l-4 fade-in excerpt-card"'
+        + ' style="background: var(--surface-container-lowest); border-color: var(--primary);"'
+        + ' data-key="' + escapeHtml(e.date + '|' + e.title) + '">'
+        + '<div class="flex justify-between items-start mb-2">'
+        +   '<span class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">' + escapeHtml(e.date) + '</span>'
+        +   '<button class="excerpt-delete material-symbols-outlined text-base text-on-surface-variant" aria-label="删除" data-key="' + escapeHtml(e.date + '|' + e.title) + '">delete</button>'
+        + '</div>'
+        + '<h3 class="text-xl font-semibold mb-2 line-clamp-1">' + escapeHtml(e.title) + '</h3>'
+        + '<p class="text-sm text-on-surface-variant line-clamp-2 mb-3">' + escapeHtml((e.excerpt || '').substring(0, 50) + ((e.excerpt || '').length > 50 ? '...' : '')) + '</p>'
+        + '<div class="flex gap-2">' + e.tags.map(function(t) { return '<span class="text-xs font-mono text-on-surface-variant">' + escapeHtml(t) + '</span>'; }).join('') + '</div>'
+      + '</div>';
     }
 
     function render() {

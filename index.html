@@ -43,11 +43,12 @@
     <!-- Greeting -->
     <section class="mb-6 fade-in">
       <p class="eyebrow mb-2">Workspace / Home</p>
-      <h1 class="headline-xl text-on-surface mb-2">
-        早安，小袁。
+      <h1 class="greeting-title" id="greeting-title">
+        <span id="greeting-text">早安</span>，<span id="greeting-name">小袁</span>。
       </h1>
-      <p class="body-lg text-on-surface-variant max-w-2xl">
-        今天是 2026 年 7 月 25 日，星期六。你已连续坚持 <strong class="text-primary">12</strong> 天，
+      <p class="greeting-subtitle text-on-surface-variant">
+        <span id="greeting-date">今天是 2026 年 7 月 25 日，星期六</span>，<span id="greeting-time" class="font-mono">00:00</span>。
+        你已连续坚持 <strong class="text-primary" id="greeting-streak">0</strong> 天，
         完成今天的待办可以让连续记录继续增长。
       </p>
     </section>
@@ -84,9 +85,9 @@
           <span class="chip">READING</span>
         </div>
         <p class="text-sm text-on-surface-variant mb-1">正在阅读</p>
-        <p class="text-3xl font-semibold text-on-surface">3<span class="text-base text-on-surface-variant ml-1">本</span></p>
+        <p class="text-3xl font-semibold text-on-surface"><span id="home-reading-stat">0</span><span class="text-base text-on-surface-variant ml-1">本</span></p>
         <div class="progress-bar mt-3">
-          <div class="progress-fill" style="width: 65%"></div>
+          <div id="home-reading-bar" class="progress-fill" style="width: 0%"></div>
         </div>
       </a>
 
@@ -96,7 +97,7 @@
           <span class="chip">STRATEGY</span>
         </div>
         <p class="text-sm text-on-surface-variant mb-1">策略归档</p>
-        <p class="text-3xl font-semibold text-on-surface">0<span class="text-base text-on-surface-variant ml-1">条</span></p>
+        <p class="text-3xl font-semibold text-on-surface"><span id="home-strategy-stat">0</span><span class="text-base text-on-surface-variant ml-1">条</span></p>
         <div class="progress-bar mt-3">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
@@ -161,6 +162,26 @@
         const wb = document.getElementById('home-water-bar');
         if (ws) ws.textContent = today;
         if (wb) wb.style.width = `${Math.min(100, (today / goal) * 100)}%`;
+      } catch (e) {}
+      // 正在阅读：当前进行中（progress > 0 且 < 100）的书
+      try {
+        const books = JSON.parse(localStorage.getItem('monolith.books') || '[]');
+        const inProgress = books.filter(b => b.progress > 0 && b.progress < 100);
+        const el = document.getElementById('home-reading-stat');
+        const bar = document.getElementById('home-reading-bar');
+        if (el) el.textContent = inProgress.length;
+        if (bar) {
+          const avg = inProgress.length ? Math.round(inProgress.reduce((s,b) => s + (b.progress || 0), 0) / inProgress.length) : 0;
+          bar.style.width = avg + '%';
+        }
+      } catch (e) {}
+      // 策略归档：今天创建的策略数
+      try {
+        const strats = JSON.parse(localStorage.getItem('monolith.strategies') || '[]');
+        const dayStart = new Date(); dayStart.setHours(0,0,0,0);
+        const todayCount = strats.filter(s => s.createdAt && s.createdAt >= dayStart.getTime()).length;
+        const el = document.getElementById('home-strategy-stat');
+        if (el) el.textContent = todayCount;
       } catch (e) {}
     })();
   </script>
@@ -233,6 +254,24 @@
     .transition-colors { transition: color .2s, background .2s; }
     .overflow-hidden { overflow: hidden; }
     .px-4 { padding-left: 16px; padding-right: 16px; }
+    /* 问候区：根据容器宽度自适应缩放，小屏不换行 */
+    .greeting-title {
+      font-size: clamp(1.75rem, 5.5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--on-surface);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .greeting-subtitle {
+      font-size: clamp(0.875rem, 1.4vw, 1.125rem);
+      line-height: 1.6;
+      max-width: 60rem;
+      word-break: break-word;
+    }
   </style>
 
   <script>
@@ -267,6 +306,58 @@
         list.innerHTML = '<li class="text-center text-sm text-on-surface-variant py-6">今日热点加载中...</li>';
       }
     })();
+  </script>
+
+  <script>
+    // 问候区：用户名来自登录 localStorage，时间问候按当前小时
+    const WEEKDAYS = ['日','一','二','三','四','五','六'];
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h >= 5 && h < 9)  return '早安';
+      if (h >= 9 && h < 11) return '早上好';
+      if (h >= 11 && h < 14) return '中午好';
+      if (h >= 14 && h < 18) return '下午好';
+      if (h >= 18 && h < 22) return '晚上好';
+      return '晚安';
+    }
+    function getStreak() {
+      try {
+        const signedDays = JSON.parse(localStorage.getItem('monolith.signedDays') || '{}');
+        let streak = 0;
+        const cursor = new Date();
+        cursor.setHours(0,0,0,0);
+        // 连续签到计数：今天算起，往前累加直到断签
+        while (true) {
+          const k = cursor.toISOString().slice(0,10);
+          if (signedDays[k]) { streak++; cursor.setDate(cursor.getDate() - 1); }
+          else break;
+        }
+        return streak;
+      } catch(e) { return 0; }
+    }
+    function updateGreeting() {
+      const d = new Date();
+      const userName = (localStorage.getItem('monolith.userName') || '小袁').toString();
+      document.getElementById('greeting-text').textContent = getGreeting();
+      document.getElementById('greeting-name').textContent = userName;
+      document.getElementById('greeting-date').textContent =
+        `今天是 ${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日，星期${WEEKDAYS[d.getDay()]}`;
+      document.getElementById('greeting-time').textContent =
+        String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      document.getElementById('greeting-streak').textContent = getStreak();
+    }
+    updateGreeting();
+    // 每分钟更新（捕捉整点切换 + 跨日重置）
+    setInterval(updateGreeting, 60_000);
+
+    // 凌晨清零：检测今天是否变化，触发一次日期敏感统计的渲染刷新
+    const __today = new Date().toISOString().slice(0,10);
+    const __lastSeen = localStorage.getItem('monolith.lastSeenDate');
+    if (__lastSeen !== __today) {
+      localStorage.setItem('monolith.lastSeenDate', __today);
+      // 触发 custom event，让各页签已挂载的脚本收到跨日信号
+      window.dispatchEvent(new CustomEvent('monolith:dayChanged', { detail: { from: __lastSeen, to: __today } }));
+    }
   </script>
 </body>
 </html>

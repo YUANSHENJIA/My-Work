@@ -49,33 +49,33 @@
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="min-height: calc(100vh - 200px);">
 
       <!-- Left: Ring + Stats (2/3) -->
-      <div class="lg:col-span-2 card fade-in relative flex flex-col items-center justify-center" style="padding: 32px 24px;">
+      <div class="lg:col-span-2 card fade-in relative flex flex-col items-center justify-center" style="padding: 48px 32px;">
         <div class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(0,0,0,0.04), transparent 70%);"></div>
 
         <!-- Ring -->
-        <div class="relative flex flex-col items-center">
-          <svg id="water-ring" width="260" height="260" viewBox="0 0 280 280" class="transform -rotate-90">
+        <div class="relative" style="width: 380px; height: 380px;">
+          <svg id="water-ring" width="380" height="380" viewBox="0 0 280 280" class="transform -rotate-90 absolute inset-0">
             <circle cx="140" cy="140" r="120" stroke="var(--outline-variant)" stroke-width="14" fill="none" opacity="0.3" />
             <circle id="water-progress" cx="140" cy="140" r="120" stroke="var(--primary)" stroke-width="14" fill="none"
                     stroke-linecap="round" stroke-dasharray="753.98" stroke-dashoffset="301.59" class="transition-all duration-700" />
           </svg>
-          <div class="absolute" style="text-align:center;">
-            <p class="eyebrow mb-1" style="font-size:12px;">当前摄入量</p>
-            <p class="text-6xl font-semibold tracking-tight" style="color: var(--on-surface);"><span id="current-amount">1200</span><span class="text-xl ml-1" style="color: var(--on-surface-variant);">ml</span></p>
-            <p class="chip mt-2" id="percent-label">60% COMPLETED</p>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <p class="eyebrow mb-2" style="font-size: 13px;">当前摄入量</p>
+            <p class="font-semibold tracking-tight" style="color: var(--on-surface); font-size: 4.5rem; line-height: 1;"><span id="current-amount">0</span><span class="ml-1" style="color: var(--on-surface-variant); font-size: 1.5rem;">ml</span></p>
+            <p class="chip mt-3" id="percent-label" style="font-size: 11px;">0% COMPLETED</p>
           </div>
         </div>
 
         <!-- Stats -->
-        <div class="flex items-center gap-8 mt-6">
+        <div class="flex items-center gap-10 mt-8">
           <div class="text-center">
             <p class="eyebrow mb-1" style="font-size:11px;">目标摄入</p>
-            <p class="text-2xl font-semibold"><span id="goal-amount">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            <p class="text-3xl font-semibold"><span id="goal-amount">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
           </div>
-          <div class="w-px h-10" style="background: var(--outline-variant); opacity:0.3;"></div>
+          <div class="w-px h-12" style="background: var(--outline-variant); opacity:0.3;"></div>
           <div class="text-center">
             <p class="eyebrow mb-1" style="font-size:11px;">还需饮水</p>
-            <p class="text-2xl font-semibold"><span id="remaining">800</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            <p class="text-3xl font-semibold"><span id="remaining">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
           </div>
         </div>
       </div>
@@ -84,15 +84,15 @@
       <div class="flex flex-col gap-6">
 
         <!-- Quick add -->
-        <div class="card fade-in flex-1 flex flex-col justify-center" style="padding: 24px;">
-          <p class="eyebrow mb-3">快速记录</p>
-          <div class="grid grid-cols-2 gap-3">
-            <button class="btn-secondary" data-add="150"><span class="material-symbols-outlined mr-1">local_drink</span>+ 150ml</button>
-            <button class="btn-secondary" data-add="250"><span class="material-symbols-outlined mr-1">local_drink</span>+ 250ml</button>
-            <button class="btn-secondary" data-add="350"><span class="material-symbols-outlined mr-1">local_drink</span>+ 350ml</button>
-            <button class="btn-secondary" data-add="500"><span class="material-symbols-outlined mr-1">local_drink</span>+ 500ml</button>
+        <div class="card fade-in flex-1" style="padding: 32px;">
+          <p class="eyebrow mb-4">快速记录</p>
+          <div class="grid grid-cols-2 gap-4">
+            <button class="water-add-btn" data-add="150"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 150ml</span></button>
+            <button class="water-add-btn" data-add="250"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 250ml</span></button>
+            <button class="water-add-btn" data-add="350"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 350ml</span></button>
+            <button class="water-add-btn" data-add="500"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 500ml</span></button>
           </div>
-          <button id="reset-water" class="mt-3 text-xs text-on-surface-variant hover:text-on-surface transition-colors">重置今日饮水</button>
+          <button id="reset-water" class="mt-5 w-full text-sm text-on-surface-variant hover:text-on-surface transition-colors py-2 rounded-lg hover:bg-surface-container">重置今日饮水</button>
         </div>
 
         <!-- Reminder settings -->
@@ -371,6 +371,29 @@
       cursor: pointer;
     }
     .mr-1 { margin-right: 4px; }
+    .water-add-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 16px;
+      border-radius: var(--r-xl);
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      font-weight: 600;
+      border: 1px solid var(--outline-variant);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .water-add-btn:hover {
+      background: var(--surface-container);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .water-add-btn .material-symbols-outlined {
+      font-size: 22px;
+      color: var(--primary);
+    }
     @media (min-width: 768px) { .md\:hidden { display: none; } }
   </style>
 </body>
