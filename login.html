@@ -42,12 +42,18 @@
       border-radius: 50%;
       padding: 4px;
       background: linear-gradient(135deg, var(--on-surface), var(--on-surface-variant));
-      margin: 0 auto 24px;
       position: relative;
       cursor: pointer;
       transition: transform 0.2s ease;
+      display: block;
     }
     .avatar-ring:hover { transform: scale(1.04); }
+    .avatar-zone {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 24px;
+    }
     .avatar-img {
       width: 100%;
       height: 100%;
@@ -56,25 +62,28 @@
       border: 3px solid var(--surface-container-lowest);
       display: block;
     }
-    .avatar-overlay {
+    /* 底部中央圆形更换按钮（常显） */
+    .avatar-change-btn {
       position: absolute;
-      inset: 4px;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      background: rgba(0,0,0,0.5);
-      color: #fff;
+      background: var(--on-surface);
+      color: var(--surface-container-lowest);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
-      border: 3px solid transparent;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      transition: transform .15s ease, box-shadow .15s ease;
+      border: 2px solid var(--surface-container-lowest);
+      z-index: 2;
     }
-    .avatar-ring:hover .avatar-overlay { opacity: 1; }
-    .avatar-overlay .material-symbols-outlined { font-size: 22px; }
-    .avatar-overlay span:last-child { font-size: 11px; }
+    .avatar-change-btn:hover { transform: translateX(-50%) scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,0.35); }
+    .avatar-change-btn .material-symbols-outlined { font-size: 16px; font-variation-settings: 'wght' 600; }
 
     .name-input {
       width: 100%;
@@ -255,13 +264,14 @@
   </button>
 
   <div class="login-card">
+    <div class="avatar-zone">
     <label class="avatar-ring" for="avatar-input" title="点击上传头像">
       <img id="avatar-img" src="assets/images/avatar.jpg" alt="头像" class="avatar-img" />
-      <div class="avatar-overlay">
-        <span class="material-symbols-outlined">photo_camera</span>
-        <span>更换</span>
-      </div>
     </label>
+    <label class="avatar-change-btn" for="avatar-input" title="更换头像" aria-label="更换头像">
+      <span class="material-symbols-outlined">photo_camera</span>
+    </label>
+  </div>
     <input id="avatar-input" type="file" accept="image/*" style="display:none;" />
 
     <h1 class="headline-lg" style="text-align:center;margin-bottom:8px;">欢迎回来</h1>
