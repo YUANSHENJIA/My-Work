@@ -486,6 +486,8 @@ body {
 .border-outline-variant\/20 { border-color: rgba(207, 196, 197, 0.2); }
 .border-outline-variant\/30 { border-color: rgba(207, 196, 197, 0.3); }
 [data-theme="dark"] .border-outline-variant\/10 { border-color: rgba(64, 64, 64, 0.4); }
+/* 深色模式下原生 select 下拉项用白字（避免部分浏览器渲染成深色文字） */
+[data-theme="dark"] select option { color: #fff; background: #1a1a1a; }
 .bg-primary { background: var(--primary); }
 .bg-transparent { background: transparent; }
 .bg-surface-container { background: var(--surface-container); }

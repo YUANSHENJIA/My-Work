@@ -49,9 +49,11 @@
     <!-- New todo creator -->
     <section class="card mb-6 fade-in">
       <form id="todo-form" class="flex items-center gap-3">
-        <input id="todo-input" type="text" placeholder="新建待办 (按 Enter 添加)" autocomplete="off"
-               class="flex-1 bg-transparent outline-none text-base placeholder:text-on-surface-variant/50 py-3" />
-        <select id="todo-priority" class="bg-surface-container rounded-lg px-3 py-2 text-sm outline-none cursor-pointer">
+        <div class="flex-1 flex items-center rounded-full border border-outline-variant px-4 hover:border-on-surface-variant transition-colors">
+          <input id="todo-input" type="text" placeholder="新建待办 (按 Enter 添加)" autocomplete="off"
+                 class="flex-1 bg-transparent outline-none rounded-full text-base placeholder:text-on-surface-variant/50 py-3" />
+        </div>
+        <select id="todo-priority" class="bg-surface-container rounded-full px-4 py-2 text-sm outline-none cursor-pointer">
           <option value="priority-high">HIGH</option>
           <option value="planning">PLANNING</option>
           <option value="routine">ROUTINE</option>
