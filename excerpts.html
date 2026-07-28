@@ -54,7 +54,7 @@
       </div>
     </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="flex flex-col gap-6">
       <!-- Left column: Entry list -->
       <aside class="flex flex-col gap-6">
         <div class="flex flex-col gap-4">
@@ -74,62 +74,6 @@
         <div id="entries-list" class="flex flex-col gap-3"></div>
       </aside>
 
-      <!-- Right column: Editor -->
-      <main class="lg:col-span-2 flex flex-col card fade-in relative overflow-hidden" style="border-radius: 32px; min-height: 70vh;">
-        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(0,0,0,0.05), transparent 70%);"></div>
-
-        <div class="flex items-center justify-between px-8 py-6" style="border-bottom: 1px solid rgba(207,196,197,0.15);">
-          <div class="flex items-center gap-2">
-            <button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant" title="加粗"><span class="material-symbols-outlined">format_bold</span></button>
-            <button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant" title="引用"><span class="material-symbols-outlined">format_quote</span></button>
-            <button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant" title="列表"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-            <button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant" title="链接"><span class="material-symbols-outlined">link</span></button>
-            <div class="w-px h-6 mx-2" style="background: var(--outline-variant); opacity: 0.3;"></div>
-            <button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant" title="插入图片"><span class="material-symbols-outlined">image</span></button>
-          </div>
-          <div class="flex items-center gap-4">
-            <span class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">字数: <span id="word-count">842</span></span>
-            <button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant"><span class="material-symbols-outlined">fullscreen</span></button>
-          </div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto px-16 py-12">
-          <div class="max-w-3xl mx-auto flex flex-col gap-8">
-            <input type="text" value="大语言模型幻觉问题的深度复盘" class="headline-xl bg-transparent outline-none w-full border-none" style="color: var(--primary);">
-            <div class="flex items-center gap-4 py-2" style="border-top: 1px solid rgba(207,196,197,0.15); border-bottom: 1px solid rgba(207,196,197,0.15);">
-              <span class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">2026年7月25日 14:30</span>
-              <span class="px-2 py-0.5 rounded text-[11px] font-mono" style="background: var(--surface-container); color: var(--on-surface-variant);">#AI</span>
-            </div>
-
-            <article class="flex flex-col gap-4 text-base leading-relaxed" style="color: var(--on-surface);">
-              <p>今天在处理复杂逻辑推理时，发现模型在多层嵌套条件下容易出现事实性错误。这是个值得长期关注的问题。</p>
-              <p>"实现"理解"所花费的时间比实现"功能"更多——某个项目心得。这句话对设计系统开发的启发非常大：</p>
-              <blockquote class="border-l-4 pl-6 py-3 my-2 italic text-on-surface-variant" style="border-color: var(--primary);">
-                "创造优美事物的方式，往往是修复丑陋的事物。"
-                <footer class="text-sm not-italic mt-2" style="color: var(--on-surface-variant);">— 某建筑学家言</footer>
-              </blockquote>
-              <p>真正的搜索应当观察记录来看是一个被反复优化的实验，但是对结果不满意，于是寻找再优化，然而对 Prompt 的同步缺陷不容忽视。</p>
-
-              <h3 class="headline-lg mt-4">脆弱观察与调整</h3>
-              <ul class="flex flex-col gap-2 pl-6 list-disc">
-                <li>引入 COT (Chain of Thought) 引导模型分步思考，显著降低了逻辑错误率。</li>
-                <li>尝试使用 RAG (Retrieval-Augmented Generation) 挂载外部知识库，作为事实校准层。</li>
-                <li>Prompt Engineering 的本质在于约束"而非"描述"。</li>
-              </ul>
-
-              <figure class="my-6 rounded-2xl overflow-hidden" style="background: var(--surface-container-low);">
-                <div class="aspect-video flex items-center justify-center" style="background: linear-gradient(135deg, #2a2a2a, #404040);">
-                  <span class="material-symbols-outlined" style="font-size: 80px; color: rgba(255,255,255,0.2);">edit_note</span>
-                </div>
-                <figcaption class="text-xs text-on-surface-variant p-3 font-mono">在这里摘录输入实际的笔记...</figcaption>
-              </figure>
-
-              <h3 class="headline-lg mt-4">下一步</h3>
-              <p>把语言模型与端到端工具结合，使搜索能扩展为主语境的"媒介"，而不是"资源"流，让个人知识体系得以更深度的自动化。</p>
-            </article>
-          </div>
-        </div>
-      </main>
     </div>
   </main>
 
@@ -166,6 +110,25 @@
     </div>
   </div>
 
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="headline-lg" id="detail-title">标题</h2>
+        <button class="modal-close" onclick="window.closeModal('detail-modal')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="flex flex-col gap-4" style="padding: 24px;">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-xs font-mono uppercase tracking-widest text-on-surface-variant" id="detail-date"></span>
+          <div id="detail-tags" class="flex gap-2"></div>
+        </div>
+        <p class="text-base leading-relaxed" id="detail-content" style="color: var(--on-surface);"></p>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
   <script>
@@ -181,9 +144,9 @@
         if (raw) return JSON.parse(raw);
       } catch(e) {}
       const seed = [
-        { date: '2026.07.25', title: '大语言模型幻觉问题的深度复盘', excerpt: '今天在处理复杂逻辑推理时，发现模型在多层嵌套条件下容易出现事实性错误...', tags: ['#AI', '#工作'], active: true },
-        { date: '2026.07.24', title: '《黑客与画家》片段摘录', excerpt: '"创造优美事物的方式，往往是修复丑陋的事物。" 这句话对设计系统开发的启发...', tags: ['#阅读', '#灵感'] },
-        { date: '2026.07.23', title: '新项目成本效益分析', excerpt: '初步估算显示，自动化工作流可以将重复性劳动的资源占用降低约40%...', tags: ['#工作'] }
+        { date: '2026.07.25', title: '大语言模型幻觉问题的深度复盘', excerpt: '今天在处理复杂逻辑推理时，发现模型在多层嵌套条件下容易出现事实性错误。引入 COT 引导模型分步思考，显著降低了逻辑错误率。', tags: ['#AI', '#工作'], active: true },
+        { date: '2026.07.24', title: '《黑客与画家》片段摘录', excerpt: '"创造优美事物的方式，往往是修复丑陋的事物。" 这句话对设计系统开发的启发非常大：真正的搜索应当观察记录来看是一个被反复优化的实验。', tags: ['#阅读', '#灵感'] },
+        { date: '2026.07.23', title: '新项目成本效益分析', excerpt: '初步估算显示，自动化工作流可以将重复性劳动的资源占用降低约40%。把语言模型与端到端工具结合，使搜索能扩展为主语境的"媒介"。', tags: ['#工作'] }
       ];
       try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(seed)); } catch(e) {}
       return seed;
@@ -201,10 +164,10 @@
         ' data-key="' + escapeHtml(e.date + '|' + e.title) + '">' +
         '<div class="flex justify-between items-start mb-2">' +
           '<span class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">' + escapeHtml(e.date) + '</span>' +
-          '<button class="excerpt-delete material-symbols-outlined text-base text-on-surface-variant opacity-0 hover:opacity-100 transition-opacity" aria-label="删除" data-key="' + escapeHtml(e.date + '|' + e.title) + '">delete</button>' +
+          '<button class="excerpt-delete material-symbols-outlined text-base text-on-surface-variant" aria-label="删除" data-key="' + escapeHtml(e.date + '|' + e.title) + '">delete</button>' +
         '</div>' +
         '<h3 class="text-xl font-semibold mb-2 line-clamp-1">' + escapeHtml(e.title) + '</h3>' +
-        '<p class="text-sm text-on-surface-variant line-clamp-2 mb-3">' + escapeHtml(e.excerpt) + '</p>' +
+        '<p class="text-sm text-on-surface-variant line-clamp-2 mb-3">' + escapeHtml((e.excerpt || '').substring(0, 50) + ((e.excerpt || '').length > 50 ? '...' : '')) + '</p>' +
         '<div class="flex gap-2">' + e.tags.map(function(t) { return '<span class="text-xs font-mono text-on-surface-variant">' + escapeHtml(t) + '</span>'; }).join('') + '</div>' +
       '</div>';
     }
@@ -225,17 +188,20 @@
       render();
     });
 
-    // Word counter
-    const textarea = document.querySelector('article');
-    const counter = document.getElementById('word-count');
-    if (textarea && counter) {
-      const update = () => {
-        const text = textarea.innerText.trim();
-        counter.textContent = text.length;
-      };
-      update();
-      textarea.addEventListener('input', update);
-    }
+    // 点击卡片展开详情弹窗
+    document.getElementById('entries-list').addEventListener('click', e => {
+      if (e.target.closest('.excerpt-delete')) return; // 跳过删除按钮的点击
+      const card = e.target.closest('[data-key]');
+      if (!card) return;
+      const key = card.dataset.key;
+      const entry = entries.find(x => (x.date + '|' + x.title) === key);
+      if (!entry) return;
+      document.getElementById('detail-title').textContent = entry.title;
+      document.getElementById('detail-date').textContent = entry.date;
+      document.getElementById('detail-content').textContent = entry.excerpt || '(无内容)';
+      document.getElementById('detail-tags').innerHTML = entry.tags.map(t => '<span class="chip">' + escapeHtml(t) + '</span>').join('');
+      window.openModal('detail-modal');
+    });
 
     // Excerpt form handler
     document.getElementById('excerpt-form').addEventListener('submit', e => {
@@ -250,7 +216,7 @@
       const newEntry = {
         date: dateKey,
         title,
-        excerpt: content.substring(0, 50) + (content.length > 50 ? '...' : ''),
+        excerpt: content,
         tags: tagList.length ? tagList : ['#未分类'],
         active: false
       };
