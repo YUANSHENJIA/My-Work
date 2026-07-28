@@ -111,15 +111,15 @@
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 
       <!-- Today's pulse -->
-      <div class="lg:col-span-2 card fade-in">
-        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div class="lg:col-span-2 card fade-in" style="padding:20px">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-3">
           <div>
-            <p class="eyebrow mb-2">AI Pulse · 今日热点</p>
+            <p class="eyebrow mb-1">AI Pulse · 今日热点</p>
             <h2 class="headline-lg">实时追踪 AI 前沿</h2>
           </div>
           <a href="news.html" class="btn-secondary text-sm py-2 px-4 no-underline">查看全部</a>
         </div>
-        <ul id="news-pulse-list" class="flex flex-col gap-4"></ul>
+        <ul id="news-pulse-list" class="flex flex-col gap-2"></ul>
       </div>
 
       <!-- Quick actions -->
@@ -275,6 +275,10 @@
       max-width: 60rem;
       word-break: break-word;
     }
+    /* AI Pulse 列表：去掉 ul/li 默认缩进与点号，紧凑展示 */
+    #news-pulse-list { padding: 0; margin: 0; list-style: none; }
+    #news-pulse-list > li { padding: 8px 4px; }
+    #news-pulse-list > li h3 { font-size: 15px; line-height: 1.4; font-weight: 600; margin: 0; }
   </style>
 
   <script>
@@ -290,18 +294,15 @@
         const items = (data.items || []).slice(0, 3);
         if (items.length === 0) throw new Error('empty');
         list.innerHTML = items.map(n => `
-          <li class="flex items-start gap-4 p-4 rounded-lg hover:bg-surface-container-low transition-colors">
-            <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-2xl">${esc(n.icon || 'memory')}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="chip">${esc(n.tag || 'NEWS')}</span>
-                <span class="text-xs text-on-surface-variant">${esc(n.time || '')}</span>
+          <li class="rounded-lg hover:bg-surface-container-low transition-colors">
+            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+              <div class="w-6 h-6 rounded-md bg-surface-container flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined" style="font-size:16px;line-height:1">${esc(n.icon || 'memory')}</span>
               </div>
-              <h3 class="body-md font-semibold mb-1">${esc(n.title || '')}</h3>
-              <p class="text-sm text-on-surface-variant line-clamp-1">${esc(n.excerpt || '')}</p>
+              <span class="chip">${esc(n.tag || 'NEWS')}</span>
+              <span class="text-xs text-on-surface-variant">${esc(n.time || '')}</span>
             </div>
+            <h3 class="line-clamp-1">${esc(n.title || '')}</h3>
           </li>
         `).join('');
       } catch (e) {
