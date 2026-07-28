@@ -205,12 +205,20 @@ function loginGuard() {
       TICKER_SLOT_QUOTE = q;
       TICKER_SLOT_WEATHER = w;
 
-      // 每 5 秒交替：短句 → 天气 → 下一句短句 → 天气 → …，每个保持 5s
+      // 短句文案每 10 分钟才换一次；短句/天气仍每 5s 交替滚动
+      var _quoteChangeMs = Date.now();
+      var QUOTE_REFRESH_MS = 10 * 60 * 1000; // 10 分钟
+
+      // 每 5 秒交替：短句 → 天气 → 短句 → 天气 → …，每个保持 5s
       setInterval(function() {
         TICKER_SHOWING_QUOTE = !TICKER_SHOWING_QUOTE;
         if (TICKER_SHOWING_QUOTE) {
-          _quoteIdx = (_quoteIdx + 1) % QUOTES.length;
-          q.textContent = getDailyQuote(_quoteIdx);
+          // 仅在距上次换句满 10 分钟时才推进到下一句
+          if (Date.now() - _quoteChangeMs >= QUOTE_REFRESH_MS) {
+            _quoteIdx = (_quoteIdx + 1) % QUOTES.length;
+            q.textContent = getDailyQuote(_quoteIdx);
+            _quoteChangeMs = Date.now();
+          }
         }
         q.style.opacity = TICKER_SHOWING_QUOTE ? '1' : '0';
         w.style.opacity = TICKER_SHOWING_QUOTE ? '0' : '1';
