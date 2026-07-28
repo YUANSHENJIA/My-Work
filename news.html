@@ -48,11 +48,11 @@
         </p>
       </div>
       <div class="flex gap-2 overflow-x-auto no-scrollbar">
-        <button class="chip active">全部</button>
-        <button class="chip">技术</button>
-        <button class="chip">商业</button>
-        <button class="chip">研究</button>
-        <button class="chip">产品</button>
+        <button class="chip active filter-chip" data-cat="全部">全部</button>
+        <button class="chip filter-chip" data-cat="技术">技术</button>
+        <button class="chip filter-chip" data-cat="商业">商业</button>
+        <button class="chip filter-chip" data-cat="研究">研究</button>
+        <button class="chip filter-chip" data-cat="产品">产品</button>
       </div>
     </section>
 
@@ -64,124 +64,112 @@
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
   <script>
-    const news = [
-      {
-        tag: 'BREAKING', time: '5 mins ago', category: '技术', source: 'THE TECH TIMES',
-        title: 'GPT-5 内部测试数据泄露：多模态理解能力实现跨代飞跃',
-        excerpt: '据匿名消息人士透露，下一代模型在逻辑推理与长文本保持一致性方面表现惊人，其原生多模态架构允许系统以类感官创造的方式处理视觉与实时音频。',
-        gradient: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-        icon: 'memory',
-        featured: true
-      },
-      {
-        tag: 'ANALYSIS', time: '2 hours ago', category: '商业', source: 'BLOOMBERG',
-        title: '英伟达发布 Blackwell 架构：训练成本降低 25 倍',
-        excerpt: '黄仁勋表示，我们正在进入物理 AI 时代，Blackwell 不仅是芯片，也是现代工业革命的引擎，为万亿参数模型而生。',
-        gradient: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
-        icon: 'developer_board'
-      },
-      {
-        tag: 'RESEARCH', time: 'Yesterday', category: '研究', source: 'Nature',
-        title: 'DeepMind 提出新款蛋白质折叠模型 AlphaFold 3',
-        excerpt: '新模型不仅能预测蛋白质结构，还能预测 DNA、RNA 及配套的相互作用，将药物研发周期缩短数倍。',
-        gradient: 'linear-gradient(135deg, #2a2a2a 0%, #404040 100%)',
-        icon: 'science'
-      },
-      {
-        tag: 'PRODUCT', time: '2 days ago', category: '产品', source: 'TechCrunch',
-        title: 'Anthropic 推出 Claude 4.5：上下文窗口突破 100 万 tokens',
-        excerpt: '新一轮的模型升级带来了对长文档理解的革命性能力，可一次性分析整本书籍或数十万行代码库。',
-        gradient: 'linear-gradient(135deg, #1f1f1f 0%, #2f2f2f 100%)',
-        icon: 'token'
-      },
-      {
-        tag: 'INSIGHT', time: '3 days ago', category: '商业', source: 'Forbes',
-        title: 'AI 独角兽估值破千亿：企业级 LLM 平台迎来整合期',
-        excerpt: '随着基础模型层趋于成熟，应用层的护城河成为新的竞争焦点。市场开始重新审视估值模型。',
-        gradient: 'linear-gradient(135deg, #232323 0%, #353535 100%)',
-        icon: 'trending_up'
+    // 从 assets/news.json 加载（由 GitHub Actions 每天北京时间 9:00 自动抓取）
+    (async () => {
+      const list = document.getElementById('news-list');
+      let news = [];
+      let lastUpdated = '';
+      let sourceLabel = '';
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
       }
-    ];
 
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-    }
-
-    const list = document.getElementById('news-list');
-
-    function newsCard(n) {
-      return '<article class="card hover-lift fade-in flex flex-col gap-4" style="padding: 24px;">' +
-        '<div class="flex items-center justify-between">' +
-          '<span class="chip">' + n.tag + '</span>' +
-          '<span class="text-xs text-on-surface-variant">' + n.time + '</span>' +
-        '</div>' +
-        '<div class="flex items-center gap-3">' +
-          '<div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--surface-container);">' +
-            '<span class="material-symbols-outlined" style="font-size: 22px; color: var(--on-surface-variant);">' + n.icon + '</span>' +
+      function newsCard(n) {
+        return '<article class="card hover-lift fade-in flex flex-col gap-4" style="padding: 24px;">' +
+          '<div class="flex items-center justify-between">' +
+            '<span class="chip">' + n.tag + '</span>' +
+            '<span class="text-xs text-on-surface-variant">' + n.time + '</span>' +
           '</div>' +
-          '<div class="flex-1 min-w-0">' +
-            '<p class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">' + n.category + ' · ' + n.source + '</p>' +
+          '<div class="flex items-center gap-3">' +
+            '<div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--surface-container);">' +
+              '<span class="material-symbols-outlined" style="font-size: 22px; color: var(--on-surface-variant);">' + n.icon + '</span>' +
+            '</div>' +
+            '<div class="flex-1 min-w-0">' +
+              '<p class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">' + n.category + ' · ' + n.source + '</p>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-        '<h3 class="text-lg font-semibold leading-snug" style="color: var(--on-surface);">' + escapeHtml(n.title) + '</h3>' +
-        '<p class="text-sm leading-relaxed line-clamp-3" style="color: var(--on-surface-variant);">' + escapeHtml(n.excerpt) + '</p>' +
-        '<div class="flex items-center justify-between mt-auto pt-3" style="border-top: 1px solid var(--outline-variant);">' +
-          '<span class="text-xs text-on-surface-variant">阅读全文</span>' +
-          '<div class="flex gap-1">' +
-            '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="收藏"><span class="material-symbols-outlined" style="font-size:18px;">bookmark</span></button>' +
-            '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="分享"><span class="material-symbols-outlined" style="font-size:18px;">share</span></button>' +
+          '<h3 class="text-lg font-semibold leading-snug" style="color: var(--on-surface);">' + escapeHtml(n.title) + '</h3>' +
+          '<p class="text-sm leading-relaxed line-clamp-3" style="color: var(--on-surface-variant);">' + escapeHtml(n.excerpt) + '</p>' +
+          '<div class="flex items-center justify-between mt-auto pt-3" style="border-top: 1px solid var(--outline-variant);">' +
+            '<a href="' + escapeHtml(n.link) + '" target="_blank" rel="noopener noreferrer" class="text-xs text-on-surface-variant hover:text-on-surface no-underline">阅读全文 →</a>' +
+            '<div class="flex gap-1">' +
+              '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="收藏"><span class="material-symbols-outlined" style="font-size:18px;">bookmark</span></button>' +
+              '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="分享"><span class="material-symbols-outlined" style="font-size:18px;">share</span></button>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-      '</article>';
-    }
-
-    list.innerHTML = news.map(n => newsCard(n)).join('');
-
-    // Auto-fetch check
-    setTimeout(() => {
-      const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes();
-      if (h >= 21 || (h === 9 && m < 5)) {
-        const badge = document.createElement('span');
-        badge.className = 'chip';
-        badge.textContent = '🔄 今日最新更新';
-        document.getElementById('news-list').before(badge);
+        '</article>';
       }
-    }, 1000);
 
-    // Manual refresh button
-    const header = document.querySelector('.eyebrow');
-    const refreshBtn = document.createElement('button');
-    refreshBtn.className = 'chip ml-auto';
-    refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
-    refreshBtn.addEventListener('click', () => {
-      refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> 刷新中...';
-      setTimeout(() => {
-        const shuffled = [...news];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        list.innerHTML = shuffled.map(n => newsCard(n)).join('');
-        refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
-        refreshBtn.animate([{transform:'rotate(360deg)'}], {duration:300});
-      }, 600);
-    });
-    header.parentElement.appendChild(refreshBtn);
-
-    // Filter
-    document.querySelectorAll('.chip').forEach(c => {
-      c.addEventListener('click', () => {
-        document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-        c.classList.add('active');
-        const cat = c.textContent.trim();
-        document.querySelectorAll('#news-list article').forEach((el, i) => {
-          const show = cat === '全部' || news[i].category === cat;
+      function applyFilter(cat) {
+        list.querySelectorAll('article').forEach((el, i) => {
+          const show = cat === '全部' || (news[i] && news[i].category === cat);
           el.style.display = show ? '' : 'none';
         });
+      }
+
+      function render() {
+        list.innerHTML = news.length ? news.map(newsCard).join('') :
+          '<p class="text-center text-on-surface-variant col-span-full py-10">暂无资讯数据。</p>';
+        updateTimestamp();
+      }
+
+      function updateTimestamp() {
+        let el = document.getElementById('news-updated');
+        if (!el) {
+          el = document.createElement('p');
+          el.id = 'news-updated';
+          el.className = 'text-xs text-on-surface-variant text-center mt-4';
+          list.parentElement.insertBefore(el, list.nextSibling);
+        }
+        el.innerHTML = sourceLabel ? '来源：<span class="font-medium">' + escapeHtml(sourceLabel) + '</span> · 最后更新：' + escapeHtml(lastUpdated) : '最后更新：' + escapeHtml(lastUpdated);
+      }
+
+      async function load(bust) {
+        const url = 'assets/news.json' + (bust ? ('?t=' + Date.now()) : '');
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        news = data.items || [];
+        lastUpdated = data.updated_at_local || data.updated_at || '';
+        sourceLabel = data.source_label || '';
+        render();
+      }
+
+      // 绑定筛选
+      document.querySelectorAll('.filter-chip').forEach(c => {
+        c.addEventListener('click', () => {
+          document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+          c.classList.add('active');
+          applyFilter(c.dataset.cat || c.textContent.trim());
+        });
       });
-    });
+
+      // 加载
+      try {
+        await load(false);
+      } catch (e) {
+        console.error('Failed to load news:', e);
+        list.innerHTML = '<p class="text-center text-on-surface-variant col-span-full py-10">资讯加载失败，请稍后再试。<br/><span class="text-xs">' + e.message + '</span></p>';
+      }
+
+      // 手动刷新按钮（强制绕过缓存）
+      const header = document.querySelector('.eyebrow');
+      const refreshBtn = document.createElement('button');
+      refreshBtn.className = 'chip ml-auto flex items-center gap-1';
+      refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
+      refreshBtn.addEventListener('click', async () => {
+        refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> 刷新中...';
+        try {
+          await load(true);
+        } catch (e) {
+          console.error(e);
+        }
+        refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
+        refreshBtn.animate([{transform:'rotate(360deg)'}], {duration:300});
+      });
+      header.parentElement.appendChild(refreshBtn);
+    })();
   </script>
 
   <style>
