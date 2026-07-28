@@ -390,6 +390,9 @@
       cropState.img.onload = () => {
         const stage = document.getElementById('crop-stage');
         const circle = document.getElementById('crop-circle');
+        // 先把 modal 显示出来再读取尺寸（display:none 时 clientWidth = 0）
+        document.getElementById('crop-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
         const stageSize = stage.clientWidth;
         const circleSize = Math.min(stageSize, 320);
         circle.style.width = circle.style.height = circleSize + 'px';
@@ -401,9 +404,9 @@
         cropState.offsetX = 0;
         cropState.offsetY = 0;
         document.getElementById('crop-zoom').value = 100;
+        // 同步到 DOM 上的 <img>，否则页面显示空白
+        document.getElementById('crop-img').src = dataUrl;
         applyCropTransform();
-        document.getElementById('crop-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
       };
       cropState.img.src = dataUrl;
     }

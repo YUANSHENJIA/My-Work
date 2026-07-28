@@ -9,6 +9,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .quick-add-btn {
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--surface-container);
+      color: var(--on-surface);
+      border: 1px solid var(--outline-variant);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s ease, transform .1s ease;
+    }
+    .quick-add-btn:hover { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+    .quick-add-btn:active { transform: scale(0.95); }
+    .quick-add-btn:disabled { opacity: 0.6; cursor: default; }
+  </style>
 </head>
 <body>
 
@@ -49,23 +65,29 @@
     <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <div class="card text-center">
         <p class="eyebrow mb-2">完成度</p>
-        <p class="text-3xl font-semibold mb-1">75%</p>
-        <p class="text-xs text-on-surface-variant">3/4 待办</p>
+        <p class="text-3xl font-semibold mb-1" id="rev-done-rate">—</p>
+        <p class="text-xs text-on-surface-variant"><span id="rev-done-fr">—/—</span> 待办</p>
       </div>
       <div class="card text-center">
         <p class="eyebrow mb-2">饮水量</p>
-        <p class="text-3xl font-semibold mb-1">1.2L</p>
+        <p class="text-3xl font-semibold mb-1"><span id="rev-water">—</span><span class="text-base text-on-surface-variant ml-1">L</span></p>
         <p class="text-xs text-on-surface-variant">目标 2.0L</p>
       </div>
       <div class="card text-center">
         <p class="eyebrow mb-2">阅读时长</p>
-        <p class="text-3xl font-semibold mb-1">42m</p>
-        <p class="text-xs text-on-surface-variant">继续前进</p>
+        <p class="text-3xl font-semibold mb-1"><span id="rev-reading">0</span><span class="text-base text-on-surface-variant ml-1">m</span></p>
+        <p class="text-xs text-on-surface-variant" id="rev-reading-sub">暂无记录</p>
+        <div class="flex justify-center gap-2 mt-3">
+          <button class="quick-add-btn" data-minutes="10" data-type="reading" type="button">+10 分钟</button>
+        </div>
       </div>
       <div class="card text-center">
         <p class="eyebrow mb-2">专注时长</p>
-        <p class="text-3xl font-semibold mb-1">3h 25m</p>
-        <p class="text-xs text-on-surface-variant">↑ 12%</p>
+        <p class="text-3xl font-semibold mb-1"><span id="rev-focus">0</span><span class="text-base text-on-surface-variant ml-1">m</span></p>
+        <p class="text-xs text-on-surface-variant" id="rev-focus-sub">暂无记录</p>
+        <div class="flex justify-center gap-2 mt-3">
+          <button class="quick-add-btn" data-minutes="25" data-type="focus" type="button">+25 分钟</button>
+        </div>
       </div>
     </section>
 
@@ -124,6 +146,115 @@
     function saveReviews(r) { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(r)); } catch(e) {} }
 
     const todayKey = () => new Date().toISOString().slice(0, 10);
+
+    // ===== 真实数据驱动的统计 =====
+    // 分钟累计键: monolith.minutes.{focus|reading}.{YYYY-MM-DD} → number of minutes
+    const MIN_PREFIX = 'monolith.minutes';
+    function loadMinutes(type) {
+      try {
+        const raw = localStorage.getItem(`${MIN_PREFIX}.${type}.${todayKey()}`);
+        return raw ? Math.max(0, parseInt(raw, 10) || 0) : 0;
+      } catch(e) { return 0; }
+    }
+    function addMinutes(type, m) {
+      const key = `${MIN_PREFIX}.${type}.${todayKey()}`;
+      const cur = loadMinutes(type);
+      const next = cur + m;
+      try { localStorage.setItem(key, String(next)); } catch(e) {}
+      return next;
+    }
+    // 比较昨日 vs 今日聚焦/阅读分钟，返回变化百分比字符串（无变化 → "—"，上升 → "↑ x%"）
+    function yesterdayMinutes(type) {
+      const d = new Date(); d.setDate(d.getDate() - 1);
+      const k = d.toISOString().slice(0, 10);
+      try {
+        const raw = localStorage.getItem(`${MIN_PREFIX}.${type}.${k}`);
+        return raw ? Math.max(0, parseInt(raw, 10) || 0) : 0;
+      } catch(e) { return 0; }
+    }
+
+    function fmtMinutes(m) {
+      if (!m) return '0';
+      const h = Math.floor(m / 60);
+      const r = m % 60;
+      return h > 0 ? `${h}h ${r}m` : `${m}m`;
+    }
+
+    function renderFocusReading() {
+      const t = loadMinutes('reading');
+      const f = loadMinutes('focus');
+      document.getElementById('rev-reading').textContent = fmtMinutes(t);
+
+      const yR = yesterdayMinutes('reading');
+      const yF = yesterdayMinutes('focus');
+      const rSub = t === 0
+        ? '暂无记录 · 点击下方按钮添加'
+        : (yR > 0
+            ? (t >= yR ? `↑ ${Math.round((t - yR) / yR * 100)}% vs 昨日` : `↓ ${Math.round((yR - t) / yR * 100)}% vs 昨日`)
+            : '今日新开始');
+      document.getElementById('rev-reading-sub').textContent = rSub;
+
+      document.getElementById('rev-focus').textContent = fmtMinutes(f);
+      const fSub = f === 0
+        ? '暂无记录 · 点击下方按钮添加'
+        : (yF > 0
+            ? (f >= yF ? `↑ ${Math.round((f - yF) / yF * 100)}% vs 昨日` : `↓ ${Math.round((yF - f) / yF * 100)}% vs 昨日`)
+            : '今日新开始');
+      document.getElementById('rev-focus-sub').textContent = fSub;
+    }
+
+    function renderDoneAndWater() {
+      // 完成度
+      try {
+        const raw = localStorage.getItem('monolith.todos');
+        const arr = raw ? JSON.parse(raw) : [];
+        const today = todayKey();
+        const todayTodos = Array.isArray(arr) ? arr.filter(t => t && t.date === today) : [];
+        const done = todayTodos.filter(t => t.done).length;
+        const total = todayTodos.length;
+        const rate = total > 0 ? Math.round(done / total * 100) : 0;
+        const el = document.getElementById('rev-done-rate');
+        const fr = document.getElementById('rev-done-fr');
+        if (el) el.textContent = total > 0 ? `${rate}%` : '—';
+        if (fr) fr.textContent = `${done}/${total}`;
+      } catch(e) {}
+
+      // 饮水量
+      try {
+        const raw = localStorage.getItem('monolith.waterLog');
+        const log = raw ? JSON.parse(raw) : {};
+        const today = todayKey();
+        const ml = (log && log[today]) || 0;
+        const el = document.getElementById('rev-water');
+        if (el) el.textContent = ml > 0 ? (ml / 1000).toFixed(1) : '0.0';
+      } catch(e) {}
+    }
+
+    // 初始化
+    renderFocusReading();
+    renderDoneAndWater();
+
+    // 累加按钮
+    document.querySelectorAll('.quick-add-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const type = btn.dataset.type;
+        const m = parseInt(btn.dataset.minutes, 10);
+        if (!type || !m) return;
+        addMinutes(type, m);
+        renderFocusReading();
+        // 即时反馈
+        const original = btn.textContent;
+        btn.textContent = '✓';
+        btn.disabled = true;
+        setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 800);
+      });
+    });
+
+    // 跨页面事件：其他页面修改 minutes 时实时刷新
+    window.addEventListener('storage', e => {
+      if (e.key && e.key.startsWith(MIN_PREFIX)) renderFocusReading();
+    });
 
     document.getElementById('save-review-btn').addEventListener('click', (e) => {
       e.preventDefault();
