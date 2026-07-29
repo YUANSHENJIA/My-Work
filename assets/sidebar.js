@@ -160,6 +160,8 @@ window.I18N = {
     lastUpdated: '最近更新',
     // ===== games.html =====
     gamesTitle: '摸鱼小游戏',
+    mbtiBreadcrumb: 'MBTI PERSONALITY TEST',
+    gamesBreadcrumb: 'SLACKING MINI GAME',
     gamesSubtitle: '适度放松，效率更高 😄',
     // ===== mbti.html =====
     // already covered
@@ -355,6 +357,8 @@ window.I18N = {
     yourMBTI: 'Your MBTI Type',
     // ===== Games =====
     gamesTitle: 'SLACKING MINI GAME',
+    mbtiBreadcrumb: 'MBTI PERSONALITY TEST',
+    gamesBreadcrumb: 'SLACKING MINI GAME',
     gamesSubtitle: 'Take a break, you deserve it 😄',
     tabSnake: 'Snake',
     tabMine: 'Minesweeper',
