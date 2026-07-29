@@ -354,7 +354,7 @@ window.I18N = {
     dimensionJP: 'J/P · Judging/Perceiving',
     yourMBTI: 'Your MBTI Type',
     // ===== Games =====
-    gamesTitle: 'Mini Games',
+    gamesTitle: 'SLACKING MINI GAME',
     gamesSubtitle: 'Take a break, you deserve it 😄',
     tabSnake: 'Snake',
     tabMine: 'Minesweeper',
