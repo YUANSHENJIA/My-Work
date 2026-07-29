@@ -89,14 +89,14 @@
 
     <!-- Wooden Fish -->
     <div class="tab-pane card" id="tab-wooden-fish" style="text-align:center;">
-      <div id="fish-wrap" style="width:220px;height:170px;margin:0 auto 16px;cursor:pointer;touch-action:manipulation;user-select:none;position:relative;">
+      <div id="fish-wrap" style="width:220px;height:170px;margin:48px auto 16px;cursor:pointer;touch-action:manipulation;user-select:none;position:relative;">
         <div id="fish" style="width:100%;height:100%;border-radius:0;display:flex;align-items:center;justify-content:center;transition:transform .15s cubic-bezier(.34,1.56,.64,1);overflow:visible;">
           🐟
         </div>
         <div id="mallet" style="position:absolute;top:-30px;right:-30px;width:128px;height:128px;pointer-events:none;transform-origin:50% 80%;transition:transform .35s cubic-bezier(.34,1.56,.64,1);">
           <img src="assets/images/mallet.png" alt="锤子" style="width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;">
         </div>
-        <div id="float-layer" style="position:absolute;inset:0;pointer-events:none;overflow:visible;"></div>
+        <div id="float-layer" style="position:absolute;left:0;right:0;top:-32px;height:32px;pointer-events:none;overflow:visible;"></div>
       </div>
       <div style="font-size:14px;color:var(--on-surface-variant);margin-bottom:8px;">总功德</div>
       <div style="font-size:32px;font-weight:800;display:block;margin-bottom:12px;" id="deed">0</div>
@@ -121,19 +121,20 @@
 .mine-cell.mine{background:var(--error-container)}
 .mine-cell.flagged{background:var(--surface-container-high)}
 #fish:active,#fish.hit{transform:scale(.85)}
-/* 飘字：每敲一次，从木鱼上方浮起 + 透明度 1→0 + 微缩放 */
+/* 飘字：每敲一次，从木鱼上方空白区浮起 + 透明度 1→0 + 微缩放 */
 @keyframes floatUp{
-  0%   { transform: translate(-50%, 0) scale(.6); opacity: 0; }
-  15%  { transform: translate(-50%, -10px) scale(1.15); opacity: 1; }
-  100% { transform: translate(-50%, -90px) scale(.95); opacity: 0; }
+  0%   { transform: translate(-50%, 0) scale(.85); opacity: 0; }
+  15%  { transform: translate(-50%, -8px) scale(1); opacity: .85; }
+  100% { transform: translate(-50%, -56px) scale(.95); opacity: 0; }
 }
 .float-deed{
-  position:absolute; left:50%; bottom:50%;
-  font-size:24px; font-weight:800;
-  color:var(--primary); text-shadow:0 2px 8px rgba(0,0,0,.25);
-  animation: floatUp 1s cubic-bezier(.2,.7,.3,1) forwards;
+  position:absolute; left:50%; top:0;
+  font-size:14px; font-weight:400;
+  color:var(--primary); opacity:.7;
+  font-family:'Geist','Inter',sans-serif; font-feature-settings:'tnum';
+  animation: floatUp 1.1s cubic-bezier(.2,.7,.3,1) forwards;
   pointer-events:none; user-select:none; white-space:nowrap;
-  letter-spacing:.02em;
+  letter-spacing:.06em;
 }
 </style>
 <script>
