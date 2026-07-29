@@ -91,9 +91,12 @@
     <div class="tab-pane card" id="tab-wooden-fish" style="text-align:center;">
       <h3 style="font-size:18px;font-weight:600;margin-bottom:12px;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">self_improvement</span> 电子木鱼</h3>
       <p style="font-size:13px;color:var(--on-surface-variant);margin-bottom:12px;">今日功德：<span id="wf-today">0</span></p>
-      <div id="fish-wrap" style="width:160px;height:160px;margin:0 auto 16px;cursor:pointer;touch-action:manipulation;user-select:none;">
-        <div id="fish" style="width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--surface-container-high);transition:transform .12s;overflow:hidden;">
+      <div id="fish-wrap" style="width:160px;height:160px;margin:0 auto 16px;cursor:pointer;touch-action:manipulation;user-select:none;position:relative;">
+        <div id="fish" style="width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--surface-container-high);transition:transform .15s cubic-bezier(.34,1.56,.64,1);overflow:hidden;">
           🐟
+        </div>
+        <div id="mallet" style="position:absolute;top:-12px;right:-12px;width:64px;height:64px;pointer-events:none;transform-origin:50% 80%;transition:transform .35s cubic-bezier(.34,1.56,.64,1);">
+          <img src="assets/images/mallet.png" alt="锤子" style="width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;">
         </div>
       </div>
       <div style="font-size:40px;font-weight:800;display:block;margin-bottom:4px;" id="deed">0</div>
@@ -415,7 +418,60 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
   function load(){try{const raw=JSON.parse(localStorage.getItem(KEY)||'{}');total=raw.total||0;const tk=new Date().toISOString().slice(0,10);today=raw[tk]||0;}catch(e){total=0;today=0}updateUI();}
   function save(){try{const raw=JSON.parse(localStorage.getItem(KEY)||'{}')||{};const tk=new Date().toISOString().slice(0,10);raw.total=total;raw[tk]=today;localStorage.setItem(KEY,JSON.stringify(raw));}catch(e){}}
   function updateUI(){document.getElementById('deed').textContent=total;document.getElementById('wf-today').textContent=today;}
-  function knock(){total++;today++;const fish=document.getElementById('fish');fish.classList.add('hit');setTimeout(()=>fish.classList.remove('hit'),120);const p=document.getElementById('wf-phrase');p.classList.add('fade');setTimeout(()=>{p.textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];p.classList.remove('fade');},100);updateUI();save();}
+
+  /* ===== 木鱼合成音（Web Audio API）=====
+     模拟木块敲击：基频 + 二次谐波 + 指数衰减包络 */
+  let audioCtx=null;
+  function playTok(){
+    try{
+      if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==='suspended')audioCtx.resume();
+      const t=audioCtx.currentTime;
+      const ctx=audioCtx;
+      // 主音（"tok"的"to"）
+      const o1=ctx.createOscillator();o1.type='sine';o1.frequency.setValueAtTime(280,t);o1.frequency.exponentialRampToValueAtTime(140,t+0.08);
+      const g1=ctx.createGain();g1.gain.setValueAtTime(0.0001,t);g1.gain.exponentialRampToValueAtTime(0.5,t+0.005);g1.gain.exponentialRampToValueAtTime(0.0001,t+0.35);
+      o1.connect(g1).connect(ctx.destination);o1.start(t);o1.stop(t+0.4);
+      // 谐波（"k"的拍击感）
+      const o2=ctx.createOscillator();o2.type='triangle';o2.frequency.setValueAtTime(620,t);o2.frequency.exponentialRampToValueAtTime(380,t+0.04);
+      const g2=ctx.createGain();g2.gain.setValueAtTime(0.0001,t);g2.gain.exponentialRampToValueAtTime(0.18,t+0.003);g2.gain.exponentialRampToValueAtTime(0.0001,t+0.12);
+      o2.connect(g2).connect(ctx.destination);o2.start(t);o2.stop(t+0.15);
+      // 噪声（更"木"的瞬态冲击）
+      const buf=ctx.createBuffer(1,ctx.sampleRate*0.05,ctx.sampleRate);
+      const data=buf.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,2);
+      const noise=ctx.createBufferSource();noise.buffer=buf;
+      const ng=ctx.createGain();ng.gain.value=0.12;
+      noise.connect(ng).connect(ctx.destination);noise.start(t);
+    }catch(e){}
+  }
+
+  function knock(){
+    total++;today++;
+    const fish=document.getElementById('fish');
+    const mallet=document.getElementById('mallet');
+    // 鱼缩放（弹性回到原位）
+    fish.style.transform='scale(0.86)';
+    setTimeout(()=>{fish.style.transform='scale(1)';},120);
+    // 锤子挥动：拉起 → 落下（用两次帧切换形成挥动节奏）
+    mallet.style.transition='transform .08s ease-out';
+    mallet.style.transform='rotate(-35deg)';
+    setTimeout(()=>{
+      mallet.style.transition='transform .12s cubic-bezier(.34,1.56,.64,1)';
+      mallet.style.transform='rotate(18deg)';
+      setTimeout(()=>{
+        mallet.style.transition='transform .4s ease-out';
+        mallet.style.transform='rotate(0deg)';
+      },260);
+    },90);
+    // 随机经文
+    const p=document.getElementById('wf-phrase');
+    p.classList.add('fade');
+    setTimeout(()=>{p.textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];p.classList.remove('fade');},100);
+    // 音效
+    playTok();
+    updateUI();
+    save();
+  }
 
   const fishEl=document.getElementById('fish');
   const img=new Image();
