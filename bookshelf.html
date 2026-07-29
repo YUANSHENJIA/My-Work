@@ -389,7 +389,14 @@
     let books = loadBooks();
 
     function saveBooks() {
-      try { localStorage.setItem(BOOKS_KEY, JSON.stringify(books)); } catch(e) {}
+      try {
+        localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
+        return true;
+      } catch(e) {
+        console.error('[BOOKSHELF] saveBooks failed:', e.message);
+        alert('保存失败：' + e.message + '\n可能浏览器存储已满');
+        return false;
+      }
     }
 
     function updateTotal() {
@@ -605,9 +612,10 @@
       const emoji = item.dataset.emoji;
       const date = item.dataset.date;
 
-      // 已加入则高亮跳过
+      // 已加入则直接打开详情页
       if (item.classList.contains('added')) {
         hideModal();
+        location.replace('book-detail.html?title=' + encodeURIComponent(name));
         return;
       }
 
@@ -638,11 +646,12 @@
         // 去重（按 url）
         books = books.filter(b => !(b.source === '每日一学' && b.url === url));
         books.unshift(book);
-        saveBooks();
+        const saved = saveBooks();
         render();
         hideModal();
-        // 跳转到详情页
-        location.href = 'book-detail.html?title=' + encodeURIComponent(book.title);
+        if (!saved) return;
+        // 跳转到详情页（确保存盘已落库再跳转）
+        location.replace('book-detail.html?title=' + encodeURIComponent(book.title));
       } catch (err) {
         alert('导入失败：' + err.message + '\n可能受网络或 CORS 限制');
         btn.innerHTML = orig;
