@@ -87,10 +87,11 @@ canvas{display:block;margin:0 auto;border-radius:var(--r-lg);max-width:100%;curs
 
   <!-- Gomoku -->
   <div class="tab-pane" id="tab-gomoku">
-    <p id="gomo-info">当前：<span id="gomo-turn">⚫ 黑棋</span> · 模式：本地双人对弈</p>
+    <p id="gomo-info">当前：<span id="gomo-turn">⚫ 你的回合</span> · <span class="chip" id="gomo-mode-text">人机模式</span></p>
     <canvas id="gomo-canvas" width="450" height="450"></canvas>
     <p id="gomo-status"></p>
     <div class="gomo-controls">
+      <button id="gomo-mode" class="btn-secondary text-sm py-2 px-4">👤 人机模式</button>
       <button id="gomo-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
     </div>
   </div>
@@ -330,18 +331,19 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
 })();
 
 /* =================================================================
-   五子棋（本地双人对弈）
+   五子棋（双人对弈 / 人机对战）
    ================================================================= */
 (function(){
   const SIZE=15,CELL=28,PADDING=20;
-  let board=[],turn=1,gameOver=false,moveCount=0;
+  let board=[],turn=1,gameOver=false,moveCount=0,aiMode=true,aiThinking=false;
   const canvas=document.getElementById('gomo-canvas'),ctx=canvas.getContext('2d');
 
   function gomoInit(){
     board=Array.from({length:SIZE},()=>Array(SIZE).fill(0));
-    turn=1;gameOver=false;moveCount=0;
-    document.getElementById('gomo-turn').textContent='⚫ 黑棋';
+    turn=1;gameOver=false;moveCount=0;aiThinking=false;
+    document.getElementById('gomo-turn').textContent=aiMode?'⚫ 你的回合':'⚫ 黑棋';
     document.getElementById('gomo-status').textContent='';
+    document.getElementById('gomo-mode').textContent=aiMode?'👤 人机模式':'👥 双人模式';
     gomoDraw();
   }
   window.gomoInit=gomoInit;
@@ -381,25 +383,94 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     return false;
   }
 
+  // ---- AI 评分算法 ----
+  function aiEvaluate(r,c,player){
+    const dirs=[[1,0],[0,1],[1,1],[1,-1]];
+    let score=0;
+    for(const [dr,dc]of dirs){
+      let cnt=1,open=0;
+      for(let d=1;d<5;d++){const nr=r+dr*d,nc=c+dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]!==undefined&&board[nr][nc]===0?1:0;break}}
+      for(let d=1;d<5;d++){const nr=r-dr*d,nc=c-dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]!==undefined&&board[nr][nc]===0?1:0;break}}
+      // scoring 5=100k, 4=10k, 3=1k, 2=100, 1=10
+      if(cnt>=5)score+=100000;
+      else if(cnt===4)score+=(open>=1?10000:5000);
+      else if(cnt===3)score+=(open>=1?1000:500);
+      else if(cnt===2)score+=(open>=1?100:50);
+      else if(cnt===1)score+=10;
+    }
+    return score;
+  }
+
+  function aiMove(){
+    if(gameOver||aiThinking)return;
+    let best={r:-1,c:-1,score:-1};
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+      if(board[r][c]!==0)continue;
+      const attack=aiEvaluate(r,c,2);   // AI = white = 2
+      const defend=aiEvaluate(r,c,1)*1.1; // 防守略优先
+      const total=Math.max(attack,defend);
+      if(total>best.score){best={r,c,score:total};}
+      // tie-break: prefer center
+      else if(total===best.score&&Math.abs(r-7)+Math.abs(c-7)<Math.abs(best.r-7)+Math.abs(best.c-7)){best={r,c,score:total};}
+    }
+    if(best.r<0){
+      // fallback: center
+      if(board[7][7]===0)best={r:7,c:7,score:0};
+      else{
+        for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){if(board[r][c]===0){best={r,c,score:0};r=SIZE;c=SIZE;}}
+      }
+    }
+    if(best.r<0)return;
+    aiThinking=true;
+    setTimeout(()=>{
+      if(gameOver){aiThinking=false;return;}
+      board[best.r][best.c]=2;moveCount++;
+      gomoDraw();
+      if(checkWin(best.r,best.c,2)){
+        gameOver=true;
+        document.getElementById('gomo-status').textContent='🤖 AI 获胜！(共'+moveCount+'步)';
+        aiThinking=false;return;
+      }
+      turn=1;
+      document.getElementById('gomo-turn').textContent='⚫ 你的回合';
+      aiThinking=false;
+    },400);
+  }
+
   canvas.addEventListener('click',e=>{
-    if(gameOver)return;
+    if(gameOver||aiThinking)return;
     const rect=canvas.getBoundingClientRect(),scale=canvas.width/rect.width;
     const x=Math.round((e.clientX-rect.left)*scale),y=Math.round((e.clientY-rect.top)*scale);
     const c=Math.round((x-PADDING)/CELL),r=Math.round((y-PADDING)/CELL);
     if(r<0||r>=SIZE||c<0||c>=SIZE||board[r][c]!==0)return;
+    // In AI mode, black=player; in 2p mode, any turn
+    if(aiMode&&turn!==1)return;
+
     board[r][c]=turn;moveCount++;
     gomoDraw();
     if(checkWin(r,c,turn)){
       gameOver=true;
-      const winner=turn===1?'⚫ 黑棋':'⚪ 白棋';
-      document.getElementById('gomo-status').textContent='🎉 '+winner+' 获胜！(共'+moveCount+'步)';
+      const winner=turn===1?'⚫ 你获胜！':'⚪ 白棋 获胜！';
+      document.getElementById('gomo-status').textContent='🎉 '+winner+' (共'+moveCount+'步)';
       return;
     }
     turn=turn===1?2:1;
-    document.getElementById('gomo-turn').textContent=turn===1?'⚫ 黑棋':'⚪ 白棋';
+    if(aiMode){
+      document.getElementById('gomo-turn').textContent='🤖 AI 思考中...';
+      aiMove();
+    } else {
+      document.getElementById('gomo-turn').textContent=turn===1?'⚫ 黑棋':'⚪ 白棋';
+    }
   });
 
-  document.getElementById('gomo-restart').addEventListener('click',gomoInit);
+  document.getElementById('gomo-restart').addEventListener('click',()=>{gomoInit();if(aiMode){document.getElementById('gomo-turn').textContent='⚫ 你的回合';}});
+  document.getElementById('gomo-mode').addEventListener('click',()=>{
+    aiMode=!aiMode;
+    document.getElementById('gomo-mode').textContent=aiMode?'👤 人机模式':'👥 双人模式';
+    gomoInit();
+    if(aiMode)document.getElementById('gomo-turn').textContent='⚫ 你的回合';
+    else document.getElementById('gomo-turn').textContent='⚫ 黑棋';
+  });
   gomoInit();
 })();
 
