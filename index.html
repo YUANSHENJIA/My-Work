@@ -63,7 +63,7 @@
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">check_circle</span>
           <span class="chip">TODAY</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1">今日待办</p>
+        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardTodos">今日待办</p>
         <p class="text-3xl font-semibold text-on-surface" id="home-todo-stat">— / —</p>
         <div class="progress-bar mt-3">
           <div id="home-todo-bar" class="progress-fill" style="width: 0%"></div>
@@ -75,7 +75,7 @@
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">water_drop</span>
           <span class="chip">HYDRATION</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1">今日饮水</p>
+        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardWater">今日饮水</p>
         <p class="text-3xl font-semibold text-on-surface"><span id="home-water-stat">0</span><span class="text-base text-on-surface-variant ml-1">ml</span></p>
         <div class="progress-bar mt-3">
           <div id="home-water-bar" class="progress-fill" style="width: 0%"></div>
@@ -87,8 +87,8 @@
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">menu_book</span>
           <span class="chip">READING</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1">正在阅读</p>
-        <p class="text-3xl font-semibold text-on-surface"><span id="home-reading-stat">0</span><span class="text-base text-on-surface-variant ml-1">本</span></p>
+        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardReading">正在阅读</p>
+        <p class="text-3xl font-semibold text-on-surface"><span id="home-reading-stat">0</span><span class="text-base text-on-surface-variant ml-1" data-i18n="bookUnit">本</span></p>
         <div class="progress-bar mt-3">
           <div id="home-reading-bar" class="progress-fill" style="width: 0%"></div>
         </div>
@@ -99,8 +99,8 @@
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">payments</span>
           <span class="chip">STRATEGY</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1">策略归档</p>
-        <p class="text-3xl font-semibold text-on-surface"><span id="home-strategy-stat">0</span><span class="text-base text-on-surface-variant ml-1">条</span></p>
+        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardArchive">策略归档</p>
+        <p class="text-3xl font-semibold text-on-surface"><span id="home-strategy-stat">0</span><span class="text-base text-on-surface-variant ml-1" data-i18n="itemUnit">条</span></p>
         <div class="progress-bar mt-3">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
@@ -114,10 +114,10 @@
       <div class="lg:col-span-2 card fade-in">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
-            <p class="eyebrow mb-2">AI Pulse · 今日热点</p>
-            <h2 class="headline-lg">实时追踪 AI 前沿</h2>
+            <p class="eyebrow mb-2">AI Pulse · <span data-i18n="aiPulseSubtitle">今日热点</span></p>
+            <h2 class="headline-lg" data-i18n="aiPulseHeading">实时追踪 AI 前沿</h2>
           </div>
-          <a href="news.html" class="btn-secondary text-sm py-2 px-4 no-underline">查看全部</a>
+          <a href="news.html" class="btn-secondary text-sm py-2 px-4 no-underline" data-i18n="viewAll">查看全部</a>
         </div>
         <ul id="news-pulse-list" class="flex flex-col gap-3"></ul>
       </div>
@@ -125,13 +125,13 @@
       <!-- Quick actions -->
       <div class="card fade-in">
         <p class="eyebrow mb-2">Quick Actions</p>
-        <h2 class="headline-lg mb-4">快速开始</h2>
+        <h2 class="headline-lg mb-4" data-i18n="quickStart">快速开始</h2>
         <div class="flex flex-col gap-2">
-          <a href="todos.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">add_task</span><span>新建待办</span></a>
-          <a href="excerpts.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">edit_note</span><span>写笔记</span></a>
-          <a href="hydration.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">local_drink</span><span>记录饮水</span></a>
-          <a href="strategy.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">lightbulb</span><span>记录灵感</span></a>
-          <a href="favorites.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">bookmark_add</span><span>添加收藏</span></a>
+          <a href="todos.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">add_task</span><span data-i18n="qaTodo">新建待办</span></a>
+          <a href="excerpts.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">edit_note</span><span data-i18n="qaNote">写笔记</span></a>
+          <a href="hydration.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">local_drink</span><span data-i18n="qaWater">记录饮水</span></a>
+          <a href="strategy.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">lightbulb</span><span data-i18n="qaIdea">记录灵感</span></a>
+          <a href="favorites.html" class="nav-item border border-outline-variant no-underline"><span class="material-symbols-outlined">bookmark_add</span><span data-i18n="qaFav">添加收藏</span></a>
         </div>
         <div class="mt-4 p-4 bg-surface-container-low rounded-lg">
           <p class="text-xs text-on-surface-variant italic leading-relaxed text-center">
@@ -308,7 +308,8 @@
         `).join('');
       } catch (e) {
         console.error('News pulse load failed:', e);
-        list.innerHTML = '<li class="text-center text-sm text-on-surface-variant py-6">今日热点加载中...</li>';
+        const dict=(window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{};
+        list.innerHTML = '<li class="text-center text-sm text-on-surface-variant py-6">' + (dict.newsLoading || '今日热点加载中...') + '</li>';
       }
     })();
   </script>
