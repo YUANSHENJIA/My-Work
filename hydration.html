@@ -69,13 +69,17 @@
         <!-- Stats -->
         <div class="flex items-center gap-10 mt-8">
           <div class="text-center">
-            <p class="eyebrow mb-1" style="font-size:11px;">目标摄入</p>
-            <p class="text-3xl font-semibold"><span id="goal-amount">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            <p class="eyebrow mb-3" style="font-size:11px;">目标摄入</p>
+            <div class="stat-chip">
+              <p class="text-3xl font-semibold"><span id="goal-amount">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            </div>
           </div>
           <div class="w-px h-12" style="background: var(--outline-variant); opacity:0.3;"></div>
           <div class="text-center">
-            <p class="eyebrow mb-1" style="font-size:11px;">还需饮水</p>
-            <p class="text-3xl font-semibold"><span id="remaining">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            <p class="eyebrow mb-3" style="font-size:11px;">还需饮水</p>
+            <div class="stat-chip">
+              <p class="text-3xl font-semibold"><span id="remaining">2000</span><span class="text-sm ml-1" style="color: var(--on-surface-variant);">ml</span></p>
+            </div>
           </div>
         </div>
       </div>
@@ -420,6 +424,15 @@
       gap: 6px;
     }
     .water-ring-center > p { margin: 0; }
+    /* 圆环下统计块：浅色胶囊包裹数字 */
+    .stat-chip {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: var(--r-xl);
+      background: var(--surface-container-low);
+      min-width: 140px;
+    }
+    .stat-chip > p { margin: 0; }
     /* 快速记录卡片：足够 padding，避免重置按钮与按钮网格重叠 */
     .water-quick-card {
       padding: 36px 28px;
