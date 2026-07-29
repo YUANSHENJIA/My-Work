@@ -48,16 +48,9 @@
       <div id="intro-card" class="card fade-in" style="max-width:600px;margin:0 auto;">
         <div class="text-center">
           <span class="material-symbols-outlined" style="font-size:64px;color:var(--primary);margin-bottom:12px;">psychology</span>
-          <h2 class="headline-lg mb-2">MBTI 人格测试</h2>
-          <p class="body-md text-on-surface-variant mb-6" style="line-height:1.7;">
-            MBTI（迈尔斯-布里格斯类型指标）从四个维度评估你的性格倾向：<br>
-            <span class="font-semibold text-on-surface">外倾(E)</span> / <span class="font-semibold text-on-surface">内倾(I)</span> ·
-            <span class="font-semibold text-on-surface">实感(S)</span> / <span class="font-semibold text-on-surface">直觉(N)</span> ·
-            <span class="font-semibold text-on-surface">思考(T)</span> / <span class="font-semibold text-on-surface">情感(F)</span> ·
-            <span class="font-semibold text-on-surface">判断(J)</span> / <span class="font-semibold text-on-surface">感知(P)</span>
-          </p>
-          <p class="text-sm text-on-surface-variant mb-6">共 16 道选择题，约需 5 分钟</p>
-          <button id="start-btn" class="btn-primary py-3 px-8">开始测试</button>
+          <h2 class="headline-lg mb-2" data-i18n="mbtiTitle">MBTI 人格测试</h2>
+          <p class="body-md text-on-surface-variant mb-6" data-i18n="mbtiSubtitle" style="line-height:1.7;">共 16 道选择题，约需 5 分钟</p>
+          <button id="start-btn" class="btn-primary py-3 px-8" data-i18n="startTest">开始测试</button>
         </div>
       </div>
 
@@ -81,8 +74,8 @@
 
         <!-- Navigation -->
         <div class="flex items-center justify-between mt-10">
-          <button id="prev-btn" class="btn-secondary text-sm py-2 px-6" disabled>上一题</button>
-          <button id="next-btn" class="btn-primary text-sm py-2 px-6">下一题</button>
+          <button id="prev-btn" class="btn-secondary text-sm py-2 px-6" disabled data-i18n="prevQ">上一题</button>
+          <button id="next-btn" class="btn-primary text-sm py-2 px-6" data-i18n="nextQ">下一题</button>
         </div>
       </div>
 
@@ -186,6 +179,7 @@
       qLabel.textContent = q.dimLabel;
       qText.textContent = q.text;
       prevBtn.disabled = idx === 0;
+      const dict=(window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{};
 
       // Build options
       options.innerHTML = q.choices.map((c, i) => {
@@ -202,11 +196,11 @@
       // Update progress
       const pct = ((idx + 1) / QUESTIONS.length) * 100;
       progressBar.style.width = pct + '%';
-      progressText.textContent = `${idx + 1}/${QUESTIONS.length}`;
+      progressText.textContent = dict.scoreProgress ? dict.scoreProgress(idx + 1, QUESTIONS.length) : `${idx + 1}/${QUESTIONS.length}`;
 
       // Next button text
       const isLast = idx === QUESTIONS.length - 1;
-      nextBtn.textContent = isLast ? '查看结果' : '下一题';
+      nextBtn.textContent = isLast ? (dict.knowResult || '查看结果') : (dict.nextQ || '下一题');
 
       // Bind option clicks
       options.querySelectorAll('.option-btn').forEach(btn => {
@@ -223,10 +217,11 @@
     });
 
     nextBtn.addEventListener('click', () => {
+      const dict=(window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{};
       if (answers[currentQ] === undefined) {
-        nextBtn.textContent = '请先选择一个选项';
+        nextBtn.textContent = dict.pleaseChoose || '请先选择一个选项';
         setTimeout(() => {
-          nextBtn.textContent = currentQ === QUESTIONS.length - 1 ? '查看结果' : '下一题';
+          nextBtn.textContent = currentQ === QUESTIONS.length - 1 ? (dict.knowResult || '查看结果') : (dict.nextQ || '下一题');
         }, 1200);
         return;
       }

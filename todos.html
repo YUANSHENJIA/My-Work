@@ -39,8 +39,8 @@
   <main class="app-main dot-bg">
 
     <section class="mb-6 fade-in">
-      <p class="eyebrow mb-2">Workspace / Tasks</p>
-      <h1 class="headline-xl mb-2">今日待办</h1>
+      <p class="eyebrow mb-2"><span data-i18n="workspace">Workspace</span> / Tasks</p>
+      <h1 class="headline-xl mb-2" data-i18n="todosTitle">今日待办</h1>
       <p class="body-lg text-on-surface-variant max-w-2xl">
         管理你的一天，从记录每一件小事开始。保持专注，稳步前行。
       </p>
@@ -51,7 +51,8 @@
       <form id="todo-form" class="flex items-center gap-3">
         <div class="flex-1 flex items-center rounded-full px-4 hover:bg-surface-container-low transition-colors">
           <input id="todo-input" type="text" placeholder="新建待办 (按 Enter 添加)" autocomplete="off"
-                 class="flex-1 bg-transparent outline-none text-base placeholder:text-on-surface-variant/70 py-3" />
+                 class="flex-1 bg-transparent outline-none text-base placeholder:text-on-surface-variant/70 py-3"
+                 data-i18n-attr="placeholder:todo_placeholder"> />
         </div>
         <select id="todo-priority" class="bg-surface-container rounded-full px-4 py-2 text-sm outline-none cursor-pointer">
           <option value="priority-high">HIGH</option>

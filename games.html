@@ -44,10 +44,10 @@
 
     <!-- Tab bar -->
     <div class="tab-bar fade-in">
-      <button class="tab-btn active" data-tab="snake">贪吃蛇</button>
-      <button class="tab-btn" data-tab="minesweeper">扫雷</button>
-      <button class="tab-btn" data-tab="gomoku">五子棋</button>
-      <button class="tab-btn" data-tab="wooden-fish">电子木鱼</button>
+      <button class="tab-btn active" data-tab="snake" data-i18n="tabSnake">贪吃蛇</button>
+      <button class="tab-btn" data-tab="minesweeper" data-i18n="tabMine">扫雷</button>
+      <button class="tab-btn" data-tab="gomoku" data-i18n="tabGomoku">五子棋</button>
+      <button class="tab-btn" data-tab="wooden-fish" data-i18n="tabFish">电子木鱼</button>
     </div>
 
     <!-- Snake -->
@@ -58,7 +58,7 @@
       </div>
       <canvas id="snake-canvas" width="400" height="400" style="display:block;margin:0 auto;background:var(--surface-container);border-radius:var(--r-lg);max-width:100%;touch-action:none;"></canvas>
       <p id="snake-status" style="font-size:15px;font-weight:500;margin-top:12px;min-height:24px;text-align:center;"></p>
-      <div style="text-align:center;margin-top:10px;"><button id="snake-restart" class="btn-primary text-sm py-2 px-6">重新开始</button></div>
+      <div style="text-align:center;margin-top:10px;"><button id="snake-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button></div>
     </div>
 
     <!-- Minesweeper -->
@@ -69,7 +69,7 @@
       <p id="mine-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
       <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
         <button id="flag-btn" class="btn-secondary text-sm py-2 px-4">🚩 标记模式 (关)</button>
-        <button id="mine-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
+        <button id="mine-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button>
       </div>
     </div>
 
@@ -83,7 +83,7 @@
       <p id="gomo-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
       <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
         <button id="gomo-mode" class="btn-secondary text-sm py-2 px-4">👤 人机模式</button>
-        <button id="gomo-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
+        <button id="gomo-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button>
       </div>
     </div>
 

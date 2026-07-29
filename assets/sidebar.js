@@ -3,7 +3,7 @@
    通过 injectSidebar() 自动注入到 .app-sidebar 占位符
    =================================================================== */
 
-// 翻译字典：zh / en（覆盖侧边栏所有可见文本）
+// 翻译字典：zh / en（覆盖侧边栏 + 主要页面所有功能性文字）
 window.I18N = {
   zh: {
     signIn: '打卡签到',
@@ -27,6 +27,146 @@ window.I18N = {
     chooseAmount: '选择金额',
     scanTip: '扫码打赏',
     thanksText: '支付宝扫码，感谢支持 🙏',
+    // ===== index.html 工作台 =====
+    workspace: 'Workspace',
+    home: 'Home',
+    streakEncourage: '你已连续坚持',
+    streakDays2: '天',
+    streakHint: '完成今天的待办可以让连续记录继续增长。',
+    todayDate: (m, d, w) => `今天是 ${m} 年 ${d} 日，星期${w}`,
+    morning: '早安',
+    goodMorning: '早上好',
+    noon: '中午好',
+    afternoon: '下午好',
+    goodEvening: '晚上好',
+    goodNight: '晚安',
+    // ===== todos.html 今日待办 =====
+    todosTitle: '今日待办',
+    add: '添加',
+    priority: '优先级',
+    complete: '完成',
+    search_placeholder: '搜索待办...',
+    todo_placeholder: '新建待办 (按 Enter 添加)',
+    noTodos: '今天没有待办，点击"添加"按钮开始你的安排',
+    priorityLabels: { HIGH: 'HIGH', PLANNING: 'PLANNING', ROUTINE: 'ROUTINE', COMMUNICATION: 'COMMUNICATION' },
+    // ===== calendar.html 日历 =====
+    calendarTitle: '日历',
+    addTodo: '添加待办',
+    reminder: '提醒',
+    manageAll: '管理全部',
+    backToday: '回到今天',
+    newReminder: '新建提醒',
+    setReminder: '设置提醒',
+    reminderContent: '提醒内容',
+    reminderTime: '提醒时间',
+    cancel: '取消',
+    noTasks: '这一天还没有待办。',
+    reminderSet: '提醒已设置',
+    reminderFuture: '提醒时间需在未来',
+    // ===== favorites.html 收藏夹 =====
+    favoritesTitle: '收藏夹',
+    favHint: '点击右上角添加第一个收藏',
+    url: '链接',
+    folder: '文件夹',
+    // ===== excerpts.html 内容摘录 =====
+    excerptsTitle: '内容摘录',
+    searchNotes: '搜索笔记或标签...',
+    newExcerpt: '新建内容摘录',
+    title: '标题',
+    content: '内容',
+    tags: '标签',
+    noExcerpts: '还没有摘录，点击下方按钮添加',
+    noMatch: '没有匹配的笔记，换个关键词或标签试试',
+    excerptHint: '摘录内容...',
+    tagHint: '#标签1, #标签2',
+    // ===== bookshelf.html 我的书架 =====
+    bookshelfTitle: '我的书架',
+    addBook: '添加书籍笔记',
+    bookCount: n => `书架共有 ${n} 本书籍笔记`,
+    visitOriginal: '原网页',
+    addFromList: '加载书籍',
+    networkFail: '加载失败',
+    delete: '删除',
+    confirmDeleteBook: '确定要删除这本书？',
+    addFromExternal: '从「每日一学」导入',
+    meiriyixue: '每日一学',
+    // ===== hydration.html 喝水时间 =====
+    hydrationTitle: '喝水时间',
+    currentIntake: '当前摄入量',
+    goalIntake: '目标摄入',
+    needDrink: '还需饮水',
+    editGoal: '修改目标',
+    newGoalPrompt: '设置每日饮水目标 (ml):',
+    selectAmount: '选择金额', // dup
+    amount: '金额',
+    higest: '最高纪录',
+    resetGoal: '重置目标',
+    resetConfirm: '确定要重置今日饮水记录吗？',
+    // ===== review.html 今日复盘 =====
+    reviewTitle: '今日复盘',
+    newReview: '新建复盘',
+    achievements: '今日成就',
+    learnings: '今日教训',
+    nextFocus: '明日计划',
+    rating: '今日满意度',
+    noReview: '还没有复盘',
+    reviewHint: '复盘帮你看清今天的成长',
+    // ===== strategy.html 搞钱方法 =====
+    strategyTitle: '搞钱方法',
+    addMethod: '添加方法',
+    difficulty: '难度',
+    income: '预期收入',
+    noMethod: '还没有方法',
+    // ===== mbti.html MBTI =====
+    mbtiTitle: 'MBTI 人格测试',
+    mbtiSubtitle: '共 16 道选择题，约需 5 分钟',
+    startTest: '开始测试',
+    restartTest: '重新测试',
+    knowResult: '查看结果',
+    prevQ: '上一题',
+    nextQ: '下一题',
+    scoreProgress: (cur, total) => `${cur}/${total}`,
+    pleaseChoose: '请先选择一个选项',
+    chooseOption: '上一题',
+    dimensionEI: 'E/I · 外倾/内倾',
+    dimensionSN: 'S/N · 实感/直觉',
+    dimensionTF: 'T/F · 思考/情感',
+    dimensionJP: 'J/P · 判断/感知',
+    yourMBTI: '你的 MBTI 类型',
+    // ===== games.html 摸鱼小游戏 =====
+    gamesTitle: '摸鱼小游戏',
+    gamesSubtitle: '适度放松，效率更高 😄',
+    tabSnake: '贪吃蛇',
+    tabMine: '扫雷',
+    tabGomoku: '五子棋',
+    tabFish: '电子木鱼',
+    snake: '贪吃蛇',
+    score: '得分',
+    highest: '最高',
+    minesweeper: '扫雷',
+    flagged: '🚩',
+    mine: '💣',
+    gomoku: '五子棋',
+    currentBlack: '⚫ 你的回合',
+    mode: 'AI',
+    woodenFish: '电子木鱼',
+    todayDeed: '今日功德',
+    totalDeed: '总功德',
+    resetDeed: '重置总功德',
+    knockHint: '点击木鱼，敲一敲',
+    restart: '重新开始',
+    victory: '🎉 你赢了！',
+    youWin: '🎉 你赢了',
+    gameOver: '💀 游戏结束！得分：',
+    mineSet: '踩雷了！',
+    // ===== common =====
+    addBtn: '添加',
+    cancelBtn: '取消',
+    confirmBtn: '确认',
+    saveBtn: '保存',
+    deleteBtn: '删除',
+    editBtn: '编辑',
+    completed: '完成',
   },
   en: {
     signIn: 'Sign In',
@@ -50,6 +190,145 @@ window.I18N = {
     chooseAmount: 'Choose Amount',
     scanTip: 'Scan to Tip',
     thanksText: 'Scan with Alipay, thanks for the support 🙏',
+    // ===== Dashboard =====
+    workspace: 'Workspace',
+    home: 'Home',
+    streakEncourage: 'You\'ve stayed on track for',
+    streakDays2: ' days',
+    streakHint: 'Complete today\'s todos to keep your streak going.',
+    todayDate: (m, d, w) => `Today is ${m}/${d}, ${w}`,
+    morning: 'Morning',
+    goodMorning: 'Good morning',
+    noon: 'Noon',
+    afternoon: 'Afternoon',
+    goodEvening: 'Good evening',
+    goodNight: 'Good night',
+    // ===== Todos =====
+    todosTitle: "Today's Todos",
+    add: 'Add',
+    priority: 'Priority',
+    complete: 'Done',
+    search_placeholder: 'Search todos...',
+    todo_placeholder: 'New todo (press Enter)',
+    noTodos: 'No todos yet, tap "Add" to start your day',
+    priorityLabels: { HIGH: 'HIGH', PLANNING: 'PLANNING', ROUTINE: 'ROUTINE', COMMUNICATION: 'COMMUNICATION' },
+    // ===== Calendar =====
+    calendarTitle: 'Calendar',
+    addTodo: 'Add Todo',
+    reminder: 'Reminder',
+    manageAll: 'Manage All',
+    backToday: 'Today',
+    newReminder: 'New Reminder',
+    setReminder: 'Set Reminder',
+    reminderContent: 'Reminder',
+    reminderTime: 'When',
+    cancel: 'Cancel',
+    noTasks: 'No tasks for this day.',
+    reminderSet: 'Reminder set',
+    reminderFuture: 'Reminder time must be in the future',
+    // ===== Favorites =====
+    favoritesTitle: 'Favorites',
+    favHint: 'Tap the top right to add your first favorite',
+    url: 'URL',
+    folder: 'Folder',
+    // ===== Excerpts =====
+    excerptsTitle: 'Excerpts',
+    searchNotes: 'Search notes or tags...',
+    newExcerpt: 'New Excerpt',
+    title: 'Title',
+    content: 'Content',
+    tags: 'Tags',
+    noExcerpts: 'No excerpts yet, tap the button below to add one',
+    noMatch: 'No matches. Try a different keyword or tag',
+    excerptHint: 'Excerpt content...',
+    tagHint: '#tag1, #tag2',
+    // ===== Bookshelf =====
+    bookshelfTitle: 'My Bookshelf',
+    addBook: 'Add Book Note',
+    bookCount: n => `${n} book notes in your shelf`,
+    visitOriginal: 'Original',
+    addFromList: 'Load Books',
+    networkFail: 'Load failed',
+    delete: 'Delete',
+    confirmDeleteBook: 'Delete this book?',
+    addFromExternal: 'Import from 「Daily Learn」',
+    meiriyixue: 'Daily Learn',
+    // ===== Hydration =====
+    hydrationTitle: 'Hydration',
+    currentIntake: 'Current Intake',
+    goalIntake: 'Goal',
+    needDrink: 'Still to Drink',
+    editGoal: 'Edit Goal',
+    newGoalPrompt: 'Set daily hydration goal (ml):',
+    amount: 'Amount',
+    highest: 'Best',
+    resetGoal: 'Reset Goal',
+    resetConfirm: 'Reset today\'s water record?',
+    // ===== Review =====
+    reviewTitle: 'Daily Review',
+    newReview: 'New Review',
+    achievements: 'Today\'s Wins',
+    learnings: 'Today\'s Lessons',
+    nextFocus: 'Tomorrow\'s Focus',
+    rating: 'Today\'s Satisfaction',
+    noReview: 'No review yet',
+    reviewHint: 'Review helps you see today\'s growth',
+    // ===== Strategy =====
+    strategyTitle: 'Side Hustles',
+    addMethod: 'Add Method',
+    difficulty: 'Difficulty',
+    income: 'Expected Income',
+    noMethod: 'No methods yet',
+    // ===== MBTI =====
+    mbtiTitle: 'MBTI Test',
+    mbtiSubtitle: '16 questions, ~5 minutes',
+    startTest: 'Start Test',
+    restartTest: 'Retake',
+    knowResult: 'See Result',
+    prevQ: 'Previous',
+    nextQ: 'Next',
+    scoreProgress: (cur, total) => `${cur}/${total}`,
+    pleaseChoose: 'Please choose an option',
+    chooseOption: 'Previous',
+    dimensionEI: 'E/I · Extrovert/Introvert',
+    dimensionSN: 'S/N · Sensing/Intuition',
+    dimensionTF: 'T/F · Thinking/Feeling',
+    dimensionJP: 'J/P · Judging/Perceiving',
+    yourMBTI: 'Your MBTI Type',
+    // ===== Games =====
+    gamesTitle: 'Mini Games',
+    gamesSubtitle: 'Take a break, you deserve it 😄',
+    tabSnake: 'Snake',
+    tabMine: 'Minesweeper',
+    tabGomoku: 'Gomoku',
+    tabFish: 'Wooden Fish',
+    snake: 'Snake',
+    score: 'Score',
+    highest: 'Best',
+    minesweeper: 'Minesweeper',
+    flagged: '🚩',
+    mine: '💣',
+    gomoku: 'Gomoku',
+    currentBlack: '⚫ Your turn',
+    mode: 'AI',
+    woodenFish: 'Wooden Fish',
+    todayDeed: 'Today\'s merit',
+    totalDeed: 'Total merit',
+    resetDeed: 'Reset merit',
+    knockHint: 'Tap the fish to knock',
+    restart: 'Restart',
+    victory: '🎉 You win!',
+    youWin: '🎉 You win',
+    gameOver: '💀 Game over! Score: ',
+    mineSet: '💥 Mine!',
+    // ===== common =====
+    addBtn: 'Add',
+    cancelBtn: 'Cancel',
+    confirmBtn: 'Confirm',
+    saveBtn: 'Save',
+    deleteBtn: 'Delete',
+    editBtn: 'Edit',
+    completed: 'Done',
   },
 };
 
@@ -78,10 +357,11 @@ window.SIDEBAR_HTML = `
       <a class="nav-item" data-nav="games.html" href="games.html"><span class="material-symbols-outlined">sports_esports</span><span data-i18n-nav="games.html">摸鱼小游戏</span></a>
     </nav>
 
-    <!-- 中英文切换 -->
-    <div style="padding:10px 0;display:flex;justify-content:center;align-items:center;gap:8px;border-top:1px solid var(--outline-variant);">
-      <button class="lang-btn" data-lang="zh" style="padding:4px 12px;border:1px solid var(--outline-variant);background:var(--surface-container-low);cursor:pointer;font-size:12px;color:var(--on-surface);border-radius:9999px;font-weight:600;">中</button>
-      <button class="lang-btn" data-lang="en" style="padding:4px 12px;border:1px solid var(--outline-variant);background:var(--surface-container-low);cursor:pointer;font-size:12px;color:var(--on-surface-variant);border-radius:9999px;font-weight:600;">EN</button>
+    <!-- 中英文切换：胶囊形状，active 状态是一小段胶囊 -->
+    <div id="lang-toggle" style="position:relative;margin:10px 0;padding:4px;background:var(--surface-container);border-radius:9999px;display:flex;align-items:center;">
+      <div id="lang-slider" style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--primary);border-radius:9999px;transition:transform .25s cubic-bezier(.4,0,.2,1);"></div>
+      <button class="lang-btn" data-lang="zh" style="position:relative;z-index:1;flex:1;padding:6px 0;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--on-surface-variant);">中</button>
+      <button class="lang-btn" data-lang="en" style="position:relative;z-index:1;flex:1;padding:6px 0;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--on-surface-variant);">EN</button>
     </div>
 
     <div class="sidebar-footer" style="position:relative;">
@@ -131,12 +411,21 @@ window.applyI18N = function(lang){
     const key = el.dataset.i18nNav;
     if (dict.nav && dict.nav[key] !== undefined) el.textContent = dict.nav[key];
   });
-  // 切换按钮 active 样式
+  // 属性翻译（placeholder / title / aria-label / 等）
+  document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+    const spec = el.dataset.i18nAttr; // "placeholder:search|aria-label:search"
+    spec.split('|').forEach(pair => {
+      const [attr, key] = pair.split(':');
+      if (dict[key] !== undefined) el.setAttribute(attr, dict[key]);
+    });
+  });
+  // 语言切换胶囊：高亮选中颜色 + 滑块位置
   document.querySelectorAll('.lang-btn').forEach(b => {
     const isActive = b.dataset.lang === lang;
-    b.style.background = isActive ? 'var(--primary)' : 'var(--surface-container-low)';
     b.style.color = isActive ? 'var(--on-primary)' : 'var(--on-surface-variant)';
   });
+  const slider = document.getElementById('lang-slider');
+  if (slider) slider.style.transform = lang === 'en' ? 'translateX(100%)' : 'translateX(0%)';
 };
 
 /**

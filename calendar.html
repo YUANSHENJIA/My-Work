@@ -53,7 +53,7 @@
           <button id="next-month" class="p-2 hover:bg-surface-container rounded-full transition-colors" aria-label="下个月">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
-          <button id="today-btn" class="chip ml-2">回到今天</button>
+          <button id="today-btn" class="chip ml-2" data-i18n="backToday">回到今天</button>
         </div>
       </div>
     </section>
@@ -79,7 +79,7 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined" style="color:var(--primary);">notifications_active</span>
-            <h3 class="headline-sm" style="font-size:20px;font-weight:600;">新建提醒</h3>
+            <h3 class="headline-sm" style="font-size:20px;font-weight:600;" data-i18n="newReminder">新建提醒</h3>
           </div>
           <button id="reminder-form-close" class="p-2 rounded-full hover:bg-surface-container" aria-label="关闭">
             <span class="material-symbols-outlined text-base">close</span>
@@ -88,19 +88,19 @@
 
         <form id="reminder-form" class="flex flex-col gap-4">
           <div>
-            <label class="eyebrow" style="font-size:11px;display:block;margin-bottom:8px;">提醒内容</label>
+            <label class="eyebrow" style="font-size:11px;display:block;margin-bottom:8px;" data-i18n="reminderContent">提醒内容</label>
             <textarea id="reminder-content" rows="3" maxlength="200" required
                       placeholder="要提醒什么？"
                       style="width:100%;padding:12px 16px;border-radius:var(--r-lg);border:1.5px solid var(--outline-variant);background:transparent;color:var(--on-surface);font-size:15px;resize:vertical;font-family:inherit;"></textarea>
           </div>
           <div>
-            <label class="eyebrow" style="font-size:11px;display:block;margin-bottom:8px;">提醒时间</label>
+            <label class="eyebrow" style="font-size:11px;display:block;margin-bottom:8px;" data-i18n="reminderTime">提醒时间</label>
             <input id="reminder-time" type="datetime-local" required
                    style="width:100%;padding:12px 16px;border-radius:var(--r-lg);border:1.5px solid var(--outline-variant);background:transparent;color:var(--on-surface);font-size:15px;font-family:inherit;" />
           </div>
           <div class="flex items-center justify-end gap-3 mt-2">
-            <button type="button" id="reminder-cancel" class="btn-secondary text-sm py-2 px-6">取消</button>
-            <button type="submit" class="btn-primary text-sm py-2 px-6">设置提醒</button>
+            <button type="button" id="reminder-cancel" class="btn-secondary text-sm py-2 px-6" data-i18n="cancel">取消</button>
+            <button type="submit" class="btn-primary text-sm py-2 px-6" data-i18n="setReminder">设置提醒</button>
           </div>
         </form>
       </div>
@@ -114,9 +114,9 @@
           <h2 class="headline-lg" id="day-detail-title">2026-07-25</h2>
         </div>
         <div class="flex items-center gap-2">
-          <button id="cal-add-todo" class="btn-secondary text-sm py-2 px-4"><span class="material-symbols-outlined text-sm">add_task</span>添加待办</button>
-          <button id="cal-add-reminder" class="btn-secondary text-sm py-2 px-4"><span class="material-symbols-outlined text-sm">notifications</span>提醒</button>
-          <a href="todos.html" class="btn-secondary text-sm py-2 px-4 no-underline">管理全部</a>
+          <button id="cal-add-todo" class="btn-secondary text-sm py-2 px-4"><span class="material-symbols-outlined text-sm">add_task</span><span data-i18n="addTodo">添加待办</span></button>
+          <button id="cal-add-reminder" class="btn-secondary text-sm py-2 px-4"><span class="material-symbols-outlined text-sm">notifications</span><span data-i18n="reminder">提醒</span></button>
+          <a href="todos.html" class="btn-secondary text-sm py-2 px-4 no-underline" data-i18n="manageAll">管理全部</a>
         </div>
       </div>
       <ul id="day-tasks" class="flex flex-col gap-2"></ul>
@@ -369,7 +369,7 @@
       const triggerAt = new Date(timeStr).getTime();
       // 允许最多 60 秒内的"过去"——datetime-local 是分钟精度，"当前分钟"提交时已过几秒
       if (triggerAt < Date.now() - 60000) {
-        alert('提醒时间需在未来');
+        alert(((window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{}).reminderFuture || '提醒时间需在未来');
         return;
       }
       window.addReminder(content, triggerAt);
@@ -378,7 +378,7 @@
       // 即时反馈：右下角小 toast
       const toast = document.createElement('div');
       toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--primary);color:var(--on-primary);padding:12px 20px;border-radius:var(--r-full);font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.25);';
-      toast.textContent = '✅ 提醒已设置';
+      toast.textContent = '✅ ' + (((window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{}).reminderSet || '提醒已设置');
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2000);
     });

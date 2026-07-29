@@ -45,14 +45,14 @@
 
     <!-- Greeting -->
     <section class="mb-6 fade-in">
-      <p class="eyebrow mb-2">Workspace / Home</p>
+      <p class="eyebrow mb-2" data-i18n="workspace">Workspace</p> / <span data-i18n="home">Home</span>
       <h1 class="greeting-title" id="greeting-title">
         <span id="greeting-text">早安</span>，<span id="greeting-name">小袁</span>！
       </h1>
       <p class="greeting-subtitle text-on-surface-variant">
         <span id="greeting-date">今天是 2026 年 7 月 25 日，星期六</span>，<span id="greeting-time" class="font-mono">00:00</span>。
-        你已连续坚持 <strong class="text-primary" id="greeting-streak">0</strong> 天，
-        完成今天的待办可以让连续记录继续增长。
+        <span data-i18n="streakEncourage">你已连续坚持</span> <strong class="text-primary" id="greeting-streak">0</strong> <span data-i18n="days">天</span>，
+        <span data-i18n="streakHint">完成今天的待办可以让连续记录继续增长。</span>
       </p>
     </section>
 
@@ -354,12 +354,14 @@
 
     function getGreeting() {
       const h = new Date().getHours();
-      if (h >= 5 && h < 9)  return '早安';
-      if (h >= 9 && h < 11) return '早上好';
-      if (h >= 11 && h < 14) return '中午好';
-      if (h >= 14 && h < 18) return '下午好';
-      if (h >= 18 && h < 22) return '晚上好';
-      return '晚安';
+      const lang = window.getCurrentLang ? window.getCurrentLang() : 'zh';
+      const dict = (window.I18N && window.I18N[lang]) || { morning:'早安', goodMorning:'早上好', noon:'中午好', afternoon:'下午好', goodEvening:'晚上好', goodNight:'晚安' };
+      if (h >= 5 && h < 9)  return dict.morning;
+      if (h >= 9 && h < 11) return dict.goodMorning;
+      if (h >= 11 && h < 14) return dict.noon;
+      if (h >= 14 && h < 18) return dict.afternoon;
+      if (h >= 18 && h < 22) return dict.goodEvening;
+      return dict.goodNight;
     }
     function getStreak() {
       try {
@@ -381,8 +383,12 @@
       const userName = (localStorage.getItem('monolith.userName') || '小袁').toString();
       document.getElementById('greeting-text').textContent = holidayGreetingToday() || getGreeting();
       document.getElementById('greeting-name').textContent = userName;
-      document.getElementById('greeting-date').textContent =
-        `今天是 ${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日，星期${WEEKDAYS[d.getDay()]}`;
+      document.getElementById('greeting-date').textContent = window.applyI18N && (()=>{
+        const lang=window.getCurrentLang();
+        const m=d.getMonth()+1, dd=d.getDate(), w=WEEKDAYS[d.getDay()];
+        if (lang==='en') return `Today is ${m}/${dd}, ${w}`;
+        return `今天是 ${d.getFullYear()} 年 ${m} 月 ${dd} 日，星期${w}`;
+      })() || `今天是 ${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日，星期${WEEKDAYS[d.getDay()]}`;
       document.getElementById('greeting-time').textContent =
         String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
       document.getElementById('greeting-streak').textContent = getStreak();
