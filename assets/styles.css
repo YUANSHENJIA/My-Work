@@ -238,9 +238,9 @@ body {
 /* Sidebar footer */
 .sidebar-footer {
   text-align: center;
-  padding: 12px 0 4px;
+  padding: 6px 0 4px;
   border-top: 1px solid var(--outline-variant);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--on-surface-variant);
 }
 

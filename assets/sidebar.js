@@ -499,10 +499,10 @@ window.SIDEBAR_HTML = `
     </nav>
 
     <!-- 中英文切换：胶囊形状，active 状态是一小段胶囊，宽度为侧边栏一半 -->
-    <div id="lang-toggle" style="position:relative;margin:10px auto;padding:4px;width:50%;background:var(--surface-container);border-radius:9999px;display:flex;align-items:center;">
-      <div id="lang-slider" style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);background:var(--primary);border-radius:9999px;transition:transform .25s cubic-bezier(.4,0,.2,1);"></div>
-      <button class="lang-btn" data-lang="zh" style="position:relative;z-index:1;flex:1;padding:6px 0;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--on-surface-variant);">中</button>
-      <button class="lang-btn" data-lang="en" style="position:relative;z-index:1;flex:1;padding:6px 0;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--on-surface-variant);">EN</button>
+    <div id="lang-toggle" style="position:relative;margin:6px auto 0;padding:2px;width:40%;background:var(--surface-container);border-radius:9999px;display:flex;align-items:center;">
+      <div id="lang-slider" style="position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);background:var(--primary);border-radius:9999px;transition:transform .25s cubic-bezier(.4,0,.2,1);"></div>
+      <button class="lang-btn" data-lang="zh" style="position:relative;z-index:1;flex:1;padding:3px 0;border:none;background:transparent;cursor:pointer;font-size:10px;font-weight:600;color:var(--on-surface-variant);">中</button>
+      <button class="lang-btn" data-lang="en" style="position:relative;z-index:1;flex:1;padding:3px 0;border:none;background:transparent;cursor:pointer;font-size:10px;font-weight:600;color:var(--on-surface-variant);">EN</button>
     </div>
 
     <div class="sidebar-footer" style="position:relative;">
