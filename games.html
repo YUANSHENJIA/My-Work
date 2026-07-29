@@ -43,12 +43,52 @@
     <p class="body-md text-on-surface-variant mb-6 fade-in" data-i18n="gamesSubtitle">适度放松，效率更高 😄</p>
 
     <!-- Tab bar -->
-    <div class="tab-bar fade-in" style="justify-content:center;">
-      <button class="tab-btn active" data-tab="wooden-fish" data-i18n="tabFish">电子木鱼</button>
+    <div class="tab-bar fade-in">
+      <button class="tab-btn active" data-tab="snake" data-i18n="tabSnake">贪吃蛇</button>
+      <button class="tab-btn" data-tab="minesweeper" data-i18n="tabMine">扫雷</button>
+      <button class="tab-btn" data-tab="gomoku" data-i18n="tabGomoku">五子棋</button>
+      <button class="tab-btn" data-tab="wooden-fish" data-i18n="tabFish">电子木鱼</button>
+    </div>
+
+    <!-- Snake -->
+    <div class="tab-pane card active" id="tab-snake">
+      <div class="flex items-center justify-between mb-3">
+        <h3 style="font-size:18px;font-weight:600;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">kebab_dining</span></h3>
+        <span id="snake-info" style="font-size:14px;color:var(--on-surface-variant);">得分：<span id="snake-score">0</span> / 最高：<span id="snake-best">0</span></span>
+      </div>
+      <canvas id="snake-canvas" width="400" height="400" style="display:block;margin:0 auto;background:var(--surface-container);border-radius:var(--r-lg);max-width:100%;touch-action:none;"></canvas>
+      <p id="snake-status" style="font-size:15px;font-weight:500;margin-top:12px;min-height:24px;text-align:center;"></p>
+      <div style="text-align:center;margin-top:10px;"><button id="snake-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button></div>
+    </div>
+
+    <!-- Minesweeper -->
+    <div class="tab-pane card" id="tab-minesweeper">
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:10px;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">explosion</span></h3>
+      <p style="font-size:14px;margin-bottom:10px;text-align:center;">💣 <span id="mine-count">10</span> · 🚩 <span id="flag-count">0</span></p>
+      <div id="mine-grid" style="display:grid;gap:2px;margin:0 auto;justify-content:center;touch-action:manipulation;"></div>
+      <p id="mine-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
+      <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="flag-btn" class="btn-secondary text-sm py-2 px-4">🚩 标记模式 (关)</button>
+        <button id="mine-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button>
+      </div>
+    </div>
+
+    <!-- Gomoku -->
+    <div class="tab-pane card" id="tab-gomoku">
+      <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <h3 style="font-size:18px;font-weight:600;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">circle</span></h3>
+        <span style="font-size:14px;">当前：<span id="gomo-turn">⚫ 你的回合</span></span>
+      </div>
+      <canvas id="gomo-canvas" width="450" height="450" style="display:block;margin:0 auto;border-radius:var(--r-lg);max-width:100%;cursor:pointer;touch-action:manipulation;background:#dcb35c;"></canvas>
+      <p id="gomo-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
+      <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="gomo-mode" class="btn-secondary text-sm py-2 px-4">👤 人机模式</button>
+        <button id="gomo-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button>
+      </div>
     </div>
 
     <!-- Wooden Fish -->
-    <div class="tab-pane card active" id="tab-wooden-fish" style="text-align:center;">
+    <div class="tab-pane card" id="tab-wooden-fish" style="text-align:center;">
       <div id="fish-wrap" style="width:220px;height:170px;margin:48px auto 16px;cursor:pointer;touch-action:manipulation;user-select:none;position:relative;">
         <div id="fish" style="width:100%;height:100%;border-radius:0;display:flex;align-items:center;justify-content:center;transition:transform .15s cubic-bezier(.34,1.56,.64,1);overflow:visible;">
           🐟
@@ -117,11 +157,267 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
   });
 });
 
+/* =================================================================
+   贪吃蛇
+   ================================================================= */
+(function(){
+  const canvas=document.getElementById('snake-canvas'),ctx=canvas.getContext('2d');
+  const CELL=20,ROWS=20,COLS=20,TICK=180;
+  let snake,direction,nextDir,food,score,gameOver,loop,best;
 
+  window.snakeInit=function(){
+    snake=[{x:5,y:10},{x:4,y:10},{x:3,y:10}];
+    direction={x:1,y:0};nextDir={x:1,y:0};score=0;gameOver=false;
+    snakeSpawnFood();
+    best=parseInt(localStorage.getItem('monolith.snakeBest')||'0');
+    document.getElementById('snake-best').textContent=best;
+    document.getElementById('snake-score').textContent=0;
+    document.getElementById('snake-status').textContent='按方向键开始';
+    if(loop)clearInterval(loop);
+    snakeDraw();
+    loop=setInterval(snakeTick,TICK);
+  };
 
+  function snakeSpawnFood(){
+    let pos;do{
+      pos={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)};
+    }while(snake.some(s=>s.x===pos.x&&s.y===pos.y));
+    food=pos;
+  }
 
+  function snakeTick(){
+    if(gameOver)return;
+    direction={...nextDir};
+    const head={x:snake[0].x+direction.x,y:snake[0].y+direction.y};
+    if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){
+      gameOver=true;document.getElementById('snake-status').textContent='💀 游戏结束！得分：'+score;
+      clearInterval(loop);
+      if(score>best){best=score;localStorage.setItem('monolith.snakeBest',String(best));document.getElementById('snake-best').textContent=best}
+      snakeDraw();return;
+    }
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){score++;snakeSpawnFood();document.getElementById('snake-score').textContent=score;}
+    else snake.pop();
+    snakeDraw();
+  }
 
+  window.snakeDraw=function(){
+    const bg=cssVar('--surface-container'),bgAlt=cssVar('--surface'),
+          head=cssVar('--primary'),body=cssVar('--on-surface-variant'),
+          fc=cssVar('--error');
+    ctx.clearRect(0,0,400,400);
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
+      ctx.fillStyle=(i+j)%2===0?bg:bgAlt;
+      ctx.fillRect(j*CELL,i*CELL,CELL,CELL);
+    }
+    snake.forEach((s,i)=>{
+      ctx.fillStyle=i===0?head:body;
+      if(i===0){ctx.shadowBlur=10;ctx.shadowColor=head;}
+      ctx.beginPath();ctx.arc(s.x*CELL+10,s.y*CELL+10,9,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+    });
+    ctx.fillStyle=fc;ctx.beginPath();ctx.arc(food.x*CELL+10,food.y*CELL+10,8,0,Math.PI*2);ctx.fill();
+  };
 
+  document.addEventListener('keydown',e=>{
+    if(!document.getElementById('tab-snake').classList.contains('active'))return;
+    const ks={'ArrowUp':{x:0,y:-1},'ArrowDown':{x:0,y:1},'ArrowLeft':{x:-1,y:0},'ArrowRight':{x:1,y:0}};
+    if(ks[e.key]){e.preventDefault();if(direction.x+ks[e.key].x!==0||direction.y+ks[e.key].y!==0)nextDir=ks[e.key];}
+  });
+  let sx=0,sy=0;
+  canvas.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;});
+  canvas.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    let d;if(Math.abs(dx)>Math.abs(dy))d=dx>0?{x:1,y:0}:{x:-1,y:0};else d=dy>0?{x:0,y:1}:{x:0,y:-1};
+    if(direction.x+d.x!==0||direction.y+d.y!==0)nextDir=d;
+  });
+  document.getElementById('snake-restart').addEventListener('click',snakeInit);
+  snakeInit();
+})();
+
+/* =================================================================
+   扫雷
+   ================================================================= */
+(function(){
+  const ROWS=9,COLS=9,TOTAL_MINES=10;
+  let board=[],revealed=[],flags={},flagMode=false,gameOver=false,firstClick=true,win=false;
+
+  function init(){
+    board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+    revealed=Array.from({length:ROWS},()=>Array(COLS).fill(false));
+    flags={};gameOver=false;firstClick=true;win=false;
+    document.getElementById('flag-btn').textContent='🚩 标记模式 (关)';flagMode=false;
+    document.getElementById('mine-count').textContent=TOTAL_MINES;
+    document.getElementById('flag-count').textContent='0';
+    document.getElementById('mine-status').textContent='';
+    mineRender();
+  }
+
+  function placeMines(safeX,safeY){
+    let placed=0;
+    while(placed<TOTAL_MINES){
+      const x=Math.floor(Math.random()*ROWS),y=Math.floor(Math.random()*COLS);
+      if(board[x][y]===-1||(Math.abs(x-safeX)<=1&&Math.abs(y-safeY)<=1))continue;
+      board[x][y]=-1;placed++;
+    }
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
+      if(board[i][j]===-1)continue;
+      let c=0;
+      for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){
+        const ni=i+di,nj=j+dj;
+        if(ni>=0&&ni<ROWS&&nj>=0&&nj<COLS&&board[ni][nj]===-1)c++;
+      }
+      board[i][j]=c;
+    }
+  }
+
+  function reveal(x,y){
+    if(x<0||x>=ROWS||y<0||y>=COLS||revealed[x][y]||flags[x+'-'+y])return;
+    revealed[x][y]=true;
+    if(board[x][y]===-1){gameOver=true;document.getElementById('mine-status').textContent='💥 踩雷了！';revealAllMines();mineRender();return;}
+    if(board[x][y]===0)for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++)reveal(x+di,y+dj);
+    checkWin();mineRender();
+  }
+
+  function revealAllMines(){for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(board[i][j]===-1)revealed[i][j]=true;}
+  function checkWin(){
+    let u=0;for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(!revealed[i][j]&&board[i][j]!==-1)u++;
+    if(u===0&&!gameOver){win=true;gameOver=true;document.getElementById('mine-status').textContent='🎉 你赢了！';}
+  }
+
+  function mineRender(){
+    const grid=document.getElementById('mine-grid');
+    grid.style.gridTemplateColumns=`repeat(${COLS},36px)`;
+    const colors={1:'#1976d2',2:'#388e3c',3:'#d32f2f',4:'#7b1fa2',5:'#ff8f00',6:'#0097a7',7:'#5d4037',8:'#616161'};
+    const bg=cssVar('--surface-container'),bgH=cssVar('--surface-container-high'),bgR=cssVar('--surface-container-lowest'),mBg=cssVar('--error-container');
+    let html='';
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
+      const key=i+'-'+j;
+      let cls='mine-cell',s='',c='';
+      if(revealed[i][j]){
+        if(board[i][j]===-1){c='💣';s=`background:${mBg};`}
+        else if(board[i][j]>0){c=board[i][j];s=`background:${bgR};color:${colors[board[i][j]]||'#000'};`}
+        else s=`background:${bgR};`;
+      }else if(flags[key]){c='🚩';s=`background:${bgH};`}
+      else s=`background:${bg};`;
+      html+=`<div class="${cls}" data-x="${i}" data-y="${j}" style="${s}">${c}</div>`;
+    }
+    grid.innerHTML=html;
+  }
+  window.mineRender=mineRender;
+
+  document.getElementById('mine-grid').addEventListener('click',e=>{
+    const cell=e.target.closest('.mine-cell');if(!cell||gameOver||win)return;
+    const x=parseInt(cell.dataset.x),y=parseInt(cell.dataset.y);
+    if(flags[x+'-'+y])return;
+    if(flagMode){toggleFlag(x,y);return;}
+    if(firstClick){placeMines(x,y);firstClick=false;}
+    reveal(x,y);
+  });
+  document.getElementById('mine-grid').addEventListener('contextmenu',e=>{e.preventDefault();const cell=e.target.closest('.mine-cell');if(!cell||gameOver)return;toggleFlag(parseInt(cell.dataset.x),parseInt(cell.dataset.y));});
+  function toggleFlag(x,y){if(revealed[x][y])return;const key=x+'-'+y;if(flags[key])delete flags[key];else flags[key]=true;document.getElementById('flag-count').textContent=Object.keys(flags).length;mineRender();}
+  document.getElementById('flag-btn').addEventListener('click',()=>{flagMode=!flagMode;document.getElementById('flag-btn').textContent=flagMode?'🚩 标记模式 (开)':'🚩 标记模式 (关)';});
+  document.getElementById('mine-restart').addEventListener('click',init);
+  init();
+})();
+
+/* =================================================================
+   五子棋（人机 / 双人）
+   ================================================================= */
+(function(){
+  const SIZE=15,CELL=28,PADDING=20;
+  let board=[],turn=1,gameOver=false,moveCount=0,aiMode=true,aiThinking=false;
+  const canvas=document.getElementById('gomo-canvas'),ctx=canvas.getContext('2d');
+
+  function gomoInit(){
+    board=Array.from({length:SIZE},()=>Array(SIZE).fill(0));
+    turn=1;gameOver=false;moveCount=0;aiThinking=false;
+    document.getElementById('gomo-turn').textContent=aiMode?'⚫ 你的回合':'⚫ 黑棋';
+    document.getElementById('gomo-status').textContent='';
+    document.getElementById('gomo-mode').textContent=aiMode?'👤 人机模式':'👥 双人模式';
+    gomoDraw();
+  }
+  window.gomoInit=gomoInit;
+
+  window.gomoDraw=function(){
+    const w=canvas.width;
+    ctx.fillStyle='#dcb35c';ctx.fillRect(0,0,w,w);
+    ctx.strokeStyle='#8b6914';ctx.lineWidth=1;
+    for(let i=0;i<SIZE;i++){const p=PADDING+i*CELL;ctx.beginPath();ctx.moveTo(PADDING,p);ctx.lineTo(w-PADDING,p);ctx.stroke();ctx.beginPath();ctx.moveTo(p,PADDING);ctx.lineTo(p,w-PADDING);ctx.stroke();}
+    ctx.fillStyle='#8b6914';
+    [[3,3],[3,11],[11,3],[11,11],[7,7]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(PADDING+x*CELL,PADDING+y*CELL,3,0,Math.PI*2);ctx.fill();});
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+      if(board[r][c]===0)continue;
+      const x=PADDING+c*CELL,y=PADDING+r*CELL;
+      ctx.shadowBlur=4;ctx.shadowColor='rgba(0,0,0,0.3)';
+      ctx.beginPath();ctx.arc(x,y,CELL/2-2,0,Math.PI*2);
+      if(board[r][c]===1){ctx.fillStyle='#1a1a1a';ctx.fill();}
+      else{ctx.fillStyle='#f5f5f5';ctx.fill();ctx.strokeStyle='#ccc';ctx.lineWidth=1;ctx.stroke();}
+    }
+    ctx.shadowBlur=0;
+  };
+
+  function checkWin(r,c,p){
+    const dirs=[[1,0],[0,1],[1,1],[1,-1]];
+    for(const [dr,dc]of dirs){
+      let cnt=1;
+      for(let d=1;d<5;d++){const nr=r+dr*d,nc=c+dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===p)cnt++;else break}
+      for(let d=1;d<5;d++){const nr=r-dr*d,nc=c-dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===p)cnt++;else break}
+      if(cnt>=5)return true;
+    }
+    return false;
+  }
+
+  function aiEvaluate(r,c,player){
+    const dirs=[[1,0],[0,1],[1,1],[1,-1]];let score=0;
+    for(const [dr,dc]of dirs){
+      let cnt=1,open=0;
+      for(let d=1;d<5;d++){const nr=r+dr*d,nc=c+dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]&&board[nr][nc]===0?1:0;break}}
+      for(let d=1;d<5;d++){const nr=r-dr*d,nc=c-dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]&&board[nr][nc]===0?1:0;break}}
+      if(cnt>=5)score+=100000;else if(cnt===4)score+=open>=1?10000:5000;else if(cnt===3)score+=open>=1?1000:500;else if(cnt===2)score+=open>=1?100:50;else if(cnt===1)score+=10;
+    }
+    return score;
+  }
+
+  function aiMove(){
+    if(gameOver||aiThinking)return;
+    let best={r:-1,c:-1,score:-1};
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+      if(board[r][c]!==0)continue;
+      const attack=aiEvaluate(r,c,2),defend=aiEvaluate(r,c,1)*1.1;
+      const total=Math.max(attack,defend);
+      if(total>best.score)best={r,c,score:total};
+      else if(total===best.score&&Math.abs(r-7)+Math.abs(c-7)<Math.abs(best.r-7)+Math.abs(best.c-7))best={r,c,score:total};
+    }
+    if(best.r<0){if(board[7][7]===0)best={r:7,c:7,score:0};else{for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){if(board[r][c]===0){best={r,c,score:0};r=SIZE;c=SIZE;}}}}
+    if(best.r<0)return;
+    aiThinking=true;
+    setTimeout(()=>{
+      if(gameOver){aiThinking=false;return;}
+      board[best.r][best.c]=2;moveCount++;
+      gomoDraw();
+      if(checkWin(best.r,best.c,2)){gameOver=true;document.getElementById('gomo-status').textContent='🤖 AI 获胜！(共'+moveCount+'步)';aiThinking=false;return;}
+      turn=1;document.getElementById('gomo-turn').textContent='⚫ 你的回合';aiThinking=false;
+    },400);
+  }
+
+  canvas.addEventListener('click',e=>{
+    if(gameOver||aiThinking)return;
+    const rect=canvas.getBoundingClientRect(),scale=canvas.width/rect.width;
+    const x=Math.round((e.clientX-rect.left)*scale),y=Math.round((e.clientY-rect.top)*scale);
+    const c=Math.round((x-PADDING)/CELL),r=Math.round((y-PADDING)/CELL);
+    if(r<0||r>=SIZE||c<0||c>=SIZE||board[r][c]!==0||(aiMode&&turn!==1))return;
+    board[r][c]=turn;moveCount++;
+    gomoDraw();
+    if(checkWin(r,c,turn)){gameOver=true;document.getElementById('gomo-status').textContent='🎉 '+(turn===1?'你获胜！':'白棋 获胜！')+' (共'+moveCount+'步)';return;}
+    turn=turn===1?2:1;
+    if(aiMode){document.getElementById('gomo-turn').textContent='🤖 AI 思考中...';aiMove();}
+    else document.getElementById('gomo-turn').textContent=turn===1?'⚫ 黑棋':'⚪ 白棋';
+  });
+  document.getElementById('gomo-restart').addEventListener('click',()=>{gomoInit();if(aiMode)document.getElementById('gomo-turn').textContent='⚫ 你的回合';});
+  document.getElementById('gomo-mode').addEventListener('click',()=>{aiMode=!aiMode;document.getElementById('gomo-mode').textContent=aiMode?'👤 人机模式':'👥 双人模式';gomoInit();});
+  gomoInit();
+})();
 
 /* =================================================================
    电子木鱼
