@@ -28,8 +28,29 @@ window.SIDEBAR_HTML = `
       <a class="nav-item" data-nav="games.html" href="games.html"><span class="material-symbols-outlined">sports_esports</span><span>摸鱼小游戏</span></a>
     </nav>
 
-    <div class="sidebar-footer">
-      <p>v1.2.0 · <span class="font-mono">MONOLITH</span></p>
+    <div class="sidebar-footer" style="position:relative;">
+      <p>v1.2.0 · <span class="font-mono">MONOLITH</span> · <button id="tip-trigger" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--on-surface-variant);font:inherit;text-decoration:underline dotted;text-underline-offset:3px;">打赏作者</button></p>
+      <!-- 打赏金额选择浮层 -->
+      <div id="tip-amount-pop" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--surface-container);border-radius:var(--r-lg);padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap;z-index:100;">
+        <div style="font-size:11px;color:var(--on-surface-variant);margin-bottom:8px;text-align:center;">选择金额</div>
+        <div style="display:flex;gap:8px;">
+          <button class="tip-amount-btn" data-amt="2" style="padding:8px 16px;border-radius:var(--r-md);border:1px solid var(--outline-variant);background:var(--surface);color:var(--on-surface);cursor:pointer;font-size:14px;font-weight:600;">2元</button>
+          <button class="tip-amount-btn" data-amt="3" style="padding:8px 16px;border-radius:var(--r-md);border:1px solid var(--outline-variant);background:var(--surface);color:var(--on-surface);cursor:pointer;font-size:14px;font-weight:600;">3元</button>
+          <button class="tip-amount-btn" data-amt="5" style="padding:8px 16px;border-radius:var(--r-md);border:1px solid var(--primary);background:var(--primary);color:var(--on-primary);cursor:pointer;font-size:14px;font-weight:600;">5元</button>
+        </div>
+      </div>
+      <!-- 收款码弹窗 -->
+      <div id="tip-qr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:var(--surface);border-radius:var(--r-xl);padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div></div>
+            <h3 style="font-size:16px;font-weight:600;margin:0;">扫码打赏 <span id="tip-qr-amt"></span></h3>
+            <button id="tip-close" style="background:transparent;border:none;cursor:pointer;color:var(--on-surface-variant);padding:4px;"><span class="material-symbols-outlined" style="font-size:20px;">close</span></button>
+          </div>
+          <img id="tip-qr-img" src="" alt="收款码" style="width:100%;max-width:280px;border-radius:var(--r-md);display:block;margin:0 auto;">
+          <p style="font-size:13px;color:var(--on-surface-variant);margin-top:12px;">支付宝扫码，感谢支持 🙏</p>
+        </div>
+      </div>
     </div>
   </div>
 `;
@@ -45,8 +66,55 @@ window.injectSidebar = function () {
   if (placeholder.children.length === 0 || placeholder.innerHTML.trim() === '') {
     placeholder.innerHTML = window.SIDEBAR_HTML;
   }
+  // 绑定打赏相关事件（每次注入都重新绑定，确保不重复）
+  bindTipEvents();
   return true;
 };
+
+/* ===== 打赏作者：金额选择 → 收款码弹窗 ===== */
+function bindTipEvents(){
+  // 避免重复绑定（injectSidebar 可能被多次调用）
+  if (window._tipBound) return;
+  window._tipBound = true;
+  const trigger = document.getElementById('tip-trigger');
+  if (!trigger) return;
+  const amtPop = document.getElementById('tip-amount-pop');
+  const qrModal = document.getElementById('tip-qr-modal');
+  const qrImg = document.getElementById('tip-qr-img');
+  const qrAmt = document.getElementById('tip-qr-amt');
+  const closeBtn = document.getElementById('tip-close');
+  if (!amtPop || !qrModal || !qrImg || !qrAmt || !closeBtn) return;
+
+  // 主触发：toggle 金额浮层
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    amtPop.style.display = amtPop.style.display === 'none' ? 'block' : 'none';
+  });
+  // 点页面其他地方关闭浮层
+  document.addEventListener('click', (e) => {
+    if (!amtPop.contains(e.target) && e.target !== trigger) amtPop.style.display = 'none';
+  });
+  // 三个金额按钮：显示对应收款码
+  document.querySelectorAll('.tip-amount-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const amt = btn.dataset.amt;
+      qrImg.src = `assets/images/tip-${amt}.png`;
+      qrAmt.textContent = `${amt}元`;
+      amtPop.style.display = 'none';
+      qrModal.style.display = 'flex';
+    });
+  });
+  // 关闭收款码弹窗
+  closeBtn.addEventListener('click', () => { qrModal.style.display = 'none'; });
+  qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.style.display = 'none'; });
+  // ESC 关闭两个浮层
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (qrModal.style.display === 'flex') qrModal.style.display = 'none';
+    else if (amtPop.style.display === 'block') amtPop.style.display = 'none';
+  });
+}
 
 // DOM ready 时立即注入（保证无闪烁）
 if (document.readyState === 'loading') {
