@@ -51,18 +51,16 @@
     </div>
 
     <!-- Snake -->
-    <div class="tab-pane card active" id="tab-snake">
-      <div class="flex items-center justify-between mb-3">
-        <span id="snake-info" style="font-size:14px;color:var(--on-surface-variant);">得分：<span id="snake-score">0</span> / 最高：<span id="snake-best">0</span></span>
-      </div>
+    <div class="tab-pane card active" id="tab-snake" style="text-align:center;">
+      <div style="font-size:14px;color:var(--on-surface-variant);margin-bottom:12px;">得分：<span id="snake-score">0</span> / 最高：<span id="snake-best">0</span></div>
       <canvas id="snake-canvas" width="400" height="400" style="display:block;margin:0 auto;background:var(--surface-container);border-radius:var(--r-lg);max-width:100%;touch-action:none;"></canvas>
       <p id="snake-status" style="font-size:15px;font-weight:500;margin-top:12px;min-height:24px;text-align:center;"></p>
       <div style="text-align:center;margin-top:10px;"><button id="snake-restart" class="btn-primary text-sm py-2 px-6" data-i18n="restart">重新开始</button></div>
     </div>
 
     <!-- Minesweeper -->
-    <div class="tab-pane card" id="tab-minesweeper">
-      <p style="font-size:14px;margin-bottom:10px;text-align:center;">💣 <span id="mine-count">10</span> · 🚩 <span id="flag-count">0</span></p>
+    <div class="tab-pane card" id="tab-minesweeper" style="text-align:center;">
+      <p style="font-size:14px;margin-bottom:10px;">💣 <span id="mine-count">10</span> · 🚩 <span id="flag-count">0</span></p>
       <div id="mine-grid" style="display:grid;gap:2px;margin:0 auto;justify-content:center;touch-action:manipulation;"></div>
       <p id="mine-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
       <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
@@ -72,10 +70,8 @@
     </div>
 
     <!-- Gomoku -->
-    <div class="tab-pane card" id="tab-gomoku">
-      <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-        <span style="font-size:14px;">当前：<span id="gomo-turn">⚫ 你的回合</span></span>
-      </div>
+    <div class="tab-pane card" id="tab-gomoku" style="text-align:center;">
+      <div style="font-size:14px;margin-bottom:8px;">当前：<span id="gomo-turn">⚫ 你的回合</span></div>
       <canvas id="gomo-canvas" width="450" height="450" style="display:block;margin:0 auto;border-radius:var(--r-lg);max-width:100%;cursor:pointer;touch-action:manipulation;background:#dcb35c;"></canvas>
       <p id="gomo-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
       <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
