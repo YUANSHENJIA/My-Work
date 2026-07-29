@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>摸鱼小游戏 · My Work</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">My Work</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <aside class="app-sidebar"></aside>
+    <main class="app-main">
+      <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-6 fade-in">
+        <span class="material-symbols-outlined text-base">sports_esports</span>
+        <span>Workspace · 摸鱼小游戏</span>
+      </div>
+
+      <h2 class="headline-lg mb-2 fade-in">摸鱼小游戏</h2>
+      <p class="body-md text-on-surface-variant mb-8 fade-in">工作累了？来一局吧，适度放松效率更高 😄</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 fade-in" id="games-grid">
+        <a href="snake.html" class="card-game">
+          <div class="game-icon" style="background:linear-gradient(135deg,#4ade80,#22c55e);">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#fff;">kebab_dining</span>
+          </div>
+          <div class="game-info">
+            <h3>贪吃蛇</h3>
+            <p>吃食物变长，碰到自己就结束</p>
+            <span class="chip">经典 · 键盘</span>
+          </div>
+        </a>
+
+        <a href="minesweeper.html" class="card-game">
+          <div class="game-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#fff;">explosion</span>
+          </div>
+          <div class="game-info">
+            <h3>扫雷</h3>
+            <p>数字推理，标记地雷</p>
+            <span class="chip">经典 · 鼠标</span>
+          </div>
+        </a>
+
+        <a href="gomoku.html" class="card-game">
+          <div class="game-icon" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#fff;">circle</span>
+          </div>
+          <div class="game-info">
+            <h3>五子棋</h3>
+            <p>黑白对弈，五子连珠获胜</p>
+            <span class="chip">双人 · 鼠标</span>
+          </div>
+        </a>
+
+        <a href="wooden-fish.html" class="card-game">
+          <div class="game-icon" style="background:linear-gradient(135deg,#f87171,#ef4444);">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#fff;">self_improvement</span>
+          </div>
+          <div class="game-info">
+            <h3>电子木鱼</h3>
+            <p>敲一敲，积攒功德</p>
+            <span class="chip">治愈 · 点击</span>
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <style>
+    .card-game {
+      display: flex; align-items: center; gap: 20px; padding: 24px;
+      border-radius: var(--r-xl); background: var(--surface-container-low);
+      text-decoration: none; color: var(--on-surface);
+      transition: all 0.25s ease; cursor: pointer;
+    }
+    .card-game:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .game-icon {
+      width: 96px; height: 96px; border-radius: var(--r-lg);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .game-info h3 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+    .game-info p { font-size: 14px; color: var(--on-surface-variant); margin: 0 0 10px; line-height: 1.5; }
+  </style>
+  <script>
+    (function checkLogin() {
+      try { var n = localStorage.getItem('monolith.userName'); if (!n) { location.href = 'login.html'; } } catch(e){}
+    })();
+  </script>
+</body>
+</html>

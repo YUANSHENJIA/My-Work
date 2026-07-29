@@ -25,6 +25,7 @@ window.SIDEBAR_HTML = `
       <a class="nav-item" data-nav="review.html" href="review.html"><span class="material-symbols-outlined">event_available</span><span>今日复盘</span></a>
       <a class="nav-item" data-nav="strategy.html" href="strategy.html"><span class="material-symbols-outlined">payments</span><span>搞钱方法</span></a>
       <a class="nav-item" data-nav="mbti.html" href="mbti.html"><span class="material-symbols-outlined">psychology</span><span>MBTI人格测试</span></a>
+      <a class="nav-item" data-nav="games.html" href="games.html"><span class="material-symbols-outlined">sports_esports</span><span>摸鱼小游戏</span></a>
     </nav>
 
     <div class="sidebar-footer">

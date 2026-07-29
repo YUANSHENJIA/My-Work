@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>扫雷 · 摸鱼小游戏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;min-height:100vh;background:var(--surface);color:var(--on-surface);font-family:'Inter',sans-serif;padding:16px}
+.game-card{background:var(--surface-container-low);border-radius:var(--r-xl);padding:24px;max-width:540px;width:100%;text-align:center}
+h2{font-size:22px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+#info{font-size:14px;color:var(--on-surface-variant);margin-bottom:12px}
+#grid{display:grid;gap:2px;margin:0 auto;justify-content:center;touch-action:manipulation}
+.cell{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border-radius:var(--r-sm);background:var(--surface-container);cursor:pointer;user-select:none;transition:background .1s}
+.cell:hover{background:var(--surface-container-high)}
+.cell.revealed{background:var(--surface-container-lowest);cursor:default}
+.cell.mine{background:var(--error-container);cursor:default}
+.cell.flagged{background:var(--surface-container-high)}
+#status{font-size:15px;font-weight:500;min-height:24px;margin-top:10px;color:var(--primary)}
+.controls{margin-top:12px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.back-link{text-decoration:none;color:var(--on-surface-variant);font-size:13px;display:inline-flex;align-items:center;gap:4px}
+.back-link:hover{color:var(--primary)}
+</style>
+</head>
+<body>
+<div class="game-card">
+  <h2><span class="material-symbols-outlined" style="font-size:28px;">explosion</span>扫雷</h2>
+  <p id="info">💣 <span id="mine-count">10</span> · 🚩 <span id="flag-count">0</span></p>
+  <div id="grid"></div>
+  <p id="status"></p>
+  <div class="controls">
+    <button id="flag-btn" class="btn-secondary text-sm py-2 px-4">🚩 标记模式 (关)</button>
+    <button id="restart-btn" class="btn-primary text-sm py-2 px-6">重新开始</button>
+  </div>
+  <a href="games.html" class="back-link"><span class="material-symbols-outlined" style="font-size:14px;">arrow_back</span>返回游戏大厅</a>
+</div>
+<script>
+(function(){
+  const ROWS=9,COLS=9,TOTAL_MINES=10;
+  let board=[],revealed=[],flags={},flagMode=false,gameOver=false,firstClick=true,win=false,best;
+
+  function init(){
+    board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+    revealed=Array.from({length:ROWS},()=>Array(COLS).fill(false));
+    flags={};gameOver=false;firstClick=true;win=false;
+    document.getElementById('flag-btn').textContent='🚩 标记模式 (关)';flagMode=false;
+    document.getElementById('mine-count').textContent=TOTAL_MINES;
+    document.getElementById('flag-count').textContent='0';
+    document.getElementById('status').textContent='';
+    render();
+  }
+
+  function placeMines(safeX,safeY){
+    let placed=0;
+    while(placed<TOTAL_MINES){
+      const x=Math.floor(Math.random()*ROWS),y=Math.floor(Math.random()*COLS);
+      if(board[x][y]===-1||(Math.abs(x-safeX)<=1&&Math.abs(y-safeY)<=1))continue;
+      board[x][y]=-1;placed++;
+    }
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
+      if(board[i][j]===-1)continue;
+      let c=0;
+      for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){
+        const ni=i+di,nj=j+dj;
+        if(ni>=0&&ni<ROWS&&nj>=0&&nj<COLS&&board[ni][nj]===-1)c++;
+      }
+      board[i][j]=c;
+    }
+  }
+
+  function reveal(x,y){
+    if(x<0||x>=ROWS||y<0||y>=COLS||revealed[x][y]||flags[x+'-'+y])return;
+    revealed[x][y]=true;
+    if(board[x][y]===-1){
+      gameOver=true;
+      document.getElementById('status').textContent='💥 踩雷了！';
+      revealAllMines();
+      render();return;
+    }
+    if(board[x][y]===0)for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++)reveal(x+di,y+dj);
+    checkWin();
+    render();
+  }
+
+  function revealAllMines(){
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(board[i][j]===-1)revealed[i][j]=true;
+  }
+
+  function checkWin(){
+    let unrevealed=0;
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(!revealed[i][j]&&board[i][j]!==-1)unrevealed++;
+    if(unrevealed===0&&!gameOver){
+      win=true;gameOver=true;
+      const t=Date.now();
+      const b=parseInt(localStorage.getItem('monolith.mineBest')||'999999');
+      if(t<b){localStorage.setItem('monolith.mineBest',String(t));best=t}
+      document.getElementById('status').textContent='🎉 你赢了！';
+    }
+  }
+
+  function render(){
+    const grid=document.getElementById('grid');
+    grid.style.gridTemplateColumns=`repeat(${COLS},36px)`;
+    let html='';
+    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
+      const key=i+'-'+j;
+      let cls='cell',content='';
+      if(revealed[i][j]){
+        if(board[i][j]===-1){cls+=' mine';content='💣'}
+        else if(board[i][j]>0){cls+=' revealed';content=board[i][j];}
+        else cls+=' revealed';
+      }else if(flags[key]){cls+=' flagged';content='🚩'}
+      html+=`<div class="${cls}" data-x="${i}" data-y="${j}">${content}</div>`;
+    }
+    grid.innerHTML=html;
+  }
+
+  document.getElementById('grid').addEventListener('click',e=>{
+    const cell=e.target.closest('.cell');if(!cell||gameOver||win)return;
+    const x=parseInt(cell.dataset.x),y=parseInt(cell.dataset.y);
+    if(flags[x+'-'+y])return;
+    if(flagMode){toggleFlag(x,y);return;}
+    if(firstClick){placeMines(x,y);firstClick=false;}
+    reveal(x,y);
+  });
+
+  document.getElementById('grid').addEventListener('contextmenu',e=>{
+    e.preventDefault();const cell=e.target.closest('.cell');if(!cell||gameOver)return;
+    toggleFlag(parseInt(cell.dataset.x),parseInt(cell.dataset.y));
+  });
+
+  function toggleFlag(x,y){
+    if(revealed[x][y])return;
+    const key=x+'-'+y;
+    if(flags[key]){delete flags[key];document.getElementById('flag-count').textContent=Object.keys(flags).length;}
+    else{flags[key]=true;document.getElementById('flag-count').textContent=Object.keys(flags).length;}
+    render();
+  }
+
+  document.getElementById('flag-btn').addEventListener('click',()=>{
+    flagMode=!flagMode;
+    document.getElementById('flag-btn').textContent=flagMode?'🚩 标记模式 (开)':'🚩 标记模式 (关)';
+  });
+
+  document.getElementById('restart-btn').addEventListener('click',init);
+  window.addEventListener('load',init);
+})();
+</script>
+</body>
+</html>
