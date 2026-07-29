@@ -266,18 +266,18 @@
     <section class="mb-6 fade-in flex items-end justify-between flex-wrap gap-4">
       <div>
         <p class="eyebrow mb-2">Library Collection</p>
-        <h1 class="headline-xl mb-2">我的书架</h1>
-        <p class="body-lg text-on-surface-variant max-w-2xl">
+        <h1 class="headline-xl mb-2" data-i18n="bookshelfTitle">我的书架</h1>
+        <p class="body-lg text-on-surface-variant max-w-2xl" data-i18n="bookshelfDesc">
           构建个人知识体系的基石。从每日一学导入，收藏过的书会保留完整内容。
         </p>
       </div>
       <div class="flex items-center gap-3">
         <button class="add-book-pill" id="add-book-btn" aria-label="添加书籍笔记">
           <span class="material-symbols-outlined">add</span>
-          <span>添加书籍笔记</span>
+          <span data-i18n="addBookNote">添加书籍笔记</span>
         </button>
         <div class="shelf-stat-box">
-          <span class="shelf-stat-text">书架共有 <span id="total-count">0</span> 本书籍笔记</span>
+          <span class="shelf-stat-text"><span data-i18n="bookCountText">书架共有</span> <span id="total-count">0</span> <span data-i18n="bookCountUnit">本书籍笔记</span></span>
         </div>
       </div>
     </section>
@@ -304,16 +304,16 @@
           </div>
         </div>
         <div class="flex-1 min-w-0">
-          <span class="chip mb-3">每日一学 · 收藏书籍</span>
-          <h2 class="headline-lg mb-2" style="color: var(--on-surface);">浏览每日一学完整书单</h2>
+          <span class="chip mb-3" data-i18n="importFrom">每日一学 · 收藏书籍</span>
+          <h2 class="headline-lg mb-2" style="color: var(--on-surface);" data-i18n="browseFull">浏览每日一学完整书单</h2>
           <p class="body-md text-on-surface-variant mb-3">
-            点击 <span class="chip" style="padding: 2px 8px; font-size: 12px;">+</span> 号可从书单导入，导入后点击书籍卡片进入详情页阅读。
+            <span data-i18n="browseHint">点击 + 号可从书单导入，导入后点击书籍卡片进入详情页阅读。</span>
             <br>
             <span class="text-xs font-mono text-on-surface-variant opacity-70">yuanshenjia.github.io/meiriyixue</span>
           </p>
           <div class="flex items-center gap-3 flex-wrap">
-            <span class="chip">外部链接</span>
-            <span class="chip">📖 阅读收藏</span>
+            <span class="chip" data-i18n="externalLink">外部链接</span>
+            <span class="chip" data-i18n="readSaved">📖 阅读收藏</span>
           </div>
         </div>
       </div>
@@ -323,7 +323,7 @@
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="books-grid"></section>
 
     <div class="text-center mt-10 text-xs text-on-surface-variant">
-      <p id="foot-tip">点击「添加书籍笔记」按钮导入你喜欢的书 📚</p>
+      <p id="foot-tip" data-i18n="importHint">点击「添加书籍笔记」按钮导入你喜欢的书 📚</p>
     </div>
   </main>
 
@@ -332,7 +332,7 @@
     <div class="book-modal" onclick="event.stopPropagation()">
       <div class="book-modal-header">
         <span class="material-symbols-outlined">menu_book</span>
-        <h2>从每日一学导入</h2>
+        <h2 data-i18n="importFrom">从每日一学导入</h2>
         <button class="p-2 rounded-full hover:bg-surface-container" id="book-modal-close" aria-label="关闭">
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -703,7 +703,8 @@
       // 改成 loading
       const btn = item.querySelector('.add-btn');
       const orig = btn.innerHTML;
-      btn.innerHTML = '<span class="material-symbols-outlined spin">progress_activity</span><span>导入中</span>';
+      const dict=(window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{};
+      btn.innerHTML = '<span class="material-symbols-outlined spin">progress_activity</span><span>'+(dict.importing||'导入中')+'</span>';
       btn.disabled = true;
       item.style.pointerEvents = 'none';
 

@@ -39,7 +39,7 @@
   <main class="app-main dot-bg">
     <section class="mb-12 fade-in">
       <p class="eyebrow mb-2">Archive 01</p>
-      <h1 class="headline-xl">我的收藏夹</h1>
+      <h1 class="headline-xl" data-i18n="favoritesTitle">我的收藏夹</h1>
     </section>
 
     <!-- Add favorite URL bar -->
@@ -47,7 +47,7 @@
       <form id="fav-form" class="flex items-center gap-3">
         <span class="material-symbols-outlined text-on-surface-variant">link</span>
         <input id="fav-url" type="url" placeholder="粘贴链接 — 文章 / 推文 / 视频 / 任何想法..." class="flex-1 bg-transparent outline-none text-base placeholder:text-on-surface-variant/50" required>
-        <button type="submit" class="btn-primary text-sm py-2 px-4">收藏</button>
+        <button type="submit" class="btn-primary text-sm py-2 px-4" data-i18n="favBtn">收藏</button>
       </form>
     </section>
 
@@ -57,10 +57,10 @@
         <span class="material-symbols-outlined text-5xl text-on-surface-variant">folder_open</span>
       </div>
       <h2 class="headline-lg mb-3">空空如也</h2>
-      <p class="text-on-surface-variant max-w-md text-center">这里还没有任何收藏内容。点击下方的按钮，开启你的灵感收集之旅。</p>
+      <p class="text-on-surface-variant max-w-md text-center" data-i18n="favEmpty">这里还没有任何收藏内容。点击下方的按钮，开启你的灵感收集之旅。</p>
       <button class="btn-primary mt-6" onclick="document.getElementById('fav-url').focus()">
         <span class="material-symbols-outlined">add</span>
-        <span>添加收藏</span>
+        <span data-i18n="addFav">添加收藏</span>
       </button>
     </section>
 
