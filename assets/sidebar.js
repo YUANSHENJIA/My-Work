@@ -239,8 +239,8 @@ window.I18N = {
     importFail: 'Import failed: ',
     importFailHint: 'Possible network or CORS restriction',
     // ===== Dashboard =====
-    workspace: 'Workspace',
-    home: 'Home',
+    workspace: 'WORKSPACE',
+    home: 'HOME',
     streakEncourage: 'You\'ve stayed on track for',
     streakDays2: ' days',
     streakHint: 'Complete today\'s todos to keep your streak going.',
