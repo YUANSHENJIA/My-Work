@@ -100,6 +100,10 @@
    Base
    =================================================================== */
 *, *::before, *::after { box-sizing: border-box; }
+input, select, button, textarea { font-family: inherit; }
+input, select, textarea { -webkit-appearance: none; appearance: none; }
+input, select { border: none; background: transparent; color: inherit; }
+input:focus, select:focus, button:focus { outline: none; }
 
 html, body {
   margin: 0; padding: 0;
@@ -594,7 +598,7 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
 .pl-6 { padding-left: 24px; }
 
 /* 响应式断点 */
-@media (min-width: 640px) { .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sm\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 640px) { .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sm\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .sm\:flex-row { flex-direction: row; } .sm\:items-center { align-items: center; } .sm\:flex-1 { flex: 1; } .sm\:flex-nowrap { flex-wrap: nowrap; } .sm\:gap-2 { gap: 8px; } .sm\:gap-3 { gap: 12px; } .sm\:gap-4 { gap: 16px; } .sm\:px-3 { padding-left: 12px; padding-right: 12px; } .sm\:px-4 { padding-left: 16px; padding-right: 16px; } .sm\:w-auto { width: auto; } .sm\:text-sm { font-size: 14px; } .sm\:text-base { font-size: 16px; } }
 @media (min-width: 768px) { .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .md\:hidden { display: none; } }
 @media (min-width: 1024px) { .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .lg\:col-span-2 { grid-column: span 2 / span 2; } }
 
@@ -640,4 +644,10 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
   .sidebar-closed .app-main { margin-left: 0 !important; max-width: 100vw !important; }
   .headline-xl { font-size: 28px; line-height: 36px; }
   .headline-lg { font-size: 22px; line-height: 30px; }
+
+  /* 待办输入区：手机端竖排，按钮/下拉占满一行 */
+  #todo-form { flex-direction: column; align-items: stretch; gap: 8px; }
+  #todo-form > div:first-child { width: 100%; }
+  #todo-form > select,
+  #todo-form > button { width: 100%; padding-top: 12px; padding-bottom: 12px; }
 }
