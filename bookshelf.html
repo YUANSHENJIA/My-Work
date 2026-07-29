@@ -509,21 +509,43 @@
 
       // 核心洞见
       let insight = '';
+      // 新结构：section.summary 下 h3=核心洞见 后面的 <p>
+      const sumIns = doc.querySelector('section.summary h3');
+      const newInsText = sumIns && /核心洞见/.test(sumIns.textContent)
+        ? sumIns.nextElementSibling?.textContent?.trim()
+        : '';
       const insSec = doc.querySelector('.insight-section');
-      if (insSec) {
+      if (newInsText) {
+        insight = '<div class="book-reader-section"><h3><span class="section-bar"></span>核心洞见</h3><div class="insight-box">' + newInsText + '</div></div>';
+      } else if (insSec) {
         const label = insSec.querySelector('.insight-label')?.textContent?.trim() || '';
         const txt = insSec.querySelector('.insight-text')?.innerHTML?.trim() || '';
         insight = '<div class="book-reader-section"><h3><span class="section-bar"></span>' + escapeHtml(label || '核心洞见') + '</h3><div class="insight-box">' + txt + '</div></div>';
       }
 
-      // 思维导图 (.branch)
-      const branches = Array.from(doc.querySelectorAll('.branch')).map(b => ({
-        icon: b.querySelector('.branch-icon')?.textContent?.trim() || '',
-        title: b.querySelector('.branch-title')?.textContent?.trim() || '',
-        desc: b.querySelector('.branch-desc')?.textContent?.trim() || ''
-      }));
+      // 思维导图：兼容两种结构
+      //   新结构：.branch > (.branch-node 标题 + .children > .leaf-node 描述)
+      //   旧结构：.branch > (.branch-icon + .branch-title + .branch-desc)
+      const branches = Array.from(doc.querySelectorAll('.branch')).map(b => {
+        // 新结构：直接子 .branch-node 是标题，.leaf-node 拼起来作为描述
+        const newTitle = b.querySelector(':scope > .branch-node')?.textContent?.trim() || '';
+        const leaves = Array.from(b.querySelectorAll('.leaf-node')).map(n => n.textContent.trim()).filter(Boolean);
+        if (newTitle || leaves.length) {
+          return {
+            icon: '',
+            title: newTitle,
+            desc: leaves.join(' · ')
+          };
+        }
+        // 旧结构
+        return {
+          icon: b.querySelector('.branch-icon')?.textContent?.trim() || '',
+          title: b.querySelector('.branch-title')?.textContent?.trim() || '',
+          desc: b.querySelector('.branch-desc')?.textContent?.trim() || ''
+        };
+      }).filter(b => b.title || b.desc);
       const branchHtml = branches.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>思维导图</h3><div class="branch-grid">' +
-        branches.map(b => '<div class="branch-card"><div class="icon">' + escapeHtml(b.icon) + '</div><div class="title">' + escapeHtml(b.title) + '</div><div class="desc">' + escapeHtml(b.desc) + '</div></div>').join('') +
+        branches.map(b => '<div class="branch-card"><div class="title">' + escapeHtml(b.title) + '</div><div class="desc">' + escapeHtml(b.desc) + '</div></div>').join('') +
         '</div></div>' : '';
 
       // 核心驱动 / 角色 (.char-card)
@@ -537,39 +559,98 @@
         chars.map(c => '<div class="branch-card"><div class="icon">' + escapeHtml(c.emoji) + '</div><div class="title">' + escapeHtml(c.name) + '</div><div class="desc"><em style="opacity:.7;">' + escapeHtml(c.type) + '</em><br>' + escapeHtml(c.desc) + '</div></div>').join('') +
         '</div></div>' : '';
 
-      // 主要知识点 (.knowledge-card)
-      const knowledges = Array.from(doc.querySelectorAll('.knowledge-card')).map(k => {
-        const h4 = k.querySelector('h4');
-        const p = k.querySelector('p');
-        return {
-          title: h4 ? h4.textContent.replace(/^\s*\d+\s*/, '').trim() : '',
-          desc: p ? p.textContent.trim() : ''
-        };
-      });
+      // 工具：在 section.summary 里找特定标题的 <h3>
+      function findSummaryHeading(text) {
+        return Array.from(doc.querySelectorAll('section.summary h3')).find(h => h.textContent.includes(text));
+      }
+      // 主要知识点
+      //   新结构：section.summary 下 h3=主要知识点 后面的 <ul><li>
+      //   旧结构：.knowledge-card > (h4 + p)
+      let knowledges = [];
+      const sumKnow = findSummaryHeading('主要知识点');
+      if (sumKnow) {
+        let el = sumKnow.nextElementSibling;
+        while (el && el.tagName === 'UL') {
+          knowledges.push(...Array.from(el.querySelectorAll('li')).map(li => ({ title: '', desc: li.textContent.trim() })));
+          el = el.nextElementSibling;
+        }
+      } else {
+        knowledges = Array.from(doc.querySelectorAll('.knowledge-card')).map(k => ({
+          title: k.querySelector('h4') ? k.querySelector('h4').textContent.replace(/^\s*\d+\s*/, '').trim() : '',
+          desc: k.querySelector('p') ? k.querySelector('p').textContent.trim() : ''
+        })).filter(k => k.title || k.desc);
+      }
       const knowHtml = knowledges.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>主要知识点</h3><div class="branch-grid">' +
-        knowledges.map(k => '<div class="branch-card"><div class="title">' + escapeHtml(k.title) + '</div><div class="desc">' + escapeHtml(k.desc) + '</div></div>').join('') +
+        knowledges.map(k => '<div class="branch-card">' + (k.title ? '<div class="title">' + escapeHtml(k.title) + '</div>' : '') + '<div class="desc">' + escapeHtml(k.desc) + '</div></div>').join('') +
         '</div></div>' : '';
 
-      // 经典金句 (.quote-card)
-      const quotes = Array.from(doc.querySelectorAll('.quote-card')).map(q => ({
-        text: q.querySelector('.quote-text')?.textContent?.trim() || '',
-        source: q.querySelector('.quote-source')?.textContent?.trim() || ''
-      }));
+      // 经典金句：可能独立成节（h3=经典金句），也可能嵌套在"主要知识点"段落后的 .quote
+      let quotes = [];
+      // 先看有没有独立金句节
+      const sumQ = findSummaryHeading('金句');
+      if (sumQ) {
+        let el = sumQ.nextElementSibling;
+        while (el && (el.classList?.contains('quote') || el.classList?.contains('quote-card'))) {
+          if (el.classList.contains('quote')) {
+            quotes.push({ text: el.textContent.trim(), source: '' });
+          } else {
+            quotes.push({
+              text: el.querySelector('.quote-text')?.textContent?.trim() || '',
+              source: el.querySelector('.quote-source')?.textContent?.trim() || ''
+            });
+          }
+          el = el.nextElementSibling;
+        }
+      } else {
+        // 旧结构兜底：.quote-card
+        quotes = Array.from(doc.querySelectorAll('.quote-card')).map(q => ({
+          text: q.querySelector('.quote-text')?.textContent?.trim() || '',
+          source: q.querySelector('.quote-source')?.textContent?.trim() || ''
+        }));
+      }
+      // 如果还没拿到，看看主要知识点段落里是否嵌套了 .quote（某些书的写法）
+      if (!quotes.length) {
+        const sumK = findSummaryHeading('主要知识点');
+        if (sumK) {
+          let el = sumK.nextElementSibling;
+          while (el && el.tagName !== 'H3') {
+            if (el.classList?.contains('quote')) {
+              quotes.push({ text: el.textContent.trim(), source: '' });
+            }
+            el = el.nextElementSibling;
+          }
+        }
+      }
       const quoteHtml = quotes.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>经典金句</h3>' +
-        quotes.map(q => '<div class="quote-card"><div class="text">' + escapeHtml(q.text) + '</div><div class="source">' + escapeHtml(q.source) + '</div></div>').join('') +
+        quotes.map(q => '<div class="quote-card"><div class="text">' + escapeHtml(q.text) + '</div>' + (q.source ? '<div class="source">' + escapeHtml(q.source) + '</div>' : '') + '</div>').join('') +
         '</div>' : '';
 
-      // 行动建议 (.action-card)
-      const actions = Array.from(doc.querySelectorAll('.action-card')).map(a => {
-        const h4 = a.querySelector('h4');
-        const p = a.querySelector('p');
-        return {
-          title: h4 ? h4.textContent.trim() : '',
-          desc: p ? p.textContent.trim() : ''
-        };
-      });
+      // 行动建议
+      //   新结构：section.summary 下 h3=行动建议 后面的 <ul class="action-list"><li>
+      //   旧结构：.action-card > (h4 + p)
+      let actions = [];
+      const sumA = findSummaryHeading('行动建议');
+      if (sumA) {
+        let el = sumA.nextElementSibling;
+        while (el && (el.tagName === 'UL' || el.classList?.contains('action-list') || el.classList?.contains('action-card'))) {
+          if (el.tagName === 'UL') {
+            actions.push(...Array.from(el.querySelectorAll('li')).map(li => ({ title: '', desc: li.textContent.trim() })));
+          } else {
+            actions.push({
+              title: el.querySelector('h4')?.textContent?.trim() || '',
+              desc: el.querySelector('p')?.textContent?.trim() || ''
+            });
+          }
+          el = el.nextElementSibling;
+        }
+      } else {
+        actions = Array.from(doc.querySelectorAll('.action-card')).map(a => ({
+          title: a.querySelector('h4')?.textContent?.trim() || '',
+          desc: a.querySelector('p')?.textContent?.trim() || ''
+        }));
+      }
       const actionHtml = actions.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>行动建议</h3>' +
-        actions.map(a => '<div class="action-card"><div class="num">●</div><div class="content"><h4>' + escapeHtml(a.title) + '</h4><p>' + escapeHtml(a.desc) + '</p></div></div>').join('') +
+        actions.map(a => '<div class="action-card"><div class="num">●</div><div class="content">' + (a.title ? '<h4>' + escapeHtml(a.title) + '</h4>' : '') + '<p>' + escapeHtml(a.desc) + '</p></div></div>').join('') +
         '</div>' : '';
 
       const headerHtml =
