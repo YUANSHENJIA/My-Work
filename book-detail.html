@@ -197,12 +197,10 @@
 
     // 返回按钮
     document.getElementById('back-btn').addEventListener('click', () => {
-      // 有历史记录则后退，否则直接去书架
-      if (document.referrer && document.referrer.includes('bookshelf')) {
-        history.back();
-      } else {
-        location.href = 'bookshelf.html';
-      }
+      // 因为从书架用 location.replace 跳过来的，history 已被替换，
+      // 用 history.back() 会跳到书架再之前的那一页（首页/登录等）。
+      // 直接 location.href 跳回书架最稳。
+      location.href = 'bookshelf.html';
     });
 
     // 移除此书

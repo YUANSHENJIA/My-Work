@@ -73,6 +73,39 @@
       <div id="cal-grid" class="grid grid-cols-7 gap-y-2"></div>
     </section>
 
+    <!-- Reminder modal -->
+    <div id="reminder-form-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;align-items:center;justify-content:center;">
+      <div style="background:var(--surface);border-radius:var(--r-xl);padding:32px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="color:var(--primary);">notifications_active</span>
+            <h3 class="headline-sm" style="font-size:20px;font-weight:600;">新建提醒</h3>
+          </div>
+          <button id="reminder-form-close" class="p-2 rounded-full hover:bg-surface-container" aria-label="关闭">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+
+        <form id="reminder-form" class="flex flex-col gap-4">
+          <div>
+            <label class="eyebrow" style="font-size:11px;display:block;margin-bottom:8px;">提醒内容</label>
+            <textarea id="reminder-content" rows="3" maxlength="200" required
+                      placeholder="要提醒什么？"
+                      style="width:100%;padding:12px 16px;border-radius:var(--r-lg);border:1.5px solid var(--outline-variant);background:transparent;color:var(--on-surface);font-size:15px;resize:vertical;font-family:inherit;"></textarea>
+          </div>
+          <div>
+            <label class="eyebrow" style="font-size:11px;display:block;margin-bottom:8px;">提醒时间</label>
+            <input id="reminder-time" type="datetime-local" required
+                   style="width:100%;padding:12px 16px;border-radius:var(--r-lg);border:1.5px solid var(--outline-variant);background:transparent;color:var(--on-surface);font-size:15px;font-family:inherit;" />
+          </div>
+          <div class="flex items-center justify-end gap-3 mt-2">
+            <button type="button" id="reminder-cancel" class="btn-secondary text-sm py-2 px-6">取消</button>
+            <button type="submit" class="btn-primary text-sm py-2 px-6">设置提醒</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Tasks for selected day -->
     <section class="card mt-6 fade-in" id="day-detail" style="display:none;">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
@@ -297,13 +330,57 @@
       renderCalendar();
       renderDayDetail();
     });
-    // Calendar reminder (simple notification mock)
-    document.getElementById('cal-add-reminder').addEventListener('click', () => {
-      const k = dateKey(selectedDay.getFullYear(), selectedDay.getMonth(), selectedDay.getDate());
-      const msg = prompt('请输入提醒内容：', `提醒：${k}`);
-      if (msg) {
-        alert('✅ 提醒已设置！(当前为本地模拟，实际版本会集成推送通知)\n\n' + msg + '\n\n日期：' + k);
+    // Calendar reminder (real modal: content + trigger time)
+    const reminderModal = document.getElementById('reminder-form-modal');
+    const reminderContent = document.getElementById('reminder-content');
+    const reminderTime = document.getElementById('reminder-time');
+    const reminderForm = document.getElementById('reminder-form');
+
+    function openReminderModal() {
+      // 预填时间：当前 + 30 分钟（更人性化的默认）
+      const now = new Date();
+      now.setMinutes(now.getMinutes() + 30);
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+      reminderTime.value = `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+      reminderContent.value = '';
+      reminderModal.style.display = 'flex';
+      setTimeout(() => reminderContent.focus(), 100);
+    }
+    function closeReminderModal() {
+      reminderModal.style.display = 'none';
+    }
+
+    document.getElementById('cal-add-reminder').addEventListener('click', openReminderModal);
+    document.getElementById('reminder-form-close').addEventListener('click', closeReminderModal);
+    document.getElementById('reminder-cancel').addEventListener('click', closeReminderModal);
+    reminderModal.addEventListener('click', e => {
+      if (e.target === reminderModal) closeReminderModal();
+    });
+
+    reminderForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const content = reminderContent.value.trim();
+      const timeStr = reminderTime.value;
+      if (!content || !timeStr) return;
+      const triggerAt = new Date(timeStr).getTime();
+      // 允许最多 60 秒内的"过去"——datetime-local 是分钟精度，"当前分钟"提交时已过几秒
+      if (triggerAt < Date.now() - 60000) {
+        alert('提醒时间需在未来');
+        return;
       }
+      window.addReminder(content, triggerAt);
+      window.requestReminderPermission(); // 顺便请求浏览器通知权限
+      closeReminderModal();
+      // 即时反馈：右下角小 toast
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--primary);color:var(--on-primary);padding:12px 20px;border-radius:var(--r-full);font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.25);';
+      toast.textContent = '✅ 提醒已设置';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
     });
   </script>
 

@@ -437,4 +437,99 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   })();
+
+  // =================================================================
+  // 提醒系统（全局）：到点弹窗
+  // =================================================================
+  const REMINDERS_KEY = 'monolith.reminders';
+
+  function loadReminders() {
+    try { return JSON.parse(localStorage.getItem(REMINDERS_KEY) || '[]'); }
+    catch(e) { return []; }
+  }
+  function saveReminders(list) {
+    try { localStorage.setItem(REMINDERS_KEY, JSON.stringify(list)); }
+    catch(e) { console.error('reminders save failed', e); }
+  }
+
+  /**
+   * 添加一条提醒
+   * @param {string} content - 提醒内容
+   * @param {number|Date} triggerAt - 触发时间（毫秒或 Date）
+   */
+  window.addReminder = function(content, triggerAt) {
+    const t = triggerAt instanceof Date ? triggerAt.getTime() : Number(triggerAt);
+    const list = loadReminders();
+    list.push({
+      id: 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      content: String(content || '').slice(0, 200),
+      triggerAt: t,
+      fired: false,
+      createdAt: Date.now(),
+    });
+    saveReminders(list);
+  };
+
+  /**
+   * 弹出提醒通知。如果有未触发且到点的，逐个弹窗（队列式）。
+   */
+  function showPendingReminders() {
+    const list = loadReminders();
+    const now = Date.now();
+    const pending = list.filter(r => !r.fired && r.triggerAt <= now);
+    if (!pending.length) return;
+    // 立即把待处理的标记为 fired，避免多 tab 重复弹出
+    pending.forEach(r => r.fired = true);
+    saveReminders(list);
+    // 队列弹出
+    pending.forEach((r, i) => setTimeout(() => showReminderModal(r), i * 300));
+  }
+
+  function showReminderModal(reminder) {
+    // 如果已有弹窗，挂到队列后面
+    if (document.getElementById('reminder-modal')) {
+      setTimeout(() => showReminderModal(reminder), 500);
+      return;
+    }
+    const wrap = document.createElement('div');
+    wrap.id = 'reminder-modal';
+    wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    wrap.innerHTML =
+      '<div style="background:var(--surface);border-radius:var(--r-xl);padding:32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.35);text-align:center;">' +
+        '<div style="width:56px;height:56px;border-radius:50%;background:var(--surface-container-low);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">' +
+          '<span class="material-symbols-outlined" style="font-size:32px;color:var(--primary);">notifications_active</span>' +
+        '</div>' +
+        '<p class="eyebrow" style="margin-bottom:6px;font-size:11px;">定时提醒</p>' +
+        '<p style="font-size:18px;font-weight:600;color:var(--on-surface);margin-bottom:8px;line-height:1.5;word-break:break-word;">' +
+          escapeHtml(reminder.content) +
+        '</p>' +
+        '<p style="font-size:12px;color:var(--on-surface-variant);margin-bottom:24px;">' +
+          new Date(reminder.triggerAt).toLocaleString('zh-CN') +
+        '</p>' +
+        '<button id="reminder-dismiss" class="btn-primary" style="width:100%;padding:12px;">知道了</button>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    document.getElementById('reminder-dismiss').addEventListener('click', () => {
+      wrap.remove();
+    });
+    // 浏览器原生通知（如用户授权过）
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try { new Notification('定时提醒', { body: reminder.content }); } catch(e) {}
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  // 请求浏览器通知权限（用户首次添加提醒时再触发，避免突兀弹权限框）
+  window.requestReminderPermission = function() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      try { Notification.requestPermission(); } catch(e) {}
+    }
+  };
+
+  // 每 3 秒扫一次到点提醒；同时启动时立即扫一次（防止 tab 休眠期间错过的提醒）
+  setInterval(showPendingReminders, 3000);
+  setTimeout(showPendingReminders, 800);
 })();
