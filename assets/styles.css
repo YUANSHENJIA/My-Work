@@ -275,6 +275,24 @@ body {
 /* Nav toggle - always visible */
 .nav-toggle {
   display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  flex-shrink: 0 !important;
+}
+/* Header icon buttons (menu, theme) — 强制正方形避免被压成椭圆 */
+.app-header button[data-theme-toggle] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  flex-shrink: 0 !important;
 }
 
 /* ===================================================================
