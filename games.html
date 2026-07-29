@@ -7,114 +7,124 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="flex items-center gap-2">
+    <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+    <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+    <span class="font-semibold text-lg tracking-tight whitespace-nowrap">My Work</span>
+  </div>
+  <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+    <div class="header-ticker w-full max-w-xl" id="header-ticker">
+      <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-1 shrink-0">
+    <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+      <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+    </button>
+  </div>
+</header>
+
+<div class="app-layout">
+  <aside class="app-sidebar"></aside>
+  <main class="app-main">
+
+    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-4 fade-in">
+      <span class="material-symbols-outlined text-base">sports_esports</span>
+      <span>Workspace · 摸鱼小游戏</span>
+    </div>
+
+    <h2 class="headline-lg mb-1 fade-in">摸鱼小游戏</h2>
+    <p class="body-md text-on-surface-variant mb-6 fade-in">适度放松，效率更高 😄</p>
+
+    <!-- Tab bar -->
+    <div class="tab-bar fade-in">
+      <button class="tab-btn active" data-tab="snake">贪吃蛇</button>
+      <button class="tab-btn" data-tab="minesweeper">扫雷</button>
+      <button class="tab-btn" data-tab="gomoku">五子棋</button>
+      <button class="tab-btn" data-tab="wooden-fish">电子木鱼</button>
+    </div>
+
+    <!-- Snake -->
+    <div class="tab-pane card active" id="tab-snake">
+      <div class="flex items-center justify-between mb-3">
+        <h3 style="font-size:18px;font-weight:600;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">kebab_dining</span> 贪吃蛇</h3>
+        <span id="snake-info" style="font-size:14px;color:var(--on-surface-variant);">得分：<span id="snake-score">0</span> / 最高：<span id="snake-best">0</span></span>
+      </div>
+      <canvas id="snake-canvas" width="400" height="400" style="display:block;margin:0 auto;background:var(--surface-container);border-radius:var(--r-lg);max-width:100%;touch-action:none;"></canvas>
+      <p id="snake-status" style="font-size:15px;font-weight:500;margin-top:12px;min-height:24px;text-align:center;"></p>
+      <div style="text-align:center;margin-top:10px;"><button id="snake-restart" class="btn-primary text-sm py-2 px-6">重新开始</button></div>
+    </div>
+
+    <!-- Minesweeper -->
+    <div class="tab-pane card" id="tab-minesweeper">
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:10px;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">explosion</span> 扫雷</h3>
+      <p style="font-size:14px;margin-bottom:10px;text-align:center;">💣 <span id="mine-count">10</span> · 🚩 <span id="flag-count">0</span></p>
+      <div id="mine-grid" style="display:grid;gap:2px;margin:0 auto;justify-content:center;touch-action:manipulation;"></div>
+      <p id="mine-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
+      <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="flag-btn" class="btn-secondary text-sm py-2 px-4">🚩 标记模式 (关)</button>
+        <button id="mine-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
+      </div>
+    </div>
+
+    <!-- Gomoku -->
+    <div class="tab-pane card" id="tab-gomoku">
+      <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <h3 style="font-size:18px;font-weight:600;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">circle</span> 五子棋</h3>
+        <span style="font-size:14px;">当前：<span id="gomo-turn">⚫ 你的回合</span></span>
+      </div>
+      <canvas id="gomo-canvas" width="450" height="450" style="display:block;margin:0 auto;border-radius:var(--r-lg);max-width:100%;cursor:pointer;touch-action:manipulation;background:#dcb35c;"></canvas>
+      <p id="gomo-status" style="font-size:15px;font-weight:500;min-height:24px;margin-top:10px;text-align:center;"></p>
+      <div style="text-align:center;margin-top:10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="gomo-mode" class="btn-secondary text-sm py-2 px-4">👤 人机模式</button>
+        <button id="gomo-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
+      </div>
+    </div>
+
+    <!-- Wooden Fish -->
+    <div class="tab-pane card" id="tab-wooden-fish" style="text-align:center;">
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:12px;"><span class="material-symbols-outlined" style="font-size:22px;vertical-align:-4px;">self_improvement</span> 电子木鱼</h3>
+      <p style="font-size:13px;color:var(--on-surface-variant);margin-bottom:12px;">今日功德：<span id="wf-today">0</span></p>
+      <div id="fish-wrap" style="width:160px;height:160px;margin:0 auto 16px;cursor:pointer;touch-action:manipulation;user-select:none;">
+        <div id="fish" style="width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--surface-container-high);transition:transform .12s;overflow:hidden;">
+          🐟
+        </div>
+      </div>
+      <div style="font-size:40px;font-weight:800;display:block;margin-bottom:4px;" id="deed">0</div>
+      <div style="font-size:14px;color:var(--on-surface-variant);margin-bottom:16px;">总功德</div>
+      <p id="wf-phrase" style="font-size:16px;font-weight:500;min-height:36px;margin-bottom:12px;transition:opacity .2s;">点击木鱼，敲一敲 🎵</p>
+      <button id="wf-reset" class="btn-secondary text-sm py-2 px-4">重置总功德</button>
+    </div>
+
+  </main>
+</div>
+
+<script src="assets/sidebar.js"></script>
+<script src="assets/app.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--surface);color:var(--on-surface);font-family:'Inter',sans-serif;padding:16px}
-.game-card{background:var(--surface-container-low);border-radius:var(--r-xl);padding:24px;max-width:540px;width:100%;text-align:center}
-h2{font-size:22px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tab-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;background:var(--surface-container);padding:6px;border-radius:9999px}
 .tab-btn{padding:10px 20px;border:none;background:transparent;border-radius:9999px;font-size:14px;font-weight:500;cursor:pointer;color:var(--on-surface-variant);transition:all .2s}
 .tab-btn.active{background:var(--primary);color:var(--on-primary)}
 .tab-btn:hover:not(.active){background:var(--surface-container-high)}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
-/* Snake */
-#snake-info{font-size:14px;color:var(--on-surface-variant);margin-bottom:12px}
-#snake-status{font-size:15px;font-weight:500;margin-top:12px;min-height:24px}
-/* Minesweeper */
-#mine-info{font-size:14px;color:var(--surface);margin-bottom:12px}
-#mine-info>*{color:var(--on-surface-variant);font-weight:600}
-#mine-grid{display:grid;gap:2px;margin:0 auto;justify-content:center;touch-action:manipulation}
-.mine-cell{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border-radius:var(--r-sm);cursor:pointer;user-select:none;transition:background .1s}
+.mine-cell{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border-radius:var(--r-sm);cursor:pointer;user-select:none;transition:background .1s;background:var(--surface-container)}
 .mine-cell:hover{filter:brightness(.92)}
-.mine-cell.revealed{cursor:default}
-.mine-cell.mine{}
-.mine-cell.flagged{}
-#mine-status{font-size:15px;font-weight:500;min-height:24px;margin-top:10px}
-.mine-controls{margin-top:12px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-/* Gomoku */
-#gomo-info{font-size:14px;margin-bottom:8px}
-#gomo-turn{font-weight:600}
-canvas{display:block;margin:0 auto;border-radius:var(--r-lg);max-width:100%;cursor:pointer;touch-action:manipulation}
-#gomo-status{font-size:15px;font-weight:500;min-height:24px;margin-top:10px}
-.gomo-controls{margin-top:12px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-/* Wooden fish */
-#wf-status-bar{font-size:13px;color:var(--on-surface-variant);margin-bottom:8px}
-#fish-wrap{position:relative;width:200px;height:200px;margin:0 auto 20px;cursor:pointer;touch-action:manipulation;user-select:none}
-#fish{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:96px;background:var(--surface-container-high);transition:transform .12s;overflow:hidden}
-#fish:active{transform:scale(.85)}
-#fish.hit{transform:scale(.85)}
-#fish img{width:100%;height:100%;object-fit:contain}
-#deed{font-size:48px;font-weight:800;display:block;margin-bottom:4px}
-#deed-label{font-size:14px;color:var(--on-surface-variant);margin-bottom:20px}
-#wf-phrase{font-size:18px;font-weight:500;min-height:40px;margin-bottom:8px;transition:opacity .2s}
+.mine-cell.revealed{background:var(--surface-container-lowest);cursor:default}
+.mine-cell.mine{background:var(--error-container)}
+.mine-cell.flagged{background:var(--surface-container-high)}
+#fish:active,#fish.hit{transform:scale(.85)}
 #wf-phrase.fade{opacity:0}
-.wf-controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.tab-controls{margin-top:12px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 </style>
-</head>
-<body>
-
-<div class="game-card">
-  <h2><span class="material-symbols-outlined" style="font-size:28px;">sports_esports</span>摸鱼小游戏</h2>
-  <div class="tab-bar">
-    <button class="tab-btn active" data-tab="snake">贪吃蛇</button>
-    <button class="tab-btn" data-tab="minesweeper">扫雷</button>
-    <button class="tab-btn" data-tab="gomoku">五子棋</button>
-    <button class="tab-btn" data-tab="wooden-fish">电子木鱼</button>
-  </div>
-
-  <!-- Snake -->
-  <div class="tab-pane active" id="tab-snake">
-    <p id="snake-info">当前得分：0 &nbsp;|&nbsp; 最高纪录：<span id="snake-best">0</span></p>
-    <canvas id="snake-canvas" width="400" height="400"></canvas>
-    <p id="snake-status"></p>
-    <div class="tab-controls">
-      <button id="snake-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
-    </div>
-  </div>
-
-  <!-- Minesweeper -->
-  <div class="tab-pane" id="tab-minesweeper">
-    <p id="mine-info">💣 <span id="mine-count">10</span> · 🚩 <span id="flag-count">0</span></p>
-    <div id="mine-grid"></div>
-    <p id="mine-status"></p>
-    <div class="mine-controls">
-      <button id="flag-btn" class="btn-secondary text-sm py-2 px-4">🚩 标记模式 (关)</button>
-      <button id="mine-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
-    </div>
-  </div>
-
-  <!-- Gomoku -->
-  <div class="tab-pane" id="tab-gomoku">
-    <p id="gomo-info">当前：<span id="gomo-turn">⚫ 你的回合</span> · <span class="chip" id="gomo-mode-text">人机模式</span></p>
-    <canvas id="gomo-canvas" width="450" height="450"></canvas>
-    <p id="gomo-status"></p>
-    <div class="gomo-controls">
-      <button id="gomo-mode" class="btn-secondary text-sm py-2 px-4">👤 人机模式</button>
-      <button id="gomo-restart" class="btn-primary text-sm py-2 px-6">重新开始</button>
-    </div>
-  </div>
-
-  <!-- Wooden Fish -->
-  <div class="tab-pane" id="tab-wooden-fish">
-    <p id="wf-status-bar">今日功德：<span id="wf-today">0</span></p>
-    <div id="fish-wrap">
-      <div id="fish">🐟</div>
-    </div>
-    <span id="deed">0</span>
-    <span id="deed-label">总功德</span>
-    <p id="wf-phrase">点击木鱼，敲一敲 🎵</p>
-    <div class="wf-controls">
-      <button id="wf-reset" class="btn-secondary text-sm py-2 px-4">重置总功德</button>
-    </div>
-  </div>
-
-</div>
-
 <script>
 /* =================================================================
-   工具：读 CSS 变量（canvas 不能直接用 var(--xxx)）
+   工具
    ================================================================= */
 function cssVar(name){
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -125,8 +135,8 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
-    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
-    // 切换到画布时重绘（防止 canvas 上下文丢失）
+    const pane=document.getElementById('tab-'+b.dataset.tab);
+    pane.classList.add('active');
     if(b.dataset.tab==='snake')snakeDraw();
     if(b.dataset.tab==='gomoku')gomoDraw();
   });
@@ -146,7 +156,7 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     snakeSpawnFood();
     best=parseInt(localStorage.getItem('monolith.snakeBest')||'0');
     document.getElementById('snake-best').textContent=best;
-    document.getElementById('snake-info').textContent='当前得分：0 | 最高纪录：'+best;
+    document.getElementById('snake-score').textContent=0;
     document.getElementById('snake-status').textContent='按方向键开始';
     if(loop)clearInterval(loop);
     snakeDraw();
@@ -171,7 +181,7 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
       snakeDraw();return;
     }
     snake.unshift(head);
-    if(head.x===food.x&&head.y===food.y){score++;snakeSpawnFood();document.getElementById('snake-info').textContent='当前得分：'+score+' | 最高纪录：'+best}
+    if(head.x===food.x&&head.y===food.y){score++;snakeSpawnFood();document.getElementById('snake-score').textContent=score;}
     else snake.pop();
     snakeDraw();
   }
@@ -179,7 +189,7 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
   window.snakeDraw=function(){
     const bg=cssVar('--surface-container'),bgAlt=cssVar('--surface'),
           head=cssVar('--primary'),body=cssVar('--on-surface-variant'),
-          foodColor=cssVar('--error');
+          fc=cssVar('--error');
     ctx.clearRect(0,0,400,400);
     for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
       ctx.fillStyle=(i+j)%2===0?bg:bgAlt;
@@ -191,17 +201,13 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
       ctx.beginPath();ctx.arc(s.x*CELL+10,s.y*CELL+10,9,0,Math.PI*2);ctx.fill();
       ctx.shadowBlur=0;
     });
-    ctx.fillStyle=foodColor;
-    ctx.beginPath();ctx.arc(food.x*CELL+10,food.y*CELL+10,8,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=fc;ctx.beginPath();ctx.arc(food.x*CELL+10,food.y*CELL+10,8,0,Math.PI*2);ctx.fill();
   };
 
   document.addEventListener('keydown',e=>{
     if(!document.getElementById('tab-snake').classList.contains('active'))return;
     const ks={'ArrowUp':{x:0,y:-1},'ArrowDown':{x:0,y:1},'ArrowLeft':{x:-1,y:0},'ArrowRight':{x:1,y:0}};
-    if(ks[e.key]){
-      e.preventDefault();
-      if(direction.x+ks[e.key].x!==0||direction.y+ks[e.key].y!==0)nextDir=ks[e.key];
-    }
+    if(ks[e.key]){e.preventDefault();if(direction.x+ks[e.key].x!==0||direction.y+ks[e.key].y!==0)nextDir=ks[e.key];}
   });
   let sx=0,sy=0;
   canvas.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;});
@@ -253,47 +259,33 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
   function reveal(x,y){
     if(x<0||x>=ROWS||y<0||y>=COLS||revealed[x][y]||flags[x+'-'+y])return;
     revealed[x][y]=true;
-    if(board[x][y]===-1){
-      gameOver=true;
-      document.getElementById('mine-status').textContent='💥 踩雷了！';
-      revealAllMines();
-      mineRender();return;
-    }
+    if(board[x][y]===-1){gameOver=true;document.getElementById('mine-status').textContent='💥 踩雷了！';revealAllMines();mineRender();return;}
     if(board[x][y]===0)for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++)reveal(x+di,y+dj);
-    checkWin();
-    mineRender();
+    checkWin();mineRender();
   }
 
-  function revealAllMines(){
-    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(board[i][j]===-1)revealed[i][j]=true;
-  }
-
+  function revealAllMines(){for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(board[i][j]===-1)revealed[i][j]=true;}
   function checkWin(){
-    let unrevealed=0;
-    for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(!revealed[i][j]&&board[i][j]!==-1)unrevealed++;
-    if(unrevealed===0&&!gameOver){
-      win=true;gameOver=true;
-      document.getElementById('mine-status').textContent='🎉 你赢了！';
-    }
+    let u=0;for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++)if(!revealed[i][j]&&board[i][j]!==-1)u++;
+    if(u===0&&!gameOver){win=true;gameOver=true;document.getElementById('mine-status').textContent='🎉 你赢了！';}
   }
 
   function mineRender(){
     const grid=document.getElementById('mine-grid');
     grid.style.gridTemplateColumns=`repeat(${COLS},36px)`;
     const colors={1:'#1976d2',2:'#388e3c',3:'#d32f2f',4:'#7b1fa2',5:'#ff8f00',6:'#0097a7',7:'#5d4037',8:'#616161'};
-    const bg=cssVar('--surface-container'),bgHover=cssVar('--surface-container-high'),
-          bgRevealed=cssVar('--surface-container-lowest'),
-          mineBg=cssVar('--error-container');
+    const bg=cssVar('--surface-container'),bgH=cssVar('--surface-container-high'),bgR=cssVar('--surface-container-lowest'),mBg=cssVar('--error-container');
     let html='';
     for(let i=0;i<ROWS;i++)for(let j=0;j<COLS;j++){
       const key=i+'-'+j;
-      let cls='mine-cell',content='',style=`background:${bg};`;
+      let cls='mine-cell',s='',c='';
       if(revealed[i][j]){
-        if(board[i][j]===-1){cls+=' mine';content='💣';style=`background:${mineBg};`;}
-        else if(board[i][j]>0){cls+=' revealed';content=board[i][j];style=`background:${bgRevealed};color:${colors[board[i][j]]||'#000'};`;}
-        else{cls+=' revealed';style=`background:${bgRevealed};`;}
-      }else if(flags[key]){cls+=' flagged';content='🚩';style=`background:${bgHover};`;}
-      html+=`<div class="${cls}" data-x="${i}" data-y="${j}" style="${style}">${content}</div>`;
+        if(board[i][j]===-1){c='💣';s=`background:${mBg};`}
+        else if(board[i][j]>0){c=board[i][j];s=`background:${bgR};color:${colors[board[i][j]]||'#000'};`}
+        else s=`background:${bgR};`;
+      }else if(flags[key]){c='🚩';s=`background:${bgH};`}
+      else s=`background:${bg};`;
+      html+=`<div class="${cls}" data-x="${i}" data-y="${j}" style="${s}">${c}</div>`;
     }
     grid.innerHTML=html;
   }
@@ -307,31 +299,15 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     if(firstClick){placeMines(x,y);firstClick=false;}
     reveal(x,y);
   });
-
-  document.getElementById('mine-grid').addEventListener('contextmenu',e=>{
-    e.preventDefault();const cell=e.target.closest('.mine-cell');if(!cell||gameOver)return;
-    toggleFlag(parseInt(cell.dataset.x),parseInt(cell.dataset.y));
-  });
-
-  function toggleFlag(x,y){
-    if(revealed[x][y])return;
-    const key=x+'-'+y;
-    if(flags[key])delete flags[key];else flags[key]=true;
-    document.getElementById('flag-count').textContent=Object.keys(flags).length;
-    mineRender();
-  }
-
-  document.getElementById('flag-btn').addEventListener('click',()=>{
-    flagMode=!flagMode;
-    document.getElementById('flag-btn').textContent=flagMode?'🚩 标记模式 (开)':'🚩 标记模式 (关)';
-  });
-
+  document.getElementById('mine-grid').addEventListener('contextmenu',e=>{e.preventDefault();const cell=e.target.closest('.mine-cell');if(!cell||gameOver)return;toggleFlag(parseInt(cell.dataset.x),parseInt(cell.dataset.y));});
+  function toggleFlag(x,y){if(revealed[x][y])return;const key=x+'-'+y;if(flags[key])delete flags[key];else flags[key]=true;document.getElementById('flag-count').textContent=Object.keys(flags).length;mineRender();}
+  document.getElementById('flag-btn').addEventListener('click',()=>{flagMode=!flagMode;document.getElementById('flag-btn').textContent=flagMode?'🚩 标记模式 (开)':'🚩 标记模式 (关)';});
   document.getElementById('mine-restart').addEventListener('click',init);
   init();
 })();
 
 /* =================================================================
-   五子棋（双人对弈 / 人机对战）
+   五子棋（人机 / 双人）
    ================================================================= */
 (function(){
   const SIZE=15,CELL=28,PADDING=20;
@@ -352,15 +328,9 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     const w=canvas.width;
     ctx.fillStyle='#dcb35c';ctx.fillRect(0,0,w,w);
     ctx.strokeStyle='#8b6914';ctx.lineWidth=1;
-    for(let i=0;i<SIZE;i++){
-      const p=PADDING+i*CELL;
-      ctx.beginPath();ctx.moveTo(PADDING,p);ctx.lineTo(w-PADDING,p);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(p,PADDING);ctx.lineTo(p,w-PADDING);ctx.stroke();
-    }
+    for(let i=0;i<SIZE;i++){const p=PADDING+i*CELL;ctx.beginPath();ctx.moveTo(PADDING,p);ctx.lineTo(w-PADDING,p);ctx.stroke();ctx.beginPath();ctx.moveTo(p,PADDING);ctx.lineTo(p,w-PADDING);ctx.stroke();}
     ctx.fillStyle='#8b6914';
-    [[3,3],[3,11],[11,3],[11,11],[7,7]].forEach(([x,y])=>{
-      ctx.beginPath();ctx.arc(PADDING+x*CELL,PADDING+y*CELL,3,0,Math.PI*2);ctx.fill();
-    });
+    [[3,3],[3,11],[11,3],[11,11],[7,7]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(PADDING+x*CELL,PADDING+y*CELL,3,0,Math.PI*2);ctx.fill();});
     for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
       if(board[r][c]===0)continue;
       const x=PADDING+c*CELL,y=PADDING+r*CELL;
@@ -383,20 +353,13 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     return false;
   }
 
-  // ---- AI 评分算法 ----
   function aiEvaluate(r,c,player){
-    const dirs=[[1,0],[0,1],[1,1],[1,-1]];
-    let score=0;
+    const dirs=[[1,0],[0,1],[1,1],[1,-1]];let score=0;
     for(const [dr,dc]of dirs){
       let cnt=1,open=0;
-      for(let d=1;d<5;d++){const nr=r+dr*d,nc=c+dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]!==undefined&&board[nr][nc]===0?1:0;break}}
-      for(let d=1;d<5;d++){const nr=r-dr*d,nc=c-dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]!==undefined&&board[nr][nc]===0?1:0;break}}
-      // scoring 5=100k, 4=10k, 3=1k, 2=100, 1=10
-      if(cnt>=5)score+=100000;
-      else if(cnt===4)score+=(open>=1?10000:5000);
-      else if(cnt===3)score+=(open>=1?1000:500);
-      else if(cnt===2)score+=(open>=1?100:50);
-      else if(cnt===1)score+=10;
+      for(let d=1;d<5;d++){const nr=r+dr*d,nc=c+dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]&&board[nr][nc]===0?1:0;break}}
+      for(let d=1;d<5;d++){const nr=r-dr*d,nc=c-dc*d;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player)cnt++;else{open+=board[nr]&&board[nr][nc]===0?1:0;break}}
+      if(cnt>=5)score+=100000;else if(cnt===4)score+=open>=1?10000:5000;else if(cnt===3)score+=open>=1?1000:500;else if(cnt===2)score+=open>=1?100:50;else if(cnt===1)score+=10;
     }
     return score;
   }
@@ -406,34 +369,20 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     let best={r:-1,c:-1,score:-1};
     for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
       if(board[r][c]!==0)continue;
-      const attack=aiEvaluate(r,c,2);   // AI = white = 2
-      const defend=aiEvaluate(r,c,1)*1.1; // 防守略优先
+      const attack=aiEvaluate(r,c,2),defend=aiEvaluate(r,c,1)*1.1;
       const total=Math.max(attack,defend);
-      if(total>best.score){best={r,c,score:total};}
-      // tie-break: prefer center
-      else if(total===best.score&&Math.abs(r-7)+Math.abs(c-7)<Math.abs(best.r-7)+Math.abs(best.c-7)){best={r,c,score:total};}
+      if(total>best.score)best={r,c,score:total};
+      else if(total===best.score&&Math.abs(r-7)+Math.abs(c-7)<Math.abs(best.r-7)+Math.abs(best.c-7))best={r,c,score:total};
     }
-    if(best.r<0){
-      // fallback: center
-      if(board[7][7]===0)best={r:7,c:7,score:0};
-      else{
-        for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){if(board[r][c]===0){best={r,c,score:0};r=SIZE;c=SIZE;}}
-      }
-    }
+    if(best.r<0){if(board[7][7]===0)best={r:7,c:7,score:0};else{for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){if(board[r][c]===0){best={r,c,score:0};r=SIZE;c=SIZE;}}}}
     if(best.r<0)return;
     aiThinking=true;
     setTimeout(()=>{
       if(gameOver){aiThinking=false;return;}
       board[best.r][best.c]=2;moveCount++;
       gomoDraw();
-      if(checkWin(best.r,best.c,2)){
-        gameOver=true;
-        document.getElementById('gomo-status').textContent='🤖 AI 获胜！(共'+moveCount+'步)';
-        aiThinking=false;return;
-      }
-      turn=1;
-      document.getElementById('gomo-turn').textContent='⚫ 你的回合';
-      aiThinking=false;
+      if(checkWin(best.r,best.c,2)){gameOver=true;document.getElementById('gomo-status').textContent='🤖 AI 获胜！(共'+moveCount+'步)';aiThinking=false;return;}
+      turn=1;document.getElementById('gomo-turn').textContent='⚫ 你的回合';aiThinking=false;
     },400);
   }
 
@@ -442,35 +391,16 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
     const rect=canvas.getBoundingClientRect(),scale=canvas.width/rect.width;
     const x=Math.round((e.clientX-rect.left)*scale),y=Math.round((e.clientY-rect.top)*scale);
     const c=Math.round((x-PADDING)/CELL),r=Math.round((y-PADDING)/CELL);
-    if(r<0||r>=SIZE||c<0||c>=SIZE||board[r][c]!==0)return;
-    // In AI mode, black=player; in 2p mode, any turn
-    if(aiMode&&turn!==1)return;
-
+    if(r<0||r>=SIZE||c<0||c>=SIZE||board[r][c]!==0||(aiMode&&turn!==1))return;
     board[r][c]=turn;moveCount++;
     gomoDraw();
-    if(checkWin(r,c,turn)){
-      gameOver=true;
-      const winner=turn===1?'⚫ 你获胜！':'⚪ 白棋 获胜！';
-      document.getElementById('gomo-status').textContent='🎉 '+winner+' (共'+moveCount+'步)';
-      return;
-    }
+    if(checkWin(r,c,turn)){gameOver=true;document.getElementById('gomo-status').textContent='🎉 '+(turn===1?'你获胜！':'白棋 获胜！')+' (共'+moveCount+'步)';return;}
     turn=turn===1?2:1;
-    if(aiMode){
-      document.getElementById('gomo-turn').textContent='🤖 AI 思考中...';
-      aiMove();
-    } else {
-      document.getElementById('gomo-turn').textContent=turn===1?'⚫ 黑棋':'⚪ 白棋';
-    }
+    if(aiMode){document.getElementById('gomo-turn').textContent='🤖 AI 思考中...';aiMove();}
+    else document.getElementById('gomo-turn').textContent=turn===1?'⚫ 黑棋':'⚪ 白棋';
   });
-
-  document.getElementById('gomo-restart').addEventListener('click',()=>{gomoInit();if(aiMode){document.getElementById('gomo-turn').textContent='⚫ 你的回合';}});
-  document.getElementById('gomo-mode').addEventListener('click',()=>{
-    aiMode=!aiMode;
-    document.getElementById('gomo-mode').textContent=aiMode?'👤 人机模式':'👥 双人模式';
-    gomoInit();
-    if(aiMode)document.getElementById('gomo-turn').textContent='⚫ 你的回合';
-    else document.getElementById('gomo-turn').textContent='⚫ 黑棋';
-  });
+  document.getElementById('gomo-restart').addEventListener('click',()=>{gomoInit();if(aiMode)document.getElementById('gomo-turn').textContent='⚫ 你的回合';});
+  document.getElementById('gomo-mode').addEventListener('click',()=>{aiMode=!aiMode;document.getElementById('gomo-mode').textContent=aiMode?'👤 人机模式':'👥 双人模式';gomoInit();});
   gomoInit();
 })();
 
@@ -480,73 +410,27 @@ document.querySelectorAll('.tab-btn').forEach(b=>{
 (function(){
   const KEY='monolith.woodenFish';
   let total=0,today=0;
+  const PHRASES=['功德 +1 🙏','心静自然凉','善哉善哉','一切随缘','放下执念','阿弥陀佛','随喜赞叹','心平气和','四大皆空','福报深厚','歇即菩提','本来无一物','万事随缘了','一花一世界','善有善报','平常心是道','福慧双修','功德无量','心生欢喜','缘起性空',];
 
-  const PHRASES=[
-    '功德 +1 🙏','心静自然凉','善哉善哉','一切随缘','放下执念',
-    '阿弥陀佛','随喜赞叹','心平气和','四大皆空','福报深厚',
-    '歇即菩提','本来无一物','万事随缘了','一花一世界','善有善报',
-    '平常心是道','福慧双修','功德无量','心生欢喜','缘起性空',
-  ];
+  function load(){try{const raw=JSON.parse(localStorage.getItem(KEY)||'{}');total=raw.total||0;const tk=new Date().toISOString().slice(0,10);today=raw[tk]||0;}catch(e){total=0;today=0}updateUI();}
+  function save(){try{const raw=JSON.parse(localStorage.getItem(KEY)||'{}')||{};const tk=new Date().toISOString().slice(0,10);raw.total=total;raw[tk]=today;localStorage.setItem(KEY,JSON.stringify(raw));}catch(e){}}
+  function updateUI(){document.getElementById('deed').textContent=total;document.getElementById('wf-today').textContent=today;}
+  function knock(){total++;today++;const fish=document.getElementById('fish');fish.classList.add('hit');setTimeout(()=>fish.classList.remove('hit'),120);const p=document.getElementById('wf-phrase');p.classList.add('fade');setTimeout(()=>{p.textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];p.classList.remove('fade');},100);updateUI();save();}
 
-  function load(){
-    try{
-      const raw=JSON.parse(localStorage.getItem(KEY)||'{}');
-      total=raw.total||0;
-      const todayKey=new Date().toISOString().slice(0,10);
-      today=raw[todayKey]||0;
-    }catch(e){total=0;today=0}
-    updateUI();
-  }
-
-  function save(){
-    try{
-      const raw=JSON.parse(localStorage.getItem(KEY)||'{}')||{};
-      const todayKey=new Date().toISOString().slice(0,10);
-      raw.total=total;raw[todayKey]=today;
-      localStorage.setItem(KEY,JSON.stringify(raw));
-    }catch(e){}
-  }
-
-  function updateUI(){
-    document.getElementById('deed').textContent=total;
-    document.getElementById('wf-today').textContent=today;
-  }
-
-  function knock(){
-    total++;today++;
-    const fish=document.getElementById('fish');
-    fish.classList.add('hit');
-    setTimeout(()=>fish.classList.remove('hit'),120);
-    const p=document.getElementById('wf-phrase');
-    p.classList.add('fade');
-    setTimeout(()=>{
-      p.textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
-      p.classList.remove('fade');
-    },100);
-    updateUI();
-    save();
-  }
-
-  // 图片优先，emoji 兜底
   const fishEl=document.getElementById('fish');
   const img=new Image();
-  img.onload=()=>{fishEl.innerHTML='<img src="assets/images/wooden-fish.png" alt="木鱼">';};
+  img.onload=()=>{fishEl.innerHTML='<img src="assets/images/wooden-fish.png" alt="木鱼" style="width:100%;height:100%;object-fit:contain;">';};
   img.onerror=()=>{fishEl.textContent='🐟';};
   img.src='assets/images/wooden-fish.png';
 
   document.getElementById('fish-wrap').addEventListener('click',knock);
-  document.addEventListener('keydown',e=>{
-    if(!document.getElementById('tab-wooden-fish').classList.contains('active'))return;
-    if(e.key===' '||e.key==='Enter'){e.preventDefault();knock()}
-  });
-  document.getElementById('wf-reset').addEventListener('click',()=>{
-    if(!confirm('确定要重置总功德吗？'))return;
-    total=0;today=0;try{localStorage.setItem(KEY,JSON.stringify({total:0}));}catch(e){}
-    updateUI();
-    document.getElementById('wf-phrase').textContent='功德已清零，从头再来 🙏';
-  });
+  document.addEventListener('keydown',e=>{if(!document.getElementById('tab-wooden-fish').classList.contains('active'))return;if(e.key===' '||e.key==='Enter'){e.preventDefault();knock()}});
+  document.getElementById('wf-reset').addEventListener('click',()=>{if(!confirm('确定要重置总功德吗？'))return;total=0;today=0;try{localStorage.setItem(KEY,JSON.stringify({total:0}));}catch(e){}updateUI();document.getElementById('wf-phrase').textContent='功德已清零，从头再来 🙏';});
   load();
 })();
+
+// Login guard
+(function(){try{var n=localStorage.getItem('monolith.userName');if(!n)location.href='login.html';}catch(e){}})();
 </script>
 </body>
 </html>
