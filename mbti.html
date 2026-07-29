@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MBTI人格测试 · My Work</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="flex items-center gap-2">
+      <button data-nav-toggle class="nav-toggle p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="菜单">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <img src="assets/images/avatar.jpg" alt="头像" class="w-8 h-8 rounded-full object-cover shrink-0" />
+      <span class="font-semibold text-lg tracking-tight whitespace-nowrap">My Work</span>
+    </div>
+    <div class="flex-1 mx-auto flex justify-center overflow-hidden px-4">
+      <div class="header-ticker w-full max-w-xl" id="header-ticker">
+        <p class="body-md text-on-surface-variant">悟已往之不谏，知来者之可追。</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button data-theme-toggle class="p-2 rounded-full hover:bg-surface-container transition-colors" aria-label="主题切换">
+        <span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+
+    <aside class="app-sidebar"></aside>
+
+    <main class="app-main">
+
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-6 fade-in">
+        <span class="material-symbols-outlined text-base">psychology</span>
+        <span>Workspace · MBTI人格测试</span>
+      </div>
+
+      <!-- Intro card (shown before test starts) -->
+      <div id="intro-card" class="card fade-in" style="max-width:600px;margin:0 auto;">
+        <div class="text-center">
+          <span class="material-symbols-outlined" style="font-size:64px;color:var(--primary);margin-bottom:12px;">psychology</span>
+          <h2 class="headline-lg mb-2">MBTI 人格测试</h2>
+          <p class="body-md text-on-surface-variant mb-6" style="line-height:1.7;">
+            MBTI（迈尔斯-布里格斯类型指标）从四个维度评估你的性格倾向：<br>
+            <span class="font-semibold text-on-surface">外倾(E)</span> / <span class="font-semibold text-on-surface">内倾(I)</span> ·
+            <span class="font-semibold text-on-surface">实感(S)</span> / <span class="font-semibold text-on-surface">直觉(N)</span> ·
+            <span class="font-semibold text-on-surface">思考(T)</span> / <span class="font-semibold text-on-surface">情感(F)</span> ·
+            <span class="font-semibold text-on-surface">判断(J)</span> / <span class="font-semibold text-on-surface">感知(P)</span>
+          </p>
+          <p class="text-sm text-on-surface-variant mb-6">共 16 道选择题，约需 5 分钟</p>
+          <button id="start-btn" class="btn-primary py-3 px-8">开始测试</button>
+        </div>
+      </div>
+
+      <!-- Quiz card (shown during test) -->
+      <div id="quiz-card" class="card fade-in" style="max-width:600px;margin:0 auto;display:none;">
+        <!-- Progress -->
+        <div class="flex items-center gap-3 mb-6">
+          <div class="flex-1 h-2 rounded-full" style="background:var(--outline-variant);">
+            <div id="progress-bar" class="h-full rounded-full transition-all duration-500" style="width:0%;background:var(--primary);"></div>
+          </div>
+          <span id="progress-text" class="text-sm text-on-surface-variant shrink-0">1/16</span>
+        </div>
+
+        <!-- Question -->
+        <div id="question-area">
+          <p id="q-label" class="eyebrow mb-3 text-xs text-primary" style="font-size:11px;">E/I · 外倾/内倾</p>
+          <h3 id="q-text" class="headline-sm mb-8" style="font-size:22px;font-weight:600;line-height:1.5;min-height:3em;"></h3>
+
+          <div id="options" class="flex flex-col gap-3"></div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between mt-8">
+          <button id="prev-btn" class="btn-secondary text-sm py-2 px-6" disabled>上一题</button>
+          <button id="next-btn" class="btn-primary text-sm py-2 px-6">下一题</button>
+        </div>
+      </div>
+
+      <!-- Result card -->
+      <div id="result-card" class="card fade-in" style="max-width:600px;margin:0 auto;display:none;">
+        <div class="text-center">
+          <span class="material-symbols-outlined" style="font-size:64px;color:var(--primary);margin-bottom:8px;">psychology</span>
+          <p class="eyebrow mb-1" style="font-size:11px;">你的 MBTI 类型</p>
+          <h2 id="result-type" class="headline-xl mb-3" style="font-size:44px;letter-spacing:0.08em;">INTJ</h2>
+          <p id="result-title" class="body-md font-semibold mb-1">建筑师</p>
+          <p id="result-desc" class="text-sm text-on-surface-variant mb-8" style="line-height:1.7;"></p>
+
+          <div id="dimension-bars" class="flex flex-col gap-4 mb-8" style="max-width:400px;margin:0 auto;"></div>
+
+          <div class="flex items-center justify-center gap-4">
+            <button id="retake-btn" class="btn-secondary text-sm py-2 px-6">重新测试</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="assets/sidebar.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    /* ===== Share state ===== */
+    let answers = {};
+    let currentQ = 0;
+
+    const QUESTIONS = [
+      // ── E/I ──
+      { dim: 'EI', dimLabel: 'E/I · 外倾/内倾', text: '在聚会或社交场合中，你更喜欢：', choices: ['主动认识新朋友，享受热闹氛围（E）', '和几个熟悉的人交流，更喜欢安静（I）'] },
+      { dim: 'EI', dimLabel: 'E/I · 外倾/内倾', text: '周末你通常会选择：', choices: ['约朋友出去玩或参加活动（E）', '在家看书/看电影，享受独处（I）'] },
+      { dim: 'EI', dimLabel: 'E/I · 外倾/内倾', text: '和别人聊天时，你倾向于：', choices: ['边想边说，喜欢即时交流（E）', '先思考再回答，话不多但精确（I）'] },
+      { dim: 'EI', dimLabel: 'E/I · 外倾/内倾', text: '工作学习中，你更喜欢：', choices: ['团队协作、讨论碰撞（E）', '独立钻研、深度思考（I）'] },
+      // ── S/N ──
+      { dim: 'SN', dimLabel: 'S/N · 实感/直觉', text: '描述一件事时，你更关注：', choices: ['具体事实、细节、实际发生了什么（S）', '背后的意义、可能性、未来的影响（N）'] },
+      { dim: 'SN', dimLabel: 'S/N · 实感/直觉', text: '哪句话更像你：', choices: ['"脚踏实地，眼见为实"（S）', '"想象一下如果…会怎样"（N）'] },
+      { dim: 'SN', dimLabel: 'S/N · 实感/直觉', text: '学新东西时，你更喜欢：', choices: ['按照明确步骤操作，看实际效果（S）', '先理解整体概念和原理（N）'] },
+      { dim: 'SN', dimLabel: 'S/N · 实感/直觉', text: '你更容易记住：', choices: ['亲身经历的具体事情（S）', '突然产生的灵感和联想（N）'] },
+      // ── T/F ──
+      { dim: 'TF', dimLabel: 'T/F · 思考/情感', text: '做重要决定时，你更依赖：', choices: ['逻辑分析、利弊权衡（T）', '内心感受、价值观（F）'] },
+      { dim: 'TF', dimLabel: 'T/F · 思考/情感', text: '朋友向你倾诉烦恼时，你通常：', choices: ['帮他分析问题出在哪（T）', '先安抚情绪，表示理解（F）'] },
+      { dim: 'TF', dimLabel: 'T/F · 思考/情感', text: '你更难容忍的是：', choices: ['不公平、不讲逻辑（T）', '冷漠无情、忽视感受（F）'] },
+      { dim: 'TF', dimLabel: 'T/F · 思考/情感', text: '评价一个人时，你更看重：', choices: ['能力和做事的结果（T）', '为人和相处的感觉（F）'] },
+      // ── J/P ──
+      { dim: 'JP', dimLabel: 'J/P · 判断/感知', text: '你的日常生活通常是：', choices: ['有计划、有清单、按部就班（J）', '随性自由、灵活应变（P）'] },
+      { dim: 'JP', dimLabel: 'J/P · 判断/感知', text: '旅行时你更喜欢：', choices: ['提前规划好行程和住宿（J）', '大致方向就行，到了再看（P）'] },
+      { dim: 'JP', dimLabel: 'J/P · 判断/感知', text: '面对 deadline，你通常会：', choices: ['提前完成，留出余量（J）', '截止前效率最高，踩着点完成（P）'] },
+      { dim: 'JP', dimLabel: 'J/P · 判断/感知', text: '你的桌面/房间通常是：', choices: ['整洁有序，每样东西有固定位置（J）', '看起来有点乱，但自己能找到（P）'] },
+    ];
+
+    const MBTI_DATA = {
+      "INTJ": { title: "建筑师", desc: "富有想象力和战略性的思想家，一切皆在计划之中。你的冷静、理性与远见使你成为一个天生的战略制定者。" },
+      "INTP": { title: "逻辑学家", desc: "具有创造力的发明家，对知识有着永不满足的渴望。你沉迷于理论和抽象概念，喜欢解构一切事物的原理。" },
+      "ENTJ": { title: "指挥官", desc: "大胆、富有想象力且意志坚强的领导者，总能制定或发现有效的解决方案。你天生就是领导者，善于组织和指挥。" },
+      "ENTP": { title: "辩论家", desc: "聪明好奇的思想者，不会放弃任何智力上的挑战。你思维敏捷、善于即兴发挥，能从一切事物中找到乐趣。" },
+      "INFJ": { title: "提倡者", desc: "安静而神秘，同时鼓舞人心且不知疲倦的理想主义者。你有强烈的使命感和深刻的洞察力。" },
+      "INFP": { title: "调停者", desc: "诗意、善良的利他主义者，总是热情地为正义事业提供帮助。你内心世界丰富，珍视真诚与意义。" },
+      "ENFJ": { title: "主人公", desc: "富有魅力的领导者，能够用自己的热情感染他人。你善于发现他人的潜力，是天生的导师。" },
+      "ENFP": { title: "竞选者", desc: "充满热情、富有创造力且善于社交的自由精神。你总能发现生活中的美好，并把快乐传递给身边的人。" },
+      "ISTJ": { title: "物流师", desc: "实际且注重事实的个人，其可靠性不容置疑。你脚踏实地、有责任感，是大家公认的可靠之人。" },
+      "ISFJ": { title: "守卫者", desc: "非常专注和温暖的守护者，随时准备保护所爱的人。你乐于奉献，默默承担着维护和谐的责任。" },
+      "ESTJ": { title: "总经理", desc: "出色的管理者，在管理事物方面无可挑剔。你有条理、有效率，是天生的管理者。" },
+      "ESFJ": { title: "执政官", desc: "极受欢迎、富有同情心且善于社交的人，总是热心提供帮助。你重视传统和归属感，是社区的黏合剂。" },
+      "ISTP": { title: "鉴赏家", desc: "大胆而实际的实验者，擅长使用各种工具。你冷静、理性，善于在危机中解决问题。" },
+      "ISFP": { title: "探险家", desc: "灵活有魅力的艺术家，总是准备好探索和体验新事物。你敏感、温柔，用自己的方式欣赏世界的美。" },
+      "ESTP": { title: "企业家", desc: "聪明、精力充沛且感知力强的行动者，享受冒险。你活在当下，临场反应极快。" },
+      "ESFP": { title: "表演者", desc: "自发的、精力充沛而热情的表演者——在他们的周围永远不会感到无聊。你阳光、热情，是派对的气氛担当。" },
+    };
+
+    /* ===== DOM refs ===== */
+    const $ = id => document.getElementById(id);
+    const introCard = $('intro-card');
+    const quizCard = $('quiz-card');
+    const resultCard = $('result-card');
+    const progressBar = $('progress-bar');
+    const progressText = $('progress-text');
+    const qLabel = $('q-label');
+    const qText = $('q-text');
+    const options = $('options');
+    const prevBtn = $('prev-btn');
+    const nextBtn = $('next-btn');
+
+    /* ===== Start ===== */
+    $('start-btn').addEventListener('click', startQuiz);
+
+    /* ===== Quiz functions ===== */
+    function startQuiz() {
+      answers = {};
+      currentQ = 0;
+      introCard.style.display = 'none';
+      quizCard.style.display = 'block';
+      resultCard.style.display = 'none';
+      showQuestion(0);
+    }
+
+    function showQuestion(idx) {
+      const q = QUESTIONS[idx];
+      qLabel.textContent = q.dimLabel;
+      qText.textContent = q.text;
+      prevBtn.disabled = idx === 0;
+
+      // Build options
+      options.innerHTML = q.choices.map((c, i) => {
+        const sel = answers[idx] === i ? 'selected' : '';
+        return `<button class="option-btn ${sel}" data-opt="${i}"><span>${c}</span></button>`;
+      }).join('');
+
+      // Mark selected
+      if (answers[idx] !== undefined) {
+        const btns = options.querySelectorAll('.option-btn');
+        btns[answers[idx]].classList.add('selected');
+      }
+
+      // Update progress
+      const pct = ((idx + 1) / QUESTIONS.length) * 100;
+      progressBar.style.width = pct + '%';
+      progressText.textContent = `${idx + 1}/${QUESTIONS.length}`;
+
+      // Next button text
+      const isLast = idx === QUESTIONS.length - 1;
+      nextBtn.textContent = isLast ? '查看结果' : '下一题';
+
+      // Bind option clicks
+      options.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          options.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          answers[idx] = parseInt(btn.dataset.opt);
+        });
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentQ > 0) { currentQ--; showQuestion(currentQ); }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (answers[currentQ] === undefined) {
+        nextBtn.textContent = '请先选择一个选项';
+        setTimeout(() => {
+          nextBtn.textContent = currentQ === QUESTIONS.length - 1 ? '查看结果' : '下一题';
+        }, 1200);
+        return;
+      }
+      if (currentQ === QUESTIONS.length - 1) {
+        calculateResult();
+      } else {
+        currentQ++;
+        showQuestion(currentQ);
+      }
+    });
+
+    /* ===== Result calculation ===== */
+    function calculateResult() {
+      const dimScores = { EI: 0, SN: 0, TF: 0, JP: 0 };
+      let dimCount = { EI: 0, SN: 0, TF: 0, JP: 0 };
+
+      QUESTIONS.forEach((q, i) => {
+        const chosen = answers[i];
+        if (chosen === undefined) return;
+        dimCount[q.dim]++;
+        // choice 0 = first letter (E/S/T/J), choice 1 = second letter (I/N/F/P)
+        dimScores[q.dim] += chosen; // 0 → +0 (type A), 1 → +1 (type B)
+      });
+
+      // Average
+      ['EI', 'SN', 'TF', 'JP'].forEach(d => {
+        dimScores[d] = dimScores[d] / (dimCount[d] || 1) * 100;
+      });
+
+      const t = [
+        dimScores.EI < 50 ? 'E' : 'I',
+        dimScores.SN < 50 ? 'S' : 'N',
+        dimScores.TF < 50 ? 'T' : 'F',
+        dimScores.JP < 50 ? 'J' : 'P',
+      ].join('');
+
+      const data = MBTI_DATA[t] || MBTI_DATA['INTJ'];
+      const pct = (d) => Math.round(dimScores[d]);
+
+      // Display result
+      $('result-type').textContent = t;
+      $('result-title').textContent = data.title;
+      $('result-desc').textContent = data.desc;
+
+      const dimConfig = [
+        { key: 'EI', label: '外倾(E)', altLabel: '内倾(I)' },
+        { key: 'SN', label: '实感(S)', altLabel: '直觉(N)' },
+        { key: 'TF', label: '思考(T)', altLabel: '情感(F)' },
+        { key: 'JP', label: '判断(J)', altLabel: '感知(P)' },
+      ];
+
+      $('dimension-bars').innerHTML = dimConfig.map(cfg => {
+        const val = dimScores[cfg.key];
+        const leftPct = 100 - val;
+        const rightPct = val;
+        const leftActive = val < 50;
+        const rightActive = val >= 50;
+        return `
+          <div class="dim-bar">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-medium ${leftActive ? 'text-primary' : 'text-on-surface-variant'}">${cfg.label} ${Math.round(leftPct)}%</span>
+              <span class="text-xs font-medium ${rightActive ? 'text-primary' : 'text-on-surface-variant'}">${Math.round(rightPct)}% ${cfg.altLabel}</span>
+            </div>
+            <div class="dim-track">
+              <div class="dim-fill" style="width:${leftPct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Save to localStorage
+      const now = new Date();
+      const result = { type: t, title: data.title, dimScores, date: now.toISOString() };
+      localStorage.setItem('monolith.mbtiResult', JSON.stringify(result));
+
+      quizCard.style.display = 'none';
+      resultCard.style.display = 'block';
+    }
+
+    /* ===== Retake ===== */
+    $('retake-btn').addEventListener('click', startQuiz);
+
+    /* ===== Login guard ===== */
+    (function checkLogin() {
+      try { var n = localStorage.getItem('monolith.userName'); if (!n) { location.href = 'login.html'; } } catch(e){}
+    })();
+  </script>
+
+  <style>
+    .option-btn {
+      display: flex; align-items: center; padding: 16px 20px;
+      border-radius: var(--r-xl); border: 1.5px solid var(--outline-variant);
+      background: transparent; cursor: pointer; text-align: left;
+      transition: all 0.2s; font-size: 15px; line-height: 1.5; color: var(--on-surface);
+    }
+    .option-btn:hover { border-color: var(--primary); background: var(--surface-container-low); }
+    .option-btn.selected { border-color: var(--primary); background: var(--surface-container); font-weight: 500; }
+    /* Dimension bars */
+    .dim-track {
+      width: 100%; height: 8px; border-radius: 9999px;
+      background: var(--outline-variant);
+    }
+    .dim-fill {
+      height: 100%; border-radius: 9999px;
+      background: var(--primary);
+      transition: width 0.6s ease;
+    }
+  </style>
+
+</body>
+</html>
