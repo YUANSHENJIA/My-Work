@@ -59,15 +59,15 @@
       <aside class="flex flex-col gap-6">
         <div class="flex flex-col gap-4">
           <div class="relative">
-            <input type="text" placeholder="搜索笔记或标签..." class="w-full px-12 py-4 rounded-2xl font-body-md outline-none" style="background: var(--surface-container-low); color: var(--on-surface);">
+            <input id="excerpt-search" type="text" placeholder="搜索笔记或标签..." class="w-full px-12 py-4 rounded-2xl font-body-md outline-none" style="background: var(--surface-container-low); color: var(--on-surface);">
             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
           </div>
-          <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-            <span class="chip active">全部</span>
-            <span class="chip">#工作</span>
-            <span class="chip">#AI</span>
-            <span class="chip">#灵感</span>
-            <span class="chip">#阅读</span>
+          <div id="excerpt-tags-bar" class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+            <span class="chip active" data-tag="">全部</span>
+            <span class="chip" data-tag="#工作">#工作</span>
+            <span class="chip" data-tag="#AI">#AI</span>
+            <span class="chip" data-tag="#灵感">#灵感</span>
+            <span class="chip" data-tag="#阅读">#阅读</span>
           </div>
         </div>
 
@@ -173,8 +173,54 @@
     }
 
     function render() {
-      document.getElementById('entries-list').innerHTML = entries.map(cardHtml).join('');
+      const q = (currentQuery || '').trim().toLowerCase();
+      let pool = entries.slice();
+      if (currentTag) {
+        pool = pool.filter(function(e){ return (e.tags || []).includes(currentTag); });
+      }
+      if (q) {
+        pool = pool.filter(function(e){
+          const hay = ((e.title || '') + ' ' + (e.excerpt || '') + ' ' + (e.tags || []).join(' ')).toLowerCase();
+          return hay.indexOf(q) !== -1;
+        });
+      }
+      const list = document.getElementById('entries-list');
+      if (!pool.length) {
+        list.innerHTML = '<div class="col-span-2 text-center py-12 text-on-surface-variant text-sm">' +
+          (q || currentTag ? '没有匹配的笔记，换个关键词或标签试试' : '还没有摘录，点击下方按钮添加') + '</div>';
+        return;
+      }
+      list.innerHTML = pool.map(cardHtml).join('');
     }
+
+    // 检索状态
+    let currentQuery = '';
+    let currentTag = '';
+
+    // 搜索框：输入即过滤（200ms 防抖）
+    let searchTimer = null;
+    document.getElementById('excerpt-search').addEventListener('input', e => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function(){
+        currentQuery = e.target.value;
+        render();
+      }, 200);
+    });
+
+    // 标签点击：切换当前筛选
+    document.getElementById('excerpt-tags-bar').addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      const tag = chip.dataset.tag || '';
+      currentTag = (currentTag === tag && tag !== '') ? '' : tag; // 再次点同一标签取消
+      // 更新 active 样式
+      document.querySelectorAll('#excerpt-tags-bar .chip').forEach(c => {
+        c.classList.toggle('active', (c.dataset.tag || '') === (currentTag || ''));
+      });
+      // "全部" 始终保持视觉一致
+      document.querySelector('#excerpt-tags-bar .chip[data-tag=""]').classList.toggle('active', !currentTag);
+      render();
+    });
 
     render();
 
