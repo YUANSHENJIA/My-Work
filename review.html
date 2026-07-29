@@ -39,8 +39,8 @@
   <main class="app-main dot-bg">
     <section class="mb-6 fade-in">
       <p class="eyebrow mb-2">Daily Reflection</p>
-      <h1 class="headline-xl mb-2">今日复盘</h1>
-      <p class="body-lg text-on-surface-variant max-w-2xl">
+      <h1 class="headline-xl mb-2" data-i18n="reviewTitle">今日复盘</h1>
+      <p class="body-lg text-on-surface-variant max-w-2xl" data-i18n="reviewDesc">
         回顾今日所做的事、所学的知识、所犯的错误。把每天的复盘变成成长的杠杆。
       </p>
     </section>
@@ -48,55 +48,58 @@
     <!-- Quick stats -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <div class="card text-center">
-        <p class="eyebrow mb-2">完成度</p>
+        <p class="eyebrow mb-2" data-i18n="completionRate">完成度</p>
         <p class="text-3xl font-semibold mb-1" id="rev-done-rate">—</p>
-        <p class="text-xs text-on-surface-variant"><span id="rev-done-fr">—/—</span> 待办</p>
+        <p class="text-xs text-on-surface-variant"><span id="rev-done-fr">—/—</span> <span data-i18n="todosPending">待办</span></p>
       </div>
       <div class="card text-center">
-        <p class="eyebrow mb-2">饮水量</p>
+        <p class="eyebrow mb-2" data-i18n="waterLabel">饮水量</p>
         <p class="text-3xl font-semibold mb-1"><span id="rev-water">—</span><span class="text-base text-on-surface-variant ml-1">L</span></p>
-        <p class="text-xs text-on-surface-variant">目标 2.0L</p>
+        <p class="text-xs text-on-surface-variant" id="rev-water-target" data-i18n-attr="textContent:waterTarget">目标 2.0L</p>
       </div>
       <div class="card text-center">
-        <p class="eyebrow mb-2">阅读时长</p>
+        <p class="eyebrow mb-2" data-i18n="readingTime">阅读时长</p>
         <p class="text-3xl font-semibold mb-1"><span id="rev-reading">0</span><span class="text-base text-on-surface-variant ml-1">m</span></p>
-        <p class="text-xs text-on-surface-variant" id="rev-reading-sub">自动统计中</p>
+        <p class="text-xs text-on-surface-variant" id="rev-reading-sub" data-i18n="autoCounting">自动统计中</p>
       </div>
       <div class="card text-center">
-        <p class="eyebrow mb-2">专注时长</p>
+        <p class="eyebrow mb-2" data-i18n="focusTime">专注时长</p>
         <p class="text-3xl font-semibold mb-1"><span id="rev-focus">0</span><span class="text-base text-on-surface-variant ml-1">m</span></p>
-        <p class="text-xs text-on-surface-variant" id="rev-focus-sub">自动统计中</p>
+        <p class="text-xs text-on-surface-variant" id="rev-focus-sub" data-i18n="autoCounting">自动统计中</p>
       </div>
     </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Three questions -->
       <section class="card fade-in">
-        <h2 class="headline-lg mb-2">三个问题</h2>
-        <p class="text-on-surface-variant mb-6">每天回答这三个问题，是建立自我反馈循环的简单方式。</p>
+        <h2 class="headline-lg mb-2" data-i18n="threeQuestions">三个问题</h2>
+        <p class="text-on-surface-variant mb-6" data-i18n="threeQuestionsDesc">每天回答这三个问题，是建立自我反馈循环的简单方式。</p>
 
         <div class="flex flex-col gap-6">
           <div>
-            <label class="eyebrow mb-2 block" style="color: var(--primary);">今天做了什么？</label>
-            <textarea id="review-q1" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" placeholder="记录你今天完成的具体事情..."
+            <label class="eyebrow mb-2 block" style="color: var(--primary);" data-i18n="q1">今天做了什么？</label>
+            <textarea id="review-q1" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" data-i18n-attr="placeholder:q1Placeholder"
+                      placeholder="记录你今天完成的具体事情..."
                       style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
           </div>
 
           <div>
-            <label class="eyebrow mb-2 block" style="color: var(--primary);">今天学到了什么？</label>
-            <textarea id="review-q2" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" placeholder="今天的新认知、新技能、新视角..."
+            <label class="eyebrow mb-2 block" style="color: var(--primary);" data-i18n="q2">今天学到了什么？</label>
+            <textarea id="review-q2" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" data-i18n-attr="placeholder:q2Placeholder"
+                      placeholder="今天的新认知、新技能、新视角..."
                       style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
           </div>
 
           <div>
-            <label class="eyebrow mb-2 block" style="color: var(--primary);">明天要改进什么？</label>
-            <textarea id="review-q3" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" placeholder="明天希望改变的一件事..."
+            <label class="eyebrow mb-2 block" style="color: var(--primary);" data-i18n="q3">明天要改进什么？</label>
+            <textarea id="review-q3" class="w-full px-4 py-3 rounded-xl outline-none resize-none" rows="4" data-i18n-attr="placeholder:q3Placeholder"
+                      placeholder="明天希望改变的一件事..."
                       style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
           </div>
 
           <button id="save-review-btn" class="btn-primary self-start">
             <span class="material-symbols-outlined">save</span>
-            <span>保存今日复盘</span>
+            <span data-i18n="saveReview">保存今日复盘</span>
           </button>
         </div>
       </section>
@@ -106,9 +109,9 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="eyebrow mb-1">History</p>
-            <h2 class="headline-lg">历史复盘</h2>
+            <h2 class="headline-lg" data-i18n="historyReview">历史复盘</h2>
           </div>
-          <a href="#" class="text-sm text-on-surface-variant hover:text-on-surface">查看全部</a>
+          <a href="#" class="text-sm text-on-surface-variant hover:text-on-surface" data-i18n="viewAll">查看全部</a>
         </div>
         <div id="history-list" class="flex flex-col gap-3"></div>
       </section>

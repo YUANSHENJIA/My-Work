@@ -38,9 +38,9 @@
 
   <main class="app-main dot-bg">
     <section class="mb-6 fade-in">
-      <p class="eyebrow mb-2">Workspace / Hydration</p>
-      <h1 class="headline-xl mb-2">喝水时间</h1>
-      <p class="body-lg text-on-surface-variant max-w-2xl">
+      <p class="eyebrow mb-2"><span data-i18n="workspace">Workspace</span> / Hydration</p>
+      <h1 class="headline-xl mb-2" data-i18n="hydrationTitle">喝水时间</h1>
+      <p class="body-lg text-on-surface-variant max-w-2xl" data-i18n="hydrationDesc">
         持续补水，保持专注。健康的小习惯带来巨大的复利。
       </p>
     </section>
@@ -95,15 +95,15 @@
             <button class="water-add-btn" data-add="350"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 350ml</span></button>
             <button class="water-add-btn" data-add="500"><span class="material-symbols-outlined">local_drink</span><span class="text-lg">+ 500ml</span></button>
           </div>
-          <button id="reset-water" class="water-reset-btn">重置今日饮水</button>
+          <button id="reset-water" class="water-reset-btn" data-i18n="resetWater">重置今日饮水</button>
         </div>
 
         <!-- Reminder settings -->
         <div class="card fade-in" style="padding: 24px;">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <p class="eyebrow mb-1" style="font-size:11px;">提醒设置</p>
-              <p class="text-lg font-semibold" style="color:var(--on-surface);">定时喝水提醒</p>
+              <p class="eyebrow mb-1" style="font-size:11px;" data-i18n="reminderSettings">提醒设置</p>
+              <p class="text-lg font-semibold" style="color:var(--on-surface);" data-i18n="scheduledReminder">定时喝水提醒</p>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="reminder-toggle" checked>
@@ -112,7 +112,7 @@
           </div>
 
           <div class="flex items-center justify-between mb-1">
-            <span class="text-xs text-on-surface-variant">提醒间隔</span>
+            <span class="text-xs text-on-surface-variant" data-i18n="reminderInterval">提醒间隔</span>
             <span class="text-xs font-semibold" id="interval-value">45 分钟</span>
           </div>
           <input type="range" id="interval-slider" min="15" max="120" step="15" value="45" class="w-full">
@@ -122,8 +122,8 @@
               <span class="material-symbols-outlined" style="font-size:18px;">vibration</span>
             </div>
             <div class="flex-1">
-              <p class="text-sm font-medium" style="color:var(--on-surface);">智能振动提醒</p>
-              <p class="text-xs text-on-surface-variant">仅在佩戴手表时提醒</p>
+              <p class="text-sm font-medium" style="color:var(--on-surface);" data-i18n="smartReminder">智能振动提醒</p>
+              <p class="text-xs text-on-surface-variant" data-i18n="smartReminderHint">仅在佩戴手表时提醒</p>
             </div>
             <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
           </div>

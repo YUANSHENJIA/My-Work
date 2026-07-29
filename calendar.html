@@ -271,7 +271,7 @@
       const dayTodos = todos.filter(t => t.date === k);
 
       if (dayTodos.length === 0) {
-        tasks.innerHTML = '<li class="text-on-surface-variant text-sm">这一天还没有待办。</li>';
+        tasks.innerHTML = '<li class="text-on-surface-variant text-sm">' + (((window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{}).noTasks || '这一天还没有待办。') + '</li>';
       } else {
         tasks.innerHTML = dayTodos.map(t => `
           <li class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-low">

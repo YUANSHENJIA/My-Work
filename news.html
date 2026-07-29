@@ -167,16 +167,18 @@
         await load(false);
       } catch (e) {
         console.error('Failed to load news:', e);
-        list.innerHTML = '<p class="text-center text-on-surface-variant col-span-full py-10">资讯加载失败，请稍后再试。<br/><span class="text-xs">' + e.message + '</span></p>';
+        list.innerHTML = '<p class="text-center text-on-surface-variant col-span-full py-10">' + (((window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{}).newsLoadFail || '资讯加载失败，请稍后再试。') + '<br/><span class="text-xs">' + e.message + '</span></p>';
       }
 
       // 手动刷新按钮（强制绕过缓存）
       const header = document.querySelector('.eyebrow');
       const refreshBtn = document.createElement('button');
+      const dictN=(window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{};
       refreshBtn.className = 'chip ml-auto flex items-center gap-1';
-      refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
+      const refreshTxt = dictN.refresh || '刷新';
+      refreshBtn.innerHTML = `<span class="material-symbols-outlined text-sm">refresh</span> ${refreshTxt}`;
       refreshBtn.addEventListener('click', async () => {
-        refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> 刷新中...';
+        refreshBtn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">refresh</span> ${dictN.refreshing || '刷新中...'}`;
         try {
           await load(true);
         } catch (e) {

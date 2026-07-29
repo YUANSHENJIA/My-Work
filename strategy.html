@@ -40,14 +40,14 @@
     <section class="mb-6 fade-in flex items-end justify-between flex-wrap gap-4">
       <div>
         <p class="eyebrow mb-2">Strategy Archive</p>
-        <h1 class="headline-xl mb-2">搞钱方法</h1>
-        <p class="body-lg text-on-surface-variant max-w-2xl">
+        <h1 class="headline-xl mb-2" data-i18n="strategyTitle">搞钱方法</h1>
+        <p class="body-lg text-on-surface-variant max-w-2xl" data-i18n="strategyDesc">
           捕捉灵感，拆解逻辑，将构想转化为可持续的复利增长。
         </p>
       </div>
       <button class="btn-primary" onclick="document.getElementById('new-strategy-modal').showModal()">
         <span class="material-symbols-outlined">add</span>
-        <span>新增策略</span>
+        <span data-i18n="addMethod">新增策略</span>
       </button>
     </section>
 
@@ -59,8 +59,8 @@
           <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: var(--surface-container-low);">
             <span class="material-symbols-outlined text-4xl text-on-surface-variant">savings</span>
           </div>
-          <h2 class="headline-lg mb-3">虚位以待</h2>
-          <p class="text-on-surface-variant max-w-md text-center mb-6">
+          <h2 class="headline-lg mb-3" data-i18n="emptyTitle">虚位以待</h2>
+          <p class="text-on-surface-variant max-w-md text-center mb-6" data-i18n="emptyDesc">
             目前还没有记录任何商业灵感。点击右上角按钮，开始记录你的第一个"搞钱"计划。
           </p>
           <div class="flex items-center gap-2">
@@ -68,21 +68,21 @@
               <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--surface-container-low);">
                 <span class="material-symbols-outlined text-on-surface-variant">lightbulb</span>
               </div>
-              <p class="text-xs text-on-surface-variant">捕捉灵感</p>
+              <p class="text-xs text-on-surface-variant" data-i18n="catchSpark">捕捉灵感</p>
             </div>
             <div class="w-12 h-px" style="background: var(--outline-variant);"></div>
             <div class="flex flex-col items-center gap-2 px-4">
               <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--surface-container-low);">
                 <span class="material-symbols-outlined text-on-surface-variant">psychology</span>
               </div>
-              <p class="text-xs text-on-surface-variant">逻辑拆解</p>
+              <p class="text-xs text-on-surface-variant" data-i18n="logicSplit">逻辑拆解</p>
             </div>
             <div class="w-12 h-px" style="background: var(--outline-variant);"></div>
             <div class="flex flex-col items-center gap-2 px-4">
               <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--surface-container-low);">
                 <span class="material-symbols-outlined text-on-surface-variant">trending_up</span>
               </div>
-              <p class="text-xs text-on-surface-variant">落地执行</p>
+              <p class="text-xs text-on-surface-variant" data-i18n="execute">落地执行</p>
             </div>
           </div>
         </section>
@@ -100,11 +100,11 @@
         </div>
 
         <div class="card">
-          <p class="eyebrow mb-2">库中策略</p>
-          <p class="text-5xl font-semibold mb-4"><span id="strat-count">0</span><span class="text-base ml-2 text-on-surface-variant">个项目</span></p>
+          <p class="eyebrow mb-2" data-i18n="stratCount">库中策略</p>
+          <p class="text-5xl font-semibold mb-4"><span id="strat-count">0</span><span class="text-base ml-2 text-on-surface-variant" data-i18n="stratUnit">个项目</span></p>
           <div class="pt-4" style="border-top: 1px solid var(--outline-variant);">
             <div class="flex items-center justify-between">
-              <p class="text-sm text-on-surface-variant">最近更新</p>
+              <p class="text-sm text-on-surface-variant" data-i18n="lastUpdated">最近更新</p>
               <p class="text-xs font-mono" id="last-updated">— / — / —</p>
             </div>
           </div>
@@ -115,7 +115,7 @@
     <!-- New strategy modal -->
     <dialog id="new-strategy-modal" class="rounded-2xl p-0 max-w-md w-full" style="background: var(--surface-container-lowest); border: 1px solid var(--outline-variant);">
       <form id="strat-form" method="dialog" class="p-6 flex flex-col gap-4">
-        <h3 class="headline-lg">新增策略</h3>
+        <h3 class="headline-lg" data-i18n="addMethod">新增策略</h3>
         <input type="text" id="strat-title" placeholder="策略名称" required class="px-4 py-3 rounded-xl outline-none" style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);">
         <textarea id="strat-content" placeholder="拆解逻辑 / 行动清单..." rows="5" required class="px-4 py-3 rounded-xl outline-none resize-none" style="background: var(--surface-container-low); color: var(--on-surface); border: 1px solid var(--outline-variant);"></textarea>
         <div class="flex items-center gap-2">
