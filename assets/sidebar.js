@@ -506,7 +506,7 @@ window.SIDEBAR_HTML = `
     </div>
 
     <div class="sidebar-footer" style="position:relative;">
-      <p>v1.2.0 · <span class="font-mono">MONOLITH</span> · <button id="tip-trigger" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--on-surface-variant);font:inherit;text-decoration:underline dotted;text-underline-offset:3px;" data-i18n="tip">打赏作者</button></p>
+      <p>v1.2.0 · <span class="font-mono">MY WORK</span> · <button id="tip-trigger" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--on-surface-variant);font:inherit;text-decoration:underline dotted;text-underline-offset:3px;" data-i18n="tip">打赏作者</button></p>
       <!-- 打赏金额选择浮层 -->
       <div id="tip-amount-pop" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--surface);border-radius:var(--r-lg);padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap;z-index:100;">
         <div style="font-size:11px;color:var(--on-surface-variant);margin-bottom:8px;text-align:center;" data-i18n="chooseAmount">选择金额</div>
