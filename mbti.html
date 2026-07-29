@@ -44,12 +44,20 @@
         <span data-i18n="mbtiBreadcrumb">MBTI PERSONALITY TEST</span>
       </div>
 
-      <!-- Intro card (shown before test starts) -->
-      <div id="intro-card" class="card fade-in" style="max-width:600px;margin:0 auto;">
-        <div class="text-center">
-          <span class="material-symbols-outlined" style="font-size:64px;color:var(--primary);margin-bottom:12px;">psychology</span>
-          <h2 class="headline-lg mb-2" data-i18n="mbtiTitle">MBTI 人格测试</h2>
-          <p class="body-md text-on-surface-variant mb-6" data-i18n="mbtiSubtitle" style="line-height:1.7;">共 16 道选择题，约需 5 分钟</p>
+      <!-- Title + intro card side by side -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 fade-in">
+        <!-- Left: big title + subtitle -->
+        <div class="flex flex-col justify-center">
+          <h1 class="headline-xl mb-2" data-i18n="mbtiTitle">MBTI 人格测试</h1>
+          <p class="body-lg text-on-surface-variant max-w-2xl" data-i18n="mbtiDesc" style="line-height:1.7;">
+            从四个维度评估你的性格倾向：外倾/内倾、实感/直觉、思考/情感、判断/感知。16 道选择题，约需 5 分钟。
+          </p>
+        </div>
+
+        <!-- Right: intro card -->
+        <div id="intro-card" class="card" style="text-align:center;">
+          <span class="material-symbols-outlined" style="font-size:48px;color:var(--primary);margin-bottom:12px;">psychology</span>
+          <p class="body-md text-on-surface-variant mb-4" data-i18n="mbtiSubtitle">共 16 道选择题，约需 5 分钟</p>
           <button id="start-btn" class="btn-primary py-3 px-8" data-i18n="startTest">开始测试</button>
         </div>
       </div>

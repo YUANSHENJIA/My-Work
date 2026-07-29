@@ -164,7 +164,10 @@ window.I18N = {
     gamesBreadcrumb: 'SLACKING MINI GAME',
     gamesSubtitle: '适度放松，效率更高 😄',
     // ===== mbti.html =====
-    // already covered
+    mbtiTitle: 'MBTI 人格测试',
+    mbtiDesc: '从四个维度评估你的性格倾向：外倾/内倾、实感/直觉、思考/情感、判断/感知。16 道选择题，约需 5 分钟。',
+    mbtiSubtitle: '共 16 道选择题，约需 5 分钟',
+    startTest: '开始测试',
     // ===== common =====
     dayUnit: '天',
     scoreUnit: '分',
@@ -340,7 +343,8 @@ window.I18N = {
     income: 'Expected Income',
     noMethod: 'No methods yet',
     // ===== MBTI =====
-    mbtiTitle: 'MBTI Test',
+    mbtiTitle: 'MBTI Personality Test',
+    mbtiDesc: 'Evaluate your personality across four dimensions: Extraversion/Introversion, Sensing/Intuition, Thinking/Feeling, Judging/Perceiving. 16 questions, ~5 minutes.',
     mbtiSubtitle: '16 questions, ~5 minutes',
     startTest: 'Start Test',
     restartTest: 'Retake',
