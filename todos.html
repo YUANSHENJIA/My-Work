@@ -55,10 +55,10 @@
                  data-i18n-attr="placeholder:todo_placeholder"> />
         </div>
         <select id="todo-priority" class="bg-surface-container rounded-full px-4 py-2 text-sm outline-none cursor-pointer">
-          <option value="priority-high">HIGH</option>
-          <option value="planning">PLANNING</option>
-          <option value="routine">ROUTINE</option>
-          <option value="communication">COMMUNICATION</option>
+          <option value="priority-high" data-i18n="optHigh">HIGH</option>
+          <option value="planning" data-i18n="optPlanning">PLANNING</option>
+          <option value="routine" data-i18n="optRoutine">ROUTINE</option>
+          <option value="communication" data-i18n="optCommunication">COMMUNICATION</option>
         </select>
         <button type="submit" class="btn-primary text-sm py-2 px-4" data-i18n="addBtn">添加</button>
       </form>
@@ -67,7 +67,7 @@
     <!-- Filter / stats -->
     <section class="flex items-center justify-between mb-4 px-2 fade-in">
       <div class="flex items-center gap-3">
-        <span class="eyebrow">CURRENT STACK</span>
+        <span class="eyebrow" data-i18n="currentStack">CURRENT STACK</span>
         <span id="todo-counter" class="chip">0 / 0</span>
       </div>
       <div class="flex items-center gap-2">
@@ -133,12 +133,15 @@
     let todos = loadTodos();
     let currentFilter = 'all';
 
-    const tagLabels = {
-      'priority-high': 'PRIORITY / HIGH',
-      'planning': 'PLANNING',
-      'routine': 'ROUTINE',
-      'communication': 'COMMUNICATION'
-    };
+    function getTagLabels() {
+      const dict = (window.I18N || {})[window.getCurrentLang ? window.getCurrentLang() : 'zh'] || {};
+      return dict.priorityLabels || {
+        'priority-high': 'PRIORITY / HIGH',
+        'planning': 'PLANNING',
+        'routine': 'ROUTINE',
+        'communication': 'COMMUNICATION'
+      };
+    }
 
     function render() {
       const list = document.getElementById('todo-list');
@@ -165,7 +168,7 @@
           </button>
           <div class="flex-1 min-w-0 flex items-center gap-3">
             <p class="text-sm ${t.done ? 'line-through text-on-surface-variant' : 'text-on-surface'}">${escapeHtml(t.text)}</p>
-            <span class="text-sm font-mono uppercase text-on-surface-variant shrink-0">${tagLabels[t.tag] || t.tag}</span>
+            <span class="text-sm font-mono uppercase text-on-surface-variant shrink-0">${getTagLabels()[t.tag] || t.tag}</span>
             ${t.time ? `<span class="text-sm text-on-surface-variant shrink-0">· ${t.time}</span>` : ''}
           </div>
           <button class="todo-delete text-on-surface-variant hover:text-on-surface" aria-label="删除">
@@ -237,6 +240,9 @@
     });
 
     render();
+
+    // 语言切换时重新渲染（tag 标签随语言变化）
+    window.addEventListener('languagechange', render);
   </script>
 
   <style>

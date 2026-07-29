@@ -49,7 +49,9 @@ window.I18N = {
     search_placeholder: '搜索待办...',
     todo_placeholder: '新建待办 (按 Enter 添加)',
     noTodos: '今天没有待办，点击"添加"按钮开始你的安排',
-    priorityLabels: { HIGH: 'HIGH', PLANNING: 'PLANNING', ROUTINE: 'ROUTINE', COMMUNICATION: 'COMMUNICATION' },
+    priorityLabels: { HIGH: '高优', PLANNING: '规划', ROUTINE: '例行', COMMUNICATION: '沟通' },
+    optHigh: '高优', optPlanning: '规划', optRoutine: '例行', optCommunication: '沟通',
+    currentStack: '当前任务',
     // ===== calendar.html 日历 =====
     calendarTitle: '日历',
     addTodo: '添加待办',
@@ -265,7 +267,9 @@ window.I18N = {
     search_placeholder: 'Search todos...',
     todo_placeholder: 'New todo (press Enter)',
     noTodos: 'No todos yet, tap "Add" to start your day',
-    priorityLabels: { HIGH: 'HIGH', PLANNING: 'PLANNING', ROUTINE: 'ROUTINE', COMMUNICATION: 'COMMUNICATION' },
+    priorityLabels: { HIGH: 'PRIORITY / HIGH', PLANNING: 'PLANNING', ROUTINE: 'ROUTINE', COMMUNICATION: 'COMMUNICATION' },
+    optHigh: 'HIGH', optPlanning: 'PLANNING', optRoutine: 'ROUTINE', optCommunication: 'COMMUNICATION',
+    currentStack: 'CURRENT STACK',
     // ===== Calendar =====
     calendarTitle: 'Calendar',
     addTodo: 'Add Todo',
@@ -563,6 +567,8 @@ window.applyI18N = function(lang){
   });
   const slider = document.getElementById('lang-slider');
   if (slider) slider.style.transform = lang === 'en' ? 'translateX(100%)' : 'translateX(0%)';
+  // 通知页面重新渲染（依赖当前语言动态计算的内容，如 tag 标签）
+  window.dispatchEvent(new CustomEvent('languagechange', { detail: { lang } }));
 };
 
 /**
