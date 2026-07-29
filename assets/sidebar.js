@@ -42,6 +42,7 @@ window.I18N = {
     goodNight: '晚安',
     // ===== todos.html 今日待办 =====
     todosTitle: '今日待办',
+    todosDesc: '管理你的一天，从记录每一件小事开始。保持专注，稳步前行。',
     add: '添加',
     priority: '优先级',
     complete: '完成',
@@ -234,6 +235,7 @@ window.I18N = {
     goodNight: 'Good night',
     // ===== Todos =====
     todosTitle: "Today's Todos",
+    todosDesc: 'Manage your day by capturing every little task. Stay focused, move forward.',
     add: 'Add',
     priority: 'Priority',
     complete: 'Done',
