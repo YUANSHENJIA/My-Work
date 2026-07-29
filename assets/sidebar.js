@@ -165,7 +165,6 @@ window.I18N = {
     gamesSubtitle: '适度放松，效率更高 😄',
     // ===== mbti.html =====
     mbtiTitle: 'MBTI 人格测试',
-    mbtiEyebrow: '性格测评',
     mbtiDesc: '从四个维度评估你的性格倾向：外倾/内倾、实感/直觉、思考/情感、判断/感知。',
     mbtiSubtitle: '共 16 道选择题，约需 5 分钟',
     startTest: '开始测试',
@@ -345,7 +344,6 @@ window.I18N = {
     noMethod: 'No methods yet',
     // ===== MBTI =====
     mbtiTitle: 'MBTI Personality Test',
-    mbtiEyebrow: 'Personality Assessment',
     mbtiDesc: 'Evaluate your personality across four dimensions: Extraversion/Introversion, Sensing/Intuition, Thinking/Feeling, Judging/Perceiving.',
     mbtiSubtitle: '16 questions, ~5 minutes',
     startTest: 'Start Test',
