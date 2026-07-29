@@ -44,22 +44,22 @@
         <span data-i18n="mbtiBreadcrumb">MBTI PERSONALITY TEST</span>
       </div>
 
-      <!-- Title + intro card side by side -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 fade-in">
-        <!-- Left: big title + subtitle -->
-        <div class="flex flex-col justify-center">
+      <!-- Title + button (matches other pages' header layout) -->
+      <section class="mb-6 fade-in flex items-end justify-between flex-wrap gap-4">
+        <div>
           <h1 class="headline-xl mb-2" data-i18n="mbtiTitle">MBTI 人格测试</h1>
           <p class="body-lg text-on-surface-variant max-w-2xl" data-i18n="mbtiDesc" style="line-height:1.7;">
-            从四个维度评估你的性格倾向：外倾/内倾、实感/直觉、思考/情感、判断/感知。16 道选择题，约需 5 分钟。
+            从四个维度评估你的性格倾向：外倾/内倾、实感/直觉、思考/情感、判断/感知。
           </p>
         </div>
+        <button class="btn-primary py-3 px-8" onclick="document.getElementById('start-btn').click()" data-i18n="startTest">开始测试</button>
+      </section>
 
-        <!-- Right: intro card -->
-        <div id="intro-card" class="card" style="text-align:center;">
-          <span class="material-symbols-outlined" style="font-size:48px;color:var(--primary);margin-bottom:12px;">psychology</span>
-          <p class="body-md text-on-surface-variant mb-4" data-i18n="mbtiSubtitle">共 16 道选择题，约需 5 分钟</p>
-          <button id="start-btn" class="btn-primary py-3 px-8" data-i18n="startTest">开始测试</button>
-        </div>
+      <!-- Intro card (centered, below title) -->
+      <div id="intro-card" class="card fade-in text-center" style="max-width:600px;margin:0 auto;">
+        <span class="material-symbols-outlined" style="font-size:48px;color:var(--primary);margin-bottom:12px;">psychology</span>
+        <p class="body-md text-on-surface-variant mb-4" data-i18n="mbtiSubtitle">共 16 道选择题，约需 5 分钟</p>
+        <button id="start-btn" class="btn-primary py-3 px-8" data-i18n="startTest">开始测试</button>
       </div>
 
       <!-- Quiz card (shown during test) -->
