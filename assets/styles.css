@@ -103,6 +103,12 @@
 input, select, button, textarea { font-family: inherit; }
 input, select, textarea { -webkit-appearance: none; appearance: none; }
 input, select { border: none; background: transparent; color: inherit; }
+/* 覆盖 Chromium 残留的 select 原生指示符 */
+select {
+  background-image: none !important;
+  -o-appearance: none;
+  -ms-appearance: none;
+}
 input:focus, select:focus, button:focus { outline: none; }
 
 html, body {
