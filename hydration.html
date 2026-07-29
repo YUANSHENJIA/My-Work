@@ -60,9 +60,9 @@
                     stroke-linecap="round" stroke-dasharray="753.98" stroke-dashoffset="301.59" class="transition-all duration-700" />
           </svg>
           <div class="water-ring-center">
-            <p class="eyebrow mb-2" style="font-size: 13px;">当前摄入量</p>
+            <p class="eyebrow" style="font-size: 13px;">当前摄入量</p>
             <p class="font-semibold tracking-tight" style="color: var(--on-surface); font-size: 4.5rem; line-height: 1;"><span id="current-amount">0</span><span class="ml-1" style="color: var(--on-surface-variant); font-size: 1.5rem;">ml</span></p>
-            <p class="chip mt-3" id="percent-label" style="font-size: 11px;">0% COMPLETED</p>
+            <p class="chip" id="percent-label" style="font-size: 11px;">0% COMPLETED</p>
           </div>
         </div>
 
@@ -414,11 +414,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
       width: 100%;
       pointer-events: none;
+      gap: 6px;
     }
+    .water-ring-center > p { margin: 0; }
     /* 快速记录卡片：足够 padding，避免重置按钮与按钮网格重叠 */
     .water-quick-card {
       padding: 36px 28px;
