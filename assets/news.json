@@ -1,28 +1,190 @@
 {
-  "updated_at": "2026-07-29T04:10:02.606Z",
-  "updated_at_local": "2026/7/29 12:10:02",
+  "updated_at": "2026-07-30T03:54:51.755Z",
+  "updated_at_local": "2026/7/30 11:54:51",
   "source_label": "量子位 · AI 前沿",
   "source_url": "https://www.qbitai.com/feed",
   "item_count": 10,
   "items": [
+    {
+      "title": "这这这…翁荔光速回OpenAI上班了",
+      "full_title": "这这这…翁荔光速回OpenAI上班了",
+      "link": "https://www.qbitai.com/2026/07/462947.html",
+      "pubDate": "Thu, 30 Jul 2026 00:31:19 +0000",
+      "pubDateISO": "2026-07-30T00:31:19.000Z",
+      "time": "3 小时前",
+      "categories": [
+        "资讯",
+        "翁荔"
+      ],
+      "category": "技术",
+      "tag": "BREAKING",
+      "excerpt": "6位联合创始人——只剩2名。",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+      "icon": "memory"
+    },
+    {
+      "title": "中科院院士对话北电数智AI专家：以 AI 与数学 “乘法效应” 开辟产业落地新路径",
+      "full_title": "中科院院士对话北电数智AI专家：以 AI 与数学 “乘法效应” 开辟产业落地新路径",
+      "link": "https://www.qbitai.com/2026/07/462943.html",
+      "pubDate": "Wed, 29 Jul 2026 11:25:21 +0000",
+      "pubDateISO": "2026-07-29T11:25:21.000Z",
+      "time": "16 小时前",
+      "categories": [
+        "资讯",
+        "中科院",
+        "北电数智"
+      ],
+      "category": "研究",
+      "tag": "AI NEWS",
+      "excerpt": "中科院、北电数智等专家共探数学与AI边界",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)",
+      "icon": "biotech"
+    },
+    {
+      "title": "超越OpenAI、Anthropic！国产AI安全智能体杀进全球前四、国内第一",
+      "full_title": "超越OpenAI、Anthropic！国产AI安全智能体杀进全球前四、国内第一",
+      "link": "https://www.qbitai.com/2026/07/462447.html",
+      "pubDate": "Wed, 29 Jul 2026 08:13:03 +0000",
+      "pubDateISO": "2026-07-29T08:13:03.000Z",
+      "time": "19 小时前",
+      "categories": [
+        "资讯",
+        "AI安全智能体",
+        "国产底座",
+        "挖漏洞",
+        "深信服"
+      ],
+      "category": "技术",
+      "tag": "RESEARCH",
+      "excerpt": "AI开始组团“挖漏洞”",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #2a2a2a 0%, #404040 100%)",
+      "icon": "data_object"
+    },
+    {
+      "title": "Opus 5游戏提示词爆火！24小时复刻3A巨作",
+      "full_title": "Opus 5游戏提示词爆火！24小时复刻3A巨作",
+      "link": "https://www.qbitai.com/2026/07/462384.html",
+      "pubDate": "Wed, 29 Jul 2026 08:04:50 +0000",
+      "pubDateISO": "2026-07-29T08:04:50.000Z",
+      "time": "19 小时前",
+      "categories": [
+        "资讯",
+        "首页轮播",
+        "Claude Opus 5",
+        "游戏"
+      ],
+      "category": "技术",
+      "tag": "PRODUCT",
+      "excerpt": "百万网友已玩疯",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #1f1f1f 0%, #2f2f2f 100%)",
+      "icon": "developer_board"
+    },
+    {
+      "title": "OceanBase回应融资报道：全力投入AI数据创新，与资本市场保持开放沟通",
+      "full_title": "OceanBase回应融资报道：全力投入AI数据创新，与资本市场保持开放沟通",
+      "link": "https://www.qbitai.com/2026/07/462380.html",
+      "pubDate": "Wed, 29 Jul 2026 06:39:43 +0000",
+      "pubDateISO": "2026-07-29T06:39:43.000Z",
+      "time": "21 小时前",
+      "categories": [
+        "资讯",
+        "OceanBase"
+      ],
+      "category": "商业",
+      "tag": "INSIGHT",
+      "excerpt": "OceanBase回应融资报道：全力投入AI数据创新，与资本市场保持开放沟通",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #141414 0%, #2a2a2a 100%)",
+      "icon": "monetization_on"
+    },
+    {
+      "title": "空中具身操作：让蜘蛛侠们安全落地",
+      "full_title": "空中具身操作：让蜘蛛侠们安全落地",
+      "link": "https://www.qbitai.com/2026/07/462301.html",
+      "pubDate": "Wed, 29 Jul 2026 06:29:26 +0000",
+      "pubDateISO": "2026-07-29T06:29:26.000Z",
+      "time": "21 小时前",
+      "categories": [
+        "资讯",
+        "西湖风形科技"
+      ],
+      "category": "技术",
+      "tag": "ANALYSIS",
+      "excerpt": "空中具身操作：让蜘蛛侠们安全落地",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #232323 0%, #383838 100%)",
+      "icon": "memory"
+    },
+    {
+      "title": "萝卜快跑抢跑无人车右舵：香港率先全无人，伦敦直面Waymo",
+      "full_title": "萝卜快跑抢跑无人车右舵：香港率先全无人，伦敦直面Waymo",
+      "link": "https://www.qbitai.com/2026/07/462071.html",
+      "pubDate": "Wed, 29 Jul 2026 05:36:38 +0000",
+      "pubDateISO": "2026-07-29T05:36:38.000Z",
+      "time": "22 小时前",
+      "categories": [
+        "资讯",
+        "无人车往哪里开？",
+        "萝卜快跑"
+      ],
+      "category": "技术",
+      "tag": "FRONTIER",
+      "excerpt": "角逐全球最难右舵市场",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #0f1a2a 0%, #1f2c40 100%)",
+      "icon": "code"
+    },
+    {
+      "title": "首个鸿蒙PC开源AI统一工作台JiuwenSwarm，办公编程一站式搞定",
+      "full_title": "首个鸿蒙PC开源AI统一工作台JiuwenSwarm，办公编程一站式搞定",
+      "link": "https://www.qbitai.com/2026/07/462065.html",
+      "pubDate": "Wed, 29 Jul 2026 03:29:59 +0000",
+      "pubDateISO": "2026-07-29T03:29:59.000Z",
+      "time": "1 天前",
+      "categories": [
+        "资讯",
+        "JiuwenSwarm",
+        "华为",
+        "编程",
+        "鸿蒙PC"
+      ],
+      "category": "产品",
+      "tag": "BREAKING",
+      "excerpt": "让多智能体团队随时随地为你干活",
+      "source": "量子位",
+      "source_short": "QbitAI",
+      "gradient": "linear-gradient(135deg, #1a1208 0%, #2d2010 100%)",
+      "icon": "widgets"
+    },
     {
       "title": "周鸿祎发布纳米Work：新一代企业智能体工作平台，为企业而生",
       "full_title": "周鸿祎发布纳米Work：新一代企业智能体工作平台，为企业而生",
       "link": "https://www.qbitai.com/2026/07/462062.html",
       "pubDate": "Wed, 29 Jul 2026 01:53:15 +0000",
       "pubDateISO": "2026-07-29T01:53:15.000Z",
-      "time": "2 小时前",
+      "time": "1 天前",
       "categories": [
         "资讯",
         "360"
       ],
       "category": "商业",
-      "tag": "BREAKING",
+      "tag": "AI NEWS",
       "excerpt": "周鸿祎发布纳米Work：新一代企业智能体工作平台，为企业而生",
       "source": "量子位",
       "source_short": "QbitAI",
       "gradient": "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
-      "icon": "trending_up"
+      "icon": "analytics"
     },
     {
       "title": "九章云极Alaya Token完成Kimi K3适配 全球首个开源3T级模型入驻Token工厂",
@@ -30,178 +192,18 @@
       "link": "https://www.qbitai.com/2026/07/462058.html",
       "pubDate": "Wed, 29 Jul 2026 01:45:36 +0000",
       "pubDateISO": "2026-07-29T01:45:36.000Z",
-      "time": "2 小时前",
+      "time": "1 天前",
       "categories": [
         "资讯",
         "九章云极"
       ],
       "category": "研究",
-      "tag": "AI NEWS",
+      "tag": "RESEARCH",
       "excerpt": "九章云极Alaya Token完成Kimi K3适配 全球首个开源3T级模型入驻Token工厂",
       "source": "量子位",
       "source_short": "QbitAI",
       "gradient": "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)",
-      "icon": "biotech"
-    },
-    {
-      "title": "豆包搜索，走出了豆包",
-      "full_title": "豆包搜索，走出了豆包",
-      "link": "https://www.qbitai.com/2026/07/461961.html",
-      "pubDate": "Tue, 28 Jul 2026 10:12:52 +0000",
-      "pubDateISO": "2026-07-28T10:12:52.000Z",
-      "time": "17 小时前",
-      "categories": [
-        "资讯",
-        "首页轮播",
-        "Agent",
-        "火山引擎",
-        "豆包搜索"
-      ],
-      "category": "技术",
-      "tag": "RESEARCH",
-      "excerpt": "把搜索能力开放给Agent了",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #2a2a2a 0%, #404040 100%)",
-      "icon": "data_object"
-    },
-    {
-      "title": "Kimi K3、Unlimited OCR包揽全球前二，中国开源模型持续刷屏海外",
-      "full_title": "Kimi K3、Unlimited OCR包揽全球前二，中国开源模型持续刷屏海外",
-      "link": "https://www.qbitai.com/2026/07/461949.html",
-      "pubDate": "Tue, 28 Jul 2026 08:17:05 +0000",
-      "pubDateISO": "2026-07-28T08:17:05.000Z",
-      "time": "19 小时前",
-      "categories": [
-        "资讯",
-        "百度"
-      ],
-      "category": "研究",
-      "tag": "PRODUCT",
-      "excerpt": "Kimi K3、Unlimited OCR包揽全球前二，中国开源模型持续刷屏海外",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #1f1f1f 0%, #2f2f2f 100%)",
-      "icon": "functions"
-    },
-    {
-      "title": "当AI学会“仿真思维”，教师才能回归育人本质",
-      "full_title": "当AI学会“仿真思维”，教师才能回归育人本质",
-      "link": "https://www.qbitai.com/2026/07/461939.html",
-      "pubDate": "Tue, 28 Jul 2026 07:32:47 +0000",
-      "pubDateISO": "2026-07-28T07:32:47.000Z",
-      "time": "20 小时前",
-      "categories": [
-        "资讯",
-        "AI教育",
-        "天立启鸣"
-      ],
-      "category": "技术",
-      "tag": "INSIGHT",
-      "excerpt": "从“工具效率”到“认知理解”，教育AI进入深水区",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #141414 0%, #2a2a2a 100%)",
-      "icon": "terminal"
-    },
-    {
-      "title": "Ilya获黄仁勋50亿美元押注：“是时候Scaling了”",
-      "full_title": "Ilya获黄仁勋50亿美元押注：“是时候Scaling了”",
-      "link": "https://www.qbitai.com/2026/07/461911.html",
-      "pubDate": "Tue, 28 Jul 2026 05:46:59 +0000",
-      "pubDateISO": "2026-07-28T05:46:59.000Z",
-      "time": "22 小时前",
-      "categories": [
-        "资讯",
-        "Ilya"
-      ],
-      "category": "技术",
-      "tag": "ANALYSIS",
-      "excerpt": "迷人的Scaling曲线",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #232323 0%, #383838 100%)",
-      "icon": "memory"
-    },
-    {
-      "title": "世界模型有触觉了！50万小时视频，训出首个隐式触觉世界动作模型",
-      "full_title": "世界模型有触觉了！50万小时视频，训出首个隐式触觉世界动作模型",
-      "link": "https://www.qbitai.com/2026/07/461827.html",
-      "pubDate": "Tue, 28 Jul 2026 05:25:31 +0000",
-      "pubDateISO": "2026-07-28T05:25:31.000Z",
-      "time": "22 小时前",
-      "categories": [
-        "资讯",
-        "世界模型",
-        "具身智能",
-        "触觉"
-      ],
-      "category": "研究",
-      "tag": "FRONTIER",
-      "excerpt": "世界模型有触觉了！50万小时视频，训出首个隐式触觉世界动作模型",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #0f1a2a 0%, #1f2c40 100%)",
-      "icon": "biotech"
-    },
-    {
-      "title": "全球首个Agentic扩散模型来了：边行动边纠错，128K上下文追平自回归",
-      "full_title": "全球首个Agentic扩散模型来了：边行动边纠错，128K上下文追平自回归",
-      "link": "https://www.qbitai.com/2026/07/461650.html",
-      "pubDate": "Tue, 28 Jul 2026 04:18:15 +0000",
-      "pubDateISO": "2026-07-28T04:18:15.000Z",
-      "time": "23 小时前",
-      "categories": [
-        "资讯",
-        "首页轮播",
-        "Agent",
-        "扩散模型"
-      ],
-      "category": "研究",
-      "tag": "BREAKING",
-      "excerpt": "扩散模型首次打通长程Agent任务",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #1a1208 0%, #2d2010 100%)",
-      "icon": "psychology"
-    },
-    {
-      "title": "智能体走向终端，个人AI时代正在到来",
-      "full_title": "智能体走向终端，个人AI时代正在到来",
-      "link": "https://www.qbitai.com/2026/07/461565.html",
-      "pubDate": "Tue, 28 Jul 2026 01:38:58 +0000",
-      "pubDateISO": "2026-07-28T01:38:58.000Z",
-      "time": "1 天前",
-      "categories": [
-        "资讯",
-        "高通"
-      ],
-      "category": "产品",
-      "tag": "AI NEWS",
-      "excerpt": "智能体走向终端，个人AI时代正在到来",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
-      "icon": "rocket_launch"
-    },
-    {
-      "title": "突发，翁荔离职Thinking Machines",
-      "full_title": "突发，翁荔离职Thinking Machines",
-      "link": "https://www.qbitai.com/2026/07/461517.html",
-      "pubDate": "Tue, 28 Jul 2026 01:21:00 +0000",
-      "pubDateISO": "2026-07-28T01:21:00.000Z",
-      "time": "1 天前",
-      "categories": [
-        "资讯",
-        "翁荔"
-      ],
-      "category": "商业",
-      "tag": "RESEARCH",
-      "excerpt": "20个月「像过完了一辈子」",
-      "source": "量子位",
-      "source_short": "QbitAI",
-      "gradient": "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)",
-      "icon": "monetization_on"
+      "icon": "experiment"
     }
   ]
 }
