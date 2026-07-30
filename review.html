@@ -120,11 +120,12 @@
 
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/sync.js"></script>
   <script>
     // Today's review save
     const REVIEW_KEY = 'monolith.reviews';
     function loadReviews() { try { return JSON.parse(localStorage.getItem(REVIEW_KEY) || '{}'); } catch(e){ return {}; } }
-    function saveReviews(r) { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(r)); } catch(e) {} }
+    function saveReviews(r) { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(r)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save(); }
 
     const todayKey = () => new Date().toISOString().slice(0, 10);
 
@@ -296,6 +297,11 @@
 
     // Initial history render
     renderHistory();
+
+    // 多端同步：页面加载时从后端拉取最新数据
+    if (typeof MyWorkSync !== 'undefined') {
+      MyWorkSync.load().then(() => { try { renderHistory(); } catch(e) {} }).catch(() => {});
+    }
   </script>
 <style>
     .flex-col { flex-direction: column; }

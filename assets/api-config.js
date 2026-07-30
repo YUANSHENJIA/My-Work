@@ -16,6 +16,9 @@
     profileGet:      'https://profile-get-valitdmdpe.cn-hongkong.fcapp.run',
     profileUpdate:   'https://profile-update-yrdtgrqbjn.cn-hongkong.fcapp.run',
     changePassword:  'https://change-password-lithxolwfi.cn-hongkong.fcapp.run',
+    // 数据同步 API（已部署）
+    dataLoad:        'https://data-load-xdafojegjo.cn-hongkong.fcapp.run',
+    dataSave:        'https://data-save-inxeojegjo.cn-hongkong.fcapp.run',
   };
 
   function url(name) {

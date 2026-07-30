@@ -134,6 +134,7 @@
 
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/sync.js"></script>
   <script>
     const ENTRIES_KEY = 'monolith.excerpts';
 
@@ -159,6 +160,7 @@
 
     function saveEntries() {
       try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch(e) {}
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save();
     }
 
     function cardHtml(e) {
@@ -226,6 +228,11 @@
     });
 
     render();
+
+    // 多端同步：页面加载时从后端拉取最新数据
+    if (typeof MyWorkSync !== 'undefined') {
+      MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
+    }
 
     // 删除单条摘录
     document.getElementById('entries-list').addEventListener('click', e => {

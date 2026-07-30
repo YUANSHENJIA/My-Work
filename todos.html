@@ -101,6 +101,7 @@
 
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/sync.js"></script>
   <script>
     // ----------------- TODO LOGIC -----------------
     const STORAGE_KEY = 'monolith.todos';
@@ -128,6 +129,7 @@
 
     function saveTodos(list) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save();
     }
 
     let todos = loadTodos();
@@ -243,6 +245,11 @@
 
     // 语言切换时重新渲染（tag 标签随语言变化）
     window.addEventListener('languagechange', render);
+
+    // 多端同步：页面加载时从后端拉取最新数据
+    if (typeof MyWorkSync !== 'undefined') {
+      MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
+    }
   </script>
 
   <style>
