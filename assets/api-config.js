@@ -1,33 +1,26 @@
 /**
- * 前端 API 配置
+ * 前端 API 配置 — FC 3.0 格式
  *
- * 把下面 FC_BASE_URL 改成你部署完成后 FC 给的基地址。
- * 格式：https://<service>-<hash>.<region>.fc.aliyuncs.com/2016-08-15/proxy/<service>/
+ * 每个函数一个独立子域名，不再走统一 proxy。
+ * 格式：https://<func-name>-<hash>.cn-hongkong.fcapp.run
  *
- * 例如：
- *   https://mywork-api.123456789.cn-hongkong.fc.aliyuncs.com/2016-08-15/proxy/mywork-api/
- *
- * ⚠️ 末尾必须有斜杠 /，fetch 拼接时不会重复加。
+ * ⚠️ 末尾不带斜杠，fetch 拼接时按需加。
  */
 (function () {
   'use strict';
 
-  // ★ 部署 FC 后，把这个常量改成实际的 FC 默认域名
-  // 临时本地调试时可填 'http://localhost:3000' 之类
-  const FC_BASE_URL = 'https://mywork-api.REPLACE_ME.fc.cn-hongkong.aliyuncs.com/2016-08-15/proxy/mywork-api/';
-
-  // 各个函数的路径
+  // ★ 5 个 FC 3.0 函数 URL（已部署）
   const ENDPOINTS = {
-    register: 'register/',
-    login: 'login/',
-    profileGet: 'profile-get/',
-    profileUpdate: 'profile-update/',
-    changePassword: 'change-password/',
+    register:        'https://register-uhtlnhvmjo.cn-hongkong.fcapp.run',
+    login:           'https://login-edkontclwd.cn-hongkong.fcapp.run',
+    profileGet:      'https://profile-get-valitdmdpe.cn-hongkong.fcapp.run',
+    profileUpdate:   'https://profile-update-yrdtgrqbjn.cn-hongkong.fcapp.run',
+    changePassword:  'https://change-password-lithxolwfi.cn-hongkong.fcapp.run',
   };
 
   function url(name) {
-    return FC_BASE_URL + ENDPOINTS[name];
+    return ENDPOINTS[name];
   }
 
-  window.API_CONFIG = { FC_BASE_URL, ENDPOINTS, url };
+  window.API_CONFIG = { ENDPOINTS, url };
 })();
