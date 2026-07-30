@@ -22,8 +22,10 @@ function loginGuard() {
   if (path === 'login.html') return;
 
   try {
+    // 优先检查 JWT token（新的鉴权方式）；保留 userName 检查作为兜底
+    const token = localStorage.getItem('monolith.authToken');
     const name = localStorage.getItem('monolith.userName');
-    if (!name || !name.trim()) {
+    if (!token && (!name || !name.trim())) {
       location.replace('login.html');
     }
   } catch (e) {

@@ -143,6 +143,8 @@
 
   </main>
 
+  <script src="assets/api-config.js"></script>
+  <script src="assets/auth.js"></script>
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
   <script>
@@ -440,11 +442,10 @@
         </div>
         <label class="profile-label" for="profile-name-input">昵称</label>
         <input id="profile-name-input" class="profile-name-input" type="text" maxlength="20" autocomplete="off" placeholder="输入你的名字..." />
-        <p class="profile-hint">保存后，头像与昵称会在所有页面生效</p>
       </div>
       <div class="profile-modal-actions">
         <button class="profile-btn" id="profile-cancel" type="button">取消</button>
-        <button class="profile-btn primary" id="profile-save" type="button">保存</button>
+        <button class="profile-btn primary" id="profile-save" type="button">确认</button>
       </div>
     </div>
   </div>
@@ -666,6 +667,17 @@
         const greetName = document.getElementById('greeting-name');
         if (greetName) greetName.textContent = name;
         closeProfile();
+
+        // 同步到云端（best-effort，不阻塞 UI；失败仅打 console）
+        if (window.Auth && window.Auth.isLoggedIn()) {
+          const payload = { name };
+          if (profileState.pendingAvatar !== profileState.originalAvatar) {
+            payload.avatar = profileState.pendingAvatar;
+          }
+          window.Auth.updateProfile(payload).catch(err => {
+            console.warn('profile sync failed:', err.message);
+          });
+        }
       });
 
       // ====== 头像裁切（与登录页同源逻辑）======
@@ -806,6 +818,12 @@
           else if (profileModal.style.display === 'flex') closeProfile();
         }
       });
+
+      // 登录成功后跳转过来 → 自动弹出资料窗（首次设置头像/昵称）
+      if (window.Auth && window.Auth.consumeShowProfileFlag && window.Auth.consumeShowProfileFlag()) {
+        // 等 sidebar/app.js 的 DOMContentLoaded 跑完再开，避免被覆盖
+        setTimeout(() => { try { openProfile(); } catch (e) { console.warn('auto openProfile failed', e); } }, 50);
+      }
     })();
   </script>
 </body>

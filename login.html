@@ -18,14 +18,16 @@
       background-color: var(--background);
       background-image: radial-gradient(var(--outline-variant) 0.5px, transparent 0.5px);
       background-size: 24px 24px;
+      padding: 24px;
     }
     [data-theme="dark"] body {
       background-image: radial-gradient(#262626 0.5px, transparent 0.5px);
     }
+
     .login-card {
       width: 100%;
       max-width: 440px;
-      padding: 48px 40px;
+      padding: 52px 36px 40px;
       background: var(--surface-container-lowest);
       border: 1px solid var(--outline-variant);
       border-radius: 24px;
@@ -36,77 +38,87 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .avatar-ring {
-      width: 176px;
-      height: 176px;
-      border-radius: 50%;
-      padding: 4px;
-      background: linear-gradient(135deg, var(--on-surface), var(--on-surface-variant));
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      display: block;
-    }
-    .avatar-ring:hover { transform: scale(1.04); }
-    .avatar-zone {
-      position: relative;
-      width: 176px;
-      height: 176px;
-      margin: 0 auto 24px;
-    }
-    .avatar-img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid var(--surface-container-lowest);
-      display: block;
-    }
-    /* 底部中央"添加头像"药丸按钮（常显） */
-    .avatar-change-btn {
-      position: absolute;
-      left: 50%;
-      bottom: -4px;
-      transform: translateX(-50%);
-      padding: 6px 16px;
-      border-radius: 999px;
-      background: var(--on-surface);
-      color: var(--surface-container-lowest);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      transition: transform .15s ease, box-shadow .15s ease;
-      border: 2px solid var(--surface-container-lowest);
-      z-index: 2;
-    }
-    .avatar-change-btn:hover { transform: translateX(-50%) scale(1.06); box-shadow: 0 4px 10px rgba(0,0,0,0.35); }
 
-    .name-input {
+    /* ====== 顶部品牌标题 ====== */
+    .auth-brand {
+      font-family: 'Geist', system-ui, sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      text-align: center;
+      margin: 0 0 36px;
+      color: var(--on-surface);
+      line-height: 1.1;
+    }
+
+    /* ====== 登录/注册 Tab ====== */
+    .auth-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--surface-container-low);
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .auth-tab.active {
+      background: var(--surface-container-lowest);
+      color: var(--on-surface);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* ====== 标题区 ====== */
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .auth-subtitle {
+      font-size: 14px;
+      color: var(--on-surface-variant);
+      text-align: center;
+      margin: 0 0 24px;
+    }
+
+    /* ====== 输入框 ====== */
+    .field {
+      margin-bottom: 14px;
+    }
+    .field-input {
       width: 100%;
       padding: 14px 16px;
       border-radius: 12px;
       background: var(--surface-container-low);
       border: 1px solid var(--outline-variant);
       color: var(--on-surface);
-      font-size: 16px;
+      font-size: 15px;
       outline: none;
       transition: all 0.2s ease;
-      text-align: center;
+      box-sizing: border-box;
     }
-    .name-input:focus {
+    .field-input:focus {
       border-color: var(--on-surface);
       background: var(--surface-container-lowest);
     }
-    .name-input::placeholder {
+    .field-input::placeholder {
       color: var(--on-surface-variant);
     }
-    .login-btn {
+
+    /* ====== 主按钮 ====== */
+    .auth-btn {
       width: 100%;
       padding: 14px;
       border: none;
@@ -117,9 +129,32 @@
       font-weight: 500;
       cursor: pointer;
       transition: opacity 0.2s;
+      margin-top: 6px;
     }
-    .login-btn:hover { opacity: 0.85; }
-    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-btn:hover { opacity: 0.85; }
+    .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ====== 错误信息 ====== */
+    .auth-error {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(220, 38, 38, 0.08);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+      color: #dc2626;
+      font-size: 13px;
+      display: none;
+      animation: fadeIn .25s ease;
+    }
+    .auth-error.show { display: block; }
+    [data-theme="dark"] .auth-error {
+      background: rgba(248, 113, 113, 0.1);
+      border-color: rgba(248, 113, 113, 0.25);
+      color: #f87171;
+    }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+    /* ====== 主题切换 ====== */
     .theme-toggle-mini {
       position: fixed;
       top: 24px;
@@ -139,12 +174,7 @@
     .theme-toggle-mini:hover {
       background: var(--surface-container);
     }
-    .hint {
-      font-size: 13px;
-      color: var(--on-surface-variant);
-      text-align: center;
-      margin-top: 16px;
-    }
+
     .brand-tag {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -152,111 +182,8 @@
       color: var(--on-surface-variant);
       text-transform: uppercase;
       text-align: center;
-      margin-top: 32px;
+      margin-top: 28px;
     }
-
-    /* ====== 头像裁切模态 ====== */
-    .crop-modal-backdrop {
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(0,0,0,0.7);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px;
-      animation: fadeIn .2s ease;
-    }
-    .crop-modal {
-      width: 100%; max-width: 480px;
-      background: var(--surface-container-lowest);
-      border: 1px solid var(--outline-variant);
-      border-radius: 20px;
-      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5);
-      display: flex; flex-direction: column;
-      overflow: hidden;
-      animation: slideUp .25s cubic-bezier(0.16,1,0.3,1);
-    }
-    .crop-modal-header {
-      padding: 20px 24px;
-      display: flex; align-items: center; gap: 12px;
-      border-bottom: 1px solid var(--outline-variant);
-    }
-    .crop-modal-header h2 { font-size: 18px; font-weight: 600; flex: 1; }
-    .crop-modal-body {
-      padding: 24px;
-    }
-    .crop-stage {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      background: #1a1a1a;
-      border-radius: 12px;
-      overflow: hidden;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-    }
-    .crop-stage img {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: none;
-      pointer-events: none;
-      -webkit-user-drag: none;
-      will-change: transform;
-    }
-    .crop-circle {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px dashed #fff;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
-      pointer-events: none;
-    }
-    .crop-circle-hint {
-      position: absolute;
-      bottom: 12px; left: 0; right: 0;
-      text-align: center;
-      color: rgba(255,255,255,0.85);
-      font-size: 12px;
-      pointer-events: none;
-    }
-    .crop-controls {
-      display: flex; align-items: center; gap: 12px;
-      margin-top: 20px;
-    }
-    .crop-controls label {
-      font-size: 13px;
-      color: var(--on-surface-variant);
-      white-space: nowrap;
-    }
-    .crop-controls input[type=range] {
-      flex: 1;
-      accent-color: var(--primary);
-    }
-    .crop-actions {
-      display: flex; gap: 12px;
-      padding: 0 24px 24px;
-    }
-    .crop-actions button {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--outline-variant);
-      background: var(--surface-container-low);
-      color: var(--on-surface);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      gap: 6px;
-    }
-    .crop-actions .primary {
-      background: var(--primary);
-      color: var(--on-primary);
-      border-color: var(--primary);
-    }
-    .crop-actions .primary:hover { opacity: 0.85; }
-    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-    @keyframes slideUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
   </style>
 </head>
 <body>
@@ -266,344 +193,172 @@
   </button>
 
   <div class="login-card">
-    <div class="avatar-zone">
-    <label class="avatar-ring" for="avatar-input" title="点击上传头像">
-      <img id="avatar-img" src="assets/images/avatar.jpg" alt="头像" class="avatar-img" />
-    </label>
-    <label class="avatar-change-btn" for="avatar-input" title="添加头像" aria-label="添加头像">添加头像</label>
-  </div>
-    <input id="avatar-input" type="file" accept="image/*" style="display:none;" />
 
-    <h1 class="headline-lg" style="text-align:center;margin-bottom:8px;">欢迎回来</h1>
-    <p class="body-md" style="text-align:center;color:var(--on-surface-variant);margin-bottom:32px;">
-      请输入你的名字，开始今天的工作
-    </p>
+    <!-- 顶部品牌 -->
+    <div class="auth-brand">My Work</div>
 
-    <form id="login-form">
-      <input
-        type="text"
-        id="name-input"
-        class="name-input"
-        placeholder="输入你的名字..."
-        autocomplete="off"
-        autofocus
-        maxlength="20"
-      />
-      <div style="height: 16px;"></div>
-      <button type="submit" class="login-btn" id="login-btn">进入工作台 →</button>
+    <!-- 登录/注册 Tab -->
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab active" data-tab="login" type="button" role="tab" aria-selected="true">登录</button>
+      <button class="auth-tab" data-tab="register" type="button" role="tab" aria-selected="false">注册</button>
+    </div>
+
+    <h1 class="auth-title" id="auth-title">欢迎回来</h1>
+    <p class="auth-subtitle" id="auth-subtitle">输入邮箱和密码开始今天的工作</p>
+
+    <!-- 登录表单 -->
+    <form id="login-form" data-form="login" autocomplete="on">
+      <div class="field">
+        <input type="email" id="login-email" class="field-input" placeholder="邮箱" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <input type="password" id="login-password" class="field-input" placeholder="密码" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="auth-btn" id="login-btn">进入工作台</button>
     </form>
 
-    <p class="hint">
-      <span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">lock</span>
-      数据仅保存在本地浏览器
-    </p>
+    <!-- 注册表单 -->
+    <form id="register-form" data-form="register" autocomplete="on" style="display:none;">
+      <div class="field">
+        <input type="email" id="register-email" class="field-input" placeholder="邮箱" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <input type="password" id="register-password" class="field-input" placeholder="设置密码（至少 6 位）" autocomplete="new-password" minlength="6" required />
+      </div>
+      <div class="field">
+        <input type="text" id="register-name" class="field-input" placeholder="昵称（可选，默认用邮箱前缀）" maxlength="30" autocomplete="nickname" />
+      </div>
+      <button type="submit" class="auth-btn" id="register-btn">创建并进入</button>
+    </form>
 
-    <p class="brand-tag">MONOLITH · v1.3.0</p>
+    <!-- 错误提示 -->
+    <div class="auth-error" id="auth-error" role="alert"></div>
+
+    <p class="brand-tag">My Work · v1.4.0</p>
   </div>
 
-  <!-- 头像裁切模态 -->
-  <div class="crop-modal-backdrop" id="crop-modal" style="display:none;">
-    <div class="crop-modal">
-      <div class="crop-modal-header">
-        <span class="material-symbols-outlined">crop_circle</span>
-        <h2>调整头像</h2>
-        <button class="p-2 rounded-full hover:bg-surface-container" id="crop-close" aria-label="关闭" style="background:transparent;border:none;cursor:pointer;color:var(--on-surface-variant);">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <div class="crop-modal-body">
-        <div class="crop-stage" id="crop-stage">
-          <img id="crop-img" alt="" />
-          <div class="crop-circle" id="crop-circle"></div>
-          <div class="crop-circle-hint">拖动图片调整位置</div>
-        </div>
-        <div class="crop-controls">
-          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);">zoom_out</span>
-          <input type="range" id="crop-zoom" min="100" max="400" value="100" step="1" />
-          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);">zoom_in</span>
-        </div>
-      </div>
-      <div class="crop-actions">
-        <button id="crop-cancel" type="button">
-          <span class="material-symbols-outlined" style="font-size:18px;">close</span>
-          <span>取消</span>
-        </button>
-        <button id="crop-confirm" type="button" class="primary">
-          <span class="material-symbols-outlined" style="font-size:18px;">check</span>
-          <span>确认</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
+  <script src="assets/api-config.js"></script>
+  <script src="assets/auth.js"></script>
   <script>
-    const NAME_KEY = 'monolith.userName';
-    const LOGIN_TIME_KEY = 'monolith.loginTime';
-    const AVATAR_KEY = 'monolith.userAvatar';
+    (function () {
+      'use strict';
 
-    // Theme toggle
-    const THEME_KEY = 'monolith.theme';
-    function applyTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      const icon = document.getElementById('theme-icon');
-      if (icon) icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
-    }
-    function initTheme() {
-      let saved;
-      try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-      if (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      applyTheme(saved);
-    }
-    document.getElementById('theme-toggle').addEventListener('click', () => {
-      const cur = document.documentElement.getAttribute('data-theme') || 'light';
-      const next = cur === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
-    });
-
-    // 头像：默认 + 用户上传
-    function loadAvatar() {
-      try {
-        const saved = localStorage.getItem(AVATAR_KEY);
-        if (saved) document.getElementById('avatar-img').src = saved;
-      } catch(e) {}
-    }
-    loadAvatar();
-
-    // 头像裁切状态
-    const cropState = {
-      src: null,        // dataURL of the picked image
-      img: null,        // Image object
-      scale: 1,         // current scale multiplier
-      offsetX: 0,       // px offset from center
-      offsetY: 0,
-      baseScale: 1,     // scale at zoom=100 (cover to circle)
-      circleSize: 280,  // circle diameter in px (recomputed on layout)
-      dragging: false,
-      startX: 0, startY: 0,
-      startOffsetX: 0, startOffsetY: 0
-    };
-
-    function openCrop(dataUrl) {
-      cropState.src = dataUrl;
-      cropState.img = new Image();
-      // 图片解码失败（如 HEIC/损坏文件）时给出明确提示，而不是无反应
-      cropState.img.onerror = () => {
-        alert('无法读取这张图片。\n可能是浏览器不支持的格式（如 iPhone 的 HEIC）或文件已损坏。\n请改用 JPG / PNG / WebP 格式的图片。');
-      };
-      cropState.img.onload = () => {
-        const stage = document.getElementById('crop-stage');
-        const circle = document.getElementById('crop-circle');
-        // 先把 modal 显示出来再读取尺寸（display:none 时 clientWidth = 0）
-        document.getElementById('crop-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        const stageSize = stage.clientWidth;
-        const circleSize = Math.min(stageSize, 320);
-        circle.style.width = circle.style.height = circleSize + 'px';
-        cropState.circleSize = circleSize;
-        // baseScale: 覆盖裁切圆 (object-fit: cover 等价)
-        const ratio = Math.max(circleSize / cropState.img.naturalWidth, circleSize / cropState.img.naturalHeight);
-        cropState.baseScale = ratio;
-        cropState.scale = 1;
-        cropState.offsetX = 0;
-        cropState.offsetY = 0;
-        document.getElementById('crop-zoom').value = 100;
-        // 同步到 DOM 上的 <img>，否则页面显示空白
-        document.getElementById('crop-img').src = dataUrl;
-        applyCropTransform();
-      };
-      cropState.img.src = dataUrl;
-    }
-
-    function closeCrop() {
-      document.getElementById('crop-modal').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-    function applyCropTransform() {
-      const img = document.getElementById('crop-img');
-      if (!cropState.img) return;
-      const total = cropState.baseScale * cropState.scale;
-      const w = cropState.img.naturalWidth * total;
-      const h = cropState.img.naturalHeight * total;
-      img.style.width = w + 'px';
-      img.style.height = h + 'px';
-      // 限制偏移：图片必须能覆盖整个圆
-      const cs = cropState.circleSize;
-      const maxX = Math.max(0, (w - cs) / 2);
-      const maxY = Math.max(0, (h - cs) / 2);
-      cropState.offsetX = Math.max(-maxX, Math.min(maxX, cropState.offsetX));
-      cropState.offsetY = Math.max(-maxY, Math.min(maxY, cropState.offsetY));
-      img.style.transform = 'translate(calc(-50% + ' + cropState.offsetX + 'px), calc(-50% + ' + cropState.offsetY + 'px))';
-    }
-
-    // 文件选择
-    document.getElementById('avatar-input').addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        alert('请选择图片文件（JPG / PNG / WebP）');
-        e.target.value = '';
-        return;
+      // ====== Theme ======
+      const THEME_KEY = 'monolith.theme';
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const icon = document.getElementById('theme-icon');
+        if (icon) icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
       }
-      // 大小限制：超过 15MB 的原图读取/解码容易卡死或失败，明确提醒
-      const MAX_FILE_MB = 15;
-      if (file.size > MAX_FILE_MB * 1024 * 1024) {
-        alert('图片太大（' + (file.size / 1024 / 1024).toFixed(1) + 'MB）。\n请选择小于 ' + MAX_FILE_MB + 'MB 的图片。');
-        e.target.value = '';
-        return;
+      function initTheme() {
+        let saved;
+        try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+        if (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        applyTheme(saved);
       }
-      const reader = new FileReader();
-      reader.onerror = () => {
-        alert('读取图片失败，请重试或换一张图片。');
-      };
-      reader.onload = (ev) => {
-        openCrop(ev.target.result);
-      };
-      reader.readAsDataURL(file);
-      // 重置以便下次选同一文件也能触发
-      e.target.value = '';
-    });
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      });
 
-    // 缩放
-    document.getElementById('crop-zoom').addEventListener('input', (e) => {
-      cropState.scale = parseInt(e.target.value, 10) / 100;
-      applyCropTransform();
-    });
+      initTheme();
 
-    // 拖动
-    const stage = document.getElementById('crop-stage');
-    function getPos(e) {
-      const t = e.touches ? e.touches[0] : e;
-      return { x: t.clientX, y: t.clientY };
-    }
-    function onDown(e) {
-      e.preventDefault();
-      cropState.dragging = true;
-      const p = getPos(e);
-      cropState.startX = p.x;
-      cropState.startY = p.y;
-      cropState.startOffsetX = cropState.offsetX;
-      cropState.startOffsetY = cropState.offsetY;
-      stage.style.cursor = 'grabbing';
-    }
-    function onMove(e) {
-      if (!cropState.dragging) return;
-      e.preventDefault();
-      const p = getPos(e);
-      cropState.offsetX = cropState.startOffsetX + (p.x - cropState.startX);
-      cropState.offsetY = cropState.startOffsetY + (p.y - cropState.startY);
-      applyCropTransform();
-    }
-    function onUp() {
-      cropState.dragging = false;
-      stage.style.cursor = 'grab';
-    }
-    stage.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    stage.addEventListener('touchstart', onDown, { passive: false });
-    window.addEventListener('touchmove', onMove, { passive: false });
-    window.addEventListener('touchend', onUp);
-    stage.style.cursor = 'grab';
+      // ====== Tab 切换 ======
+      const tabs = document.querySelectorAll('.auth-tab');
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const title = document.getElementById('auth-title');
+      const subtitle = document.getElementById('auth-subtitle');
 
-    // 确认
-    document.getElementById('crop-confirm').addEventListener('click', () => {
-      if (!cropState.img) return;
-      const cs = cropState.circleSize;
-      const out = 256; // 输出大小
-      const canvas = document.createElement('canvas');
-      canvas.width = out; canvas.height = out;
-      const ctx = canvas.getContext('2d');
-      // 圆形裁切
-      ctx.beginPath();
-      ctx.arc(out/2, out/2, out/2, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
+      function switchTab(tab) {
+        tabs.forEach(t => {
+          const active = t.getAttribute('data-tab') === tab;
+          t.classList.toggle('active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        if (tab === 'login') {
+          loginForm.style.display = '';
+          registerForm.style.display = 'none';
+          title.textContent = '欢迎回来';
+          subtitle.textContent = '输入邮箱和密码开始今天的工作';
+        } else {
+          loginForm.style.display = 'none';
+          registerForm.style.display = '';
+          title.textContent = '创建账号';
+          subtitle.textContent = '填写邮箱和密码，几秒钟就能开始';
+        }
+        hideError();
+      }
+      tabs.forEach(t => t.addEventListener('click', () => switchTab(t.getAttribute('data-tab'))));
 
-      // 计算图片在 stage 中的实际位置和大小，然后映射到 canvas
-      const total = cropState.baseScale * cropState.scale;
-      const w = cropState.img.naturalWidth * total;
-      const h = cropState.img.naturalHeight * total;
-      // 圆在 stage 中心，cs 直径；canvas 直径 out
-      // ratio: out / cs
-      const ratio = out / cs;
-      const dx = -cropState.offsetX * ratio - w/2 * ratio + out/2;
-      const dy = -cropState.offsetY * ratio - h/2 * ratio + out/2;
-      ctx.drawImage(cropState.img, dx, dy, w * ratio, h * ratio);
+      // ====== 错误提示 ======
+      const errorEl = document.getElementById('auth-error');
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.classList.add('show');
+      }
+      function hideError() {
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+      }
 
-      // 圆形裁切区外是透明的，先铺白底再导出 JPEG（比 PNG 小一个量级，避免超出 localStorage 容量）
-      const flat = document.createElement('canvas');
-      flat.width = out; flat.height = out;
-      const fctx = flat.getContext('2d');
-      fctx.fillStyle = '#ffffff';
-      fctx.fillRect(0, 0, out, out);
-      fctx.beginPath();
-      fctx.arc(out/2, out/2, out/2, 0, Math.PI * 2);
-      fctx.closePath();
-      fctx.clip();
-      fctx.drawImage(canvas, 0, 0);
-      let dataUrl = flat.toDataURL('image/jpeg', 0.88);
+      // ====== 已登录则直接跳首页 ======
+      if (window.Auth && window.Auth.isLoggedIn()) {
+        window.Auth.markShowProfileOnLoad();
+        location.replace('index.html');
+      }
 
-      // 保存；若仍超出 localStorage 容量则降质重试，最终失败必须提醒用户
-      let saved = false;
-      try {
-        localStorage.setItem(AVATAR_KEY, dataUrl);
-        saved = true;
-      } catch (err) {
+      // ====== 登录提交 ======
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideError();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        if (!email || !password) { showError('请填写邮箱和密码'); return; }
+
+        const btn = document.getElementById('login-btn');
+        btn.disabled = true;
+        btn.textContent = '进入中...';
         try {
-          dataUrl = flat.toDataURL('image/jpeg', 0.6);
-          localStorage.setItem(AVATAR_KEY, dataUrl);
-          saved = true;
-        } catch (err2) {}
-      }
-      if (!saved) {
-        alert('头像保存失败：图片过大，超出了浏览器本地存储容量。\n请换一张更小的图片，或先清理浏览器缓存后再试。');
-        return;
-      }
-      document.getElementById('avatar-img').src = dataUrl;
-      closeCrop();
-    });
+          await window.Auth.login(email, password);
+          // 跳首页，标记首页要弹资料窗
+          window.Auth.markShowProfileOnLoad();
+          window.Auth.clearShowProfileAfter = true; // 备用，兼容旧代码
+          setTimeout(() => { location.href = 'index.html'; }, 250);
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = '进入工作台';
+          showError(err.message || '进入失败');
+        }
+      });
 
-    document.getElementById('crop-cancel').addEventListener('click', closeCrop);
-    document.getElementById('crop-close').addEventListener('click', closeCrop);
-    document.getElementById('crop-modal').addEventListener('click', e => {
-      if (e.target.id === 'crop-modal') closeCrop();
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && document.getElementById('crop-modal').style.display === 'flex') {
-        closeCrop();
-      }
-    });
+      // ====== 注册提交 ======
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideError();
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value;
+        const name = document.getElementById('register-name').value.trim();
 
-    // Login logic
-    initTheme();
+        if (!email || !password) { showError('请填写邮箱和密码'); return; }
+        if (password.length < 6) { showError('密码至少 6 位'); return; }
 
-    // Prefill last name if exists
-    const lastName = localStorage.getItem(NAME_KEY);
-    if (lastName) {
-      document.getElementById('name-input').value = lastName;
-    }
-
-    document.getElementById('login-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = document.getElementById('name-input');
-      const name = input.value.trim();
-      if (!name) {
-        input.focus();
-        return;
-      }
-      try {
-        localStorage.setItem(NAME_KEY, name);
-        localStorage.setItem(LOGIN_TIME_KEY, new Date().toISOString());
-      } catch (e) {}
-      const btn = document.getElementById('login-btn');
-      btn.disabled = true;
-      btn.textContent = '登录中...';
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 400);
-    });
+        const btn = document.getElementById('register-btn');
+        btn.disabled = true;
+        btn.textContent = '创建中...';
+        try {
+          await window.Auth.register(email, password, name || undefined);
+          window.Auth.markShowProfileOnLoad();
+          setTimeout(() => { location.href = 'index.html'; }, 250);
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = '创建并进入';
+          showError(err.message || '创建失败');
+        }
+      });
+    })();
   </script>
 </body>
 </html>
