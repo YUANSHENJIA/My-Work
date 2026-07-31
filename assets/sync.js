@@ -184,9 +184,12 @@
    *   不传则自动收集所有业务字段全量推送。
    */
   async function save(fields) {
+    const fieldsKeys = fields ? Object.keys(fields) : null;
+    console.log('[MyWorkSync] save() called', fieldsKeys ? ('with fields: ' + fieldsKeys.join(',')) : '(collectLocalData)');
     updateStatus();
     if (!status.enabled) {
       const reason = !status.hasToken ? '未登录' : 'API 未配置';
+      console.warn('[MyWorkSync] save() skipped:', reason, 'hasToken=' + status.hasToken, 'enabled=' + status.enabled);
       return { ok: false, error: reason };
     }
 
@@ -211,17 +214,18 @@
         status.lastSaveAt = Date.now();
         status.error = null;
         const result = { ok: true };
+        console.log('[MyWorkSync] save() OK at', new Date().toLocaleTimeString());
         dispatch('sync:saved', result);
         return result;
       }
 
       const err = body && body.error ? body.error : '保存失败';
       status.error = err;
-      console.warn('[sync] save failed:', body);
+      console.warn('[MyWorkSync] save() failed:', body);
       return { ok: false, error: err };
     } catch (e) {
       status.error = e.message || '网络错误';
-      console.warn('[sync] save error:', e);
+      console.warn('[MyWorkSync] save() error:', e);
       return { ok: false, error: status.error };
     } finally {
       status.saving = false;

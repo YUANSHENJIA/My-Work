@@ -387,6 +387,20 @@ loginGuard(); // 必须最先执行
       });
       document.body.appendChild(el);
 
+      // toast 元素（圆点上方短暂显示"已保存/失败"等）
+      const toast = document.createElement('div');
+      toast.id = 'sync-toast';
+      toast.style.cssText = 'position:fixed;bottom:34px;right:16px;padding:6px 12px;border-radius:6px;font-size:12px;font-family:monospace;color:#fff;background:#333;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:99999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:280px;';
+      document.body.appendChild(toast);
+      let toastTimer = null;
+      function showToast(text, bg) {
+        toast.textContent = text;
+        toast.style.background = bg || '#333';
+        toast.style.opacity = '1';
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+      }
+
       function set(color, tip) {
         el.style.background = color;
         el.title = tip;
@@ -402,14 +416,27 @@ loginGuard(); // 必须最先执行
       else if (st.lastLoadAt) set('#4caf50', '已同步 ' + new Date(st.lastLoadAt).toLocaleTimeString());
       else set('#f5c518', '同步中...');
 
-      window.addEventListener('sync:loading', () => set('#f5c518', '同步中...'));
-      window.addEventListener('sync:loaded', (e) => set('#4caf50', '已同步 ' + new Date().toLocaleTimeString() + (e.detail && e.detail.changed ? '（有更新）' : '')));
-      window.addEventListener('sync:saved', () => set('#4caf50', '已保存到云端 ' + new Date().toLocaleTimeString()));
+      window.addEventListener('sync:loading', () => { set('#f5c518', '同步中...'); showToast('同步中…', '#666'); });
+      window.addEventListener('sync:loaded', (e) => {
+        set('#4caf50', '已同步 ' + new Date().toLocaleTimeString());
+        showToast('✓ 已从云端拉取', '#2e7d32');
+        console.log('[MyWorkSync] load OK', e.detail);
+      });
+      window.addEventListener('sync:saving', () => { set('#f5c518', '保存中...'); showToast('保存中…', '#1565c0'); });
+      window.addEventListener('sync:saved', (e) => {
+        set('#4caf50', '已保存到云端 ' + new Date().toLocaleTimeString());
+        showToast('✓ 已保存到云端', '#2e7d32');
+        console.log('[MyWorkSync] save OK', e.detail);
+      });
       window.addEventListener('sync:status', (e) => {
         const s = e.detail;
-        if (s && s.error) set('#f44336', '同步失败：' + s.error);
+        if (s && s.error) {
+          set('#f44336', '同步失败：' + s.error);
+          showToast('✗ 同步失败：' + s.error, '#c62828');
+          console.error('[MyWorkSync] error', s);
+        }
       });
-    } catch (e) { /* 指示器失败不影响页面 */ }
+    } catch (e) { /* 指示器失败不影响页面 */ console.error('[sync-indicator]', e); }
   }
 
 document.addEventListener('DOMContentLoaded', () => {
