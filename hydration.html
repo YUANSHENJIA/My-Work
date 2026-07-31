@@ -234,6 +234,65 @@
       if (e.key === WATER_KEY || e.key === GOAL_KEY || e.key === INTERVAL_KEY) render();
     });
     window.addEventListener('sync:loaded', () => { try { render(); } catch(e) {} });
+
+    // ===== 定时喝水提醒（水杯弹窗） =====
+    const reminderToggle = document.getElementById('reminder-toggle');
+    const intervalSlider = document.getElementById('interval-slider');
+    const LAST_WATER_REMIND_KEY = 'monolith.lastWaterRemind';
+
+    let waterTimer = null;
+
+    function getWaterInterval() {
+      return Math.max(5, parseInt(intervalSlider ? intervalSlider.value : '45', 10) || 45);
+    }
+
+    function showWaterReminderModal() {
+      // 多标签防抖：距上次提醒不足 interval 则跳过
+      try {
+        const last = parseInt(localStorage.getItem(LAST_WATER_REMIND_KEY) || '0', 10);
+        if (Date.now() - last < (getWaterInterval() - 1) * 60 * 1000) return;
+        localStorage.setItem(LAST_WATER_REMIND_KEY, String(Date.now()));
+      } catch (e) {}
+      if (document.getElementById('water-reminder-modal')) return;
+
+      const wrap = document.createElement('div');
+      wrap.id = 'water-reminder-modal';
+      wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+      wrap.innerHTML =
+        '<div style="background:var(--surface);border-radius:var(--r-xl);padding:40px 32px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.35);text-align:center;">' +
+          '<div style="width:76px;height:76px;border-radius:50%;background:var(--surface-container-low);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">' +
+            '<span class="material-symbols-outlined" style="font-size:42px;color:var(--primary);">local_drink</span>' +
+          '</div>' +
+          '<p style="font-size:22px;font-weight:700;color:var(--on-surface);margin-bottom:10px;">你该喝水了</p>' +
+          '<p style="font-size:13px;color:var(--on-surface-variant);margin-bottom:26px;line-height:1.6;">上班这么辛苦，记得按时补充生命之源！</p>' +
+          '<button id="water-reminder-dismiss" class="btn-primary" style="width:100%;padding:12px;border:none;cursor:pointer;">好的，马上去喝</button>' +
+        '</div>';
+      document.body.appendChild(wrap);
+      document.getElementById('water-reminder-dismiss').addEventListener('click', () => { wrap.remove(); });
+      wrap.addEventListener('click', e => { if (e.target === wrap) wrap.remove(); });
+    }
+
+    function scheduleWaterReminder() {
+      if (waterTimer) { clearTimeout(waterTimer); waterTimer = null; }
+      if (!reminderToggle || !reminderToggle.checked) return;
+      waterTimer = setTimeout(() => {
+        showWaterReminderModal();
+        scheduleWaterReminder(); // 弹窗后继续下一轮
+      }, getWaterInterval() * 60 * 1000);
+    }
+
+    if (reminderToggle) {
+      reminderToggle.addEventListener('change', () => {
+        if (reminderToggle.checked) scheduleWaterReminder();
+        else if (waterTimer) { clearTimeout(waterTimer); waterTimer = null; }
+      });
+      scheduleWaterReminder();
+    }
+    if (intervalSlider) {
+      intervalSlider.addEventListener('change', () => {
+        if (reminderToggle && reminderToggle.checked) scheduleWaterReminder();
+      });
+    }
   </script>
 
   <style>
