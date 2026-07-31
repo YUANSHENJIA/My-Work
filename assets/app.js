@@ -129,12 +129,15 @@ function loginGuard() {
       if (!btn) return;
       if (signedToday === today) {
         btn.textContent = '已签到 ✓';
-        btn.style.opacity = '0.6';
-        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.7';
+        // 仍可点击：重复点击 = 重新上传云端（幂等），解决"旧版本已签到导致云端无数据"问题
+        btn.style.pointerEvents = '';
+        btn.title = '已签到（点击可重新同步到云端）';
       } else {
         btn.textContent = signLabel();
         btn.style.opacity = '';
         btn.style.pointerEvents = '';
+        btn.title = '';
       }
     }
 
@@ -146,6 +149,22 @@ function loginGuard() {
     window.addEventListener('storage', (e) => {
       if (e.key && [STREAK_KEY, SIGNED_TODAY_KEY, 'monolith.signedDays', 'monolith.lastSignedDate'].includes(e.key)) refreshUI();
     });
+
+    // 关键修复：本地已签到但云端可能没有（旧版本遗留）→ 页面加载时自动上传一次
+    function autoUploadSigned() {
+      try {
+        const st = readState();
+        if (st.signedToday !== today) return;
+        if (typeof MyWorkSync === 'undefined') return;
+        let sd = {};
+        try { sd = JSON.parse(localStorage.getItem('monolith.signedDays') || '{}'); } catch(e) { sd = {}; }
+        const lastDate = localStorage.getItem('monolith.lastSignedDate') || today;
+        MyWorkSync.save({ streak: st.streak, signedToday: today, signedDays: sd, lastSignedDate: lastDate });
+      } catch (e) {}
+    }
+    // 等 sync.js 首次 load 完成后再决定是否补传（避免与 load 拉取冲突）
+    window.addEventListener('sync:loaded', autoUploadSigned);
+    setTimeout(autoUploadSigned, 3000);
 
     // Save signed days for calendar
     btn.addEventListener('click', () => {
@@ -170,9 +189,9 @@ function loginGuard() {
         try { localStorage.setItem('monolith.signedDays', JSON.stringify(signedDays)); } catch(e) {}
 
         refreshUI();
-        btn.animate([{transform:'scale(1)'},{transform:'scale(0.95)'},{transform:'scale(1)'}], {duration:280,easing:'ease-out'});
+        try { btn.animate([{transform:'scale(1)'},{transform:'scale(0.95)'},{transform:'scale(1)'}], {duration:280,easing:'ease-out'}); } catch(e) {}
 
-        // 多端同步：推送签到数据到云端
+        // 多端同步：推送签到数据到云端（已签到重复点击也重新上传）
         if (typeof MyWorkSync !== 'undefined') {
           MyWorkSync.save({ streak: newStreak, signedToday: today, signedDays, lastSignedDate: today });
         }
