@@ -58,7 +58,8 @@
       </div>
     </section>
 
-    <section class="card fade-in relative" style="padding: 24px;">
+    <div class="grid grid-cols-1 lg:grid-cols-7 gap-6 items-start">
+    <section class="card fade-in relative lg:col-span-5" style="padding: 24px;">
       <div class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(0,0,0,0.04), transparent 70%);"></div>
 
       <div class="grid grid-cols-7 mb-4 border-b border-outline-variant/20 pb-3">
@@ -107,7 +108,7 @@
     </div>
 
     <!-- Tasks for selected day -->
-    <section class="card mt-6 fade-in" id="day-detail" style="display:none;">
+    <section class="card fade-in lg:col-span-2 self-start" id="day-detail" style="display:none;">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
           <p class="eyebrow mb-2">Selected Day</p>
@@ -135,6 +136,7 @@
         </form>
       </div>
     </section>
+    </div>
 
     <p class="text-center text-sm text-on-surface-variant italic mt-10">"The secret of your future is hidden in your daily routine."</p>
   </main>
@@ -470,8 +472,17 @@
     .bg-surface-container-low { background: var(--surface-container-low); }
     .bg-surface-container-high { background: var(--surface-container-high); }
     .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     .grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
     .gap-y-2 > * + * { margin-top: 8px; }
+    .gap-6 { gap: 24px; }
+    .items-start { align-items: start; }
+    .self-start { align-self: start; }
+    @media (min-width: 1024px) {
+      .lg\:grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+      .lg\:col-span-5 { grid-column: span 5 / span 5; }
+      .lg\:col-span-2 { grid-column: span 2 / span 2; }
+    }
     .h-5 { height: 20px; }
     .w-5 { width: 20px; }
     .h-28 { height: 112px; }
