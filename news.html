@@ -71,10 +71,31 @@
       let lastUpdated = '';
       let sourceLabel = '';
 
-      // 本地隐藏：被用户删除的新闻 link 集合（刷新后同批次仍隐藏；每天 Action 重写后内容不同，隐藏即对当天有效）
+      // 本地隐藏：被用户删除的新闻 link 集合。
+      // 按日期隔离（monolith.news.hidden.YYYY-MM-DD），每天独立计数，
+      // 避免跨天累积导致同一条新闻永远隐藏、列表越显越少。
+      const _todayKey = new Date().toISOString().slice(0, 10);
+      const _hiddenStoreKey = 'monolith.news.hidden.' + _todayKey;
       let hidden = new Set();
-      try { hidden = new Set(JSON.parse(localStorage.getItem('monolith.news.hidden') || '[]')); } catch(e) {}
-      function persistHidden() { try { localStorage.setItem('monolith.news.hidden', JSON.stringify([...hidden])); } catch(e) {} }
+      try { hidden = new Set(JSON.parse(localStorage.getItem(_hiddenStoreKey) || '[]')); } catch(e) {}
+      function persistHidden() { try { localStorage.setItem(_hiddenStoreKey, JSON.stringify([...hidden])); } catch(e) {} }
+      // 清理旧数据：删除无日期的旧 key 和 7 天前的日期 key（避免 localStorage 膨胀）
+      try {
+        const oldKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('monolith.news.hidden')) oldKeys.push(k);
+        }
+        const cutoff = Date.now() - 7 * 86400000;
+        oldKeys.forEach(k => {
+          const keep = k === _hiddenStoreKey;
+          if (!keep && k === 'monolith.news.hidden') { localStorage.removeItem(k); return; }
+          const d = k.replace('monolith.news.hidden.', '');
+          if (!keep && /^\d{4}-\d{2}-\d{2}$/.test(d) && new Date(d + 'T00:00:00Z').getTime() < cutoff) {
+            localStorage.removeItem(k);
+          }
+        });
+      } catch(e) {}
 
       function escapeHtml(s) {
         return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
