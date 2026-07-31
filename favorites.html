@@ -89,7 +89,7 @@
     ];
 
     function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || []; } catch(e) { return []; } }
-    function save(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save(); }
+    function save(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ favorites: list }); }
 
     let favs = load();
     // If first time, seed with examples so user sees something
@@ -174,7 +174,7 @@
 
     // 多端同步：页面加载时从后端拉取最新数据
     if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
+      MyWorkSync.load().then(() => { try { favs = load(); render(); } catch(e) {} }).catch(() => {});
     }
   </script>
 

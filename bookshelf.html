@@ -392,7 +392,7 @@
     function saveBooks() {
       try {
         localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
-        if (typeof MyWorkSync !== 'undefined') MyWorkSync.save();
+        if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ books });
         return true;
       } catch(e) {
         console.error('[BOOKSHELF] saveBooks failed:', e.message);
@@ -777,7 +777,7 @@
 
     // 多端同步：页面加载时从后端拉取最新数据
     if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
+      MyWorkSync.load().then(() => { try { books = loadBooks(); render(); } catch(e) {} }).catch(() => {});
     }
   </script>
 

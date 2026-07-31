@@ -125,7 +125,7 @@
     // Today's review save
     const REVIEW_KEY = 'monolith.reviews';
     function loadReviews() { try { return JSON.parse(localStorage.getItem(REVIEW_KEY) || '{}'); } catch(e){ return {}; } }
-    function saveReviews(r) { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(r)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save(); }
+    function saveReviews(r) { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(r)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ reviews: r }); }
 
     const todayKey = () => new Date().toISOString().slice(0, 10);
 
@@ -300,7 +300,17 @@
 
     // 多端同步：页面加载时从后端拉取最新数据
     if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { renderHistory(); } catch(e) {} }).catch(() => {});
+      MyWorkSync.load().then(() => {
+        try {
+          const sv = (loadReviews())[todayKey()];
+          if (sv) {
+            if (sv.q1) document.getElementById('review-q1').value = sv.q1;
+            if (sv.q2) document.getElementById('review-q2').value = sv.q2;
+            if (sv.q3) document.getElementById('review-q3').value = sv.q3;
+          }
+          renderFocusReading(); renderDoneAndWater(); renderHistory();
+        } catch(e) {}
+      }).catch(() => {});
     }
   </script>
 <style>

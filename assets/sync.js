@@ -86,11 +86,11 @@
         },
       });
       const body = await res.json();
-      // 后端返回格式：{ code:0, data: {...}, message: "..." }
-      if (body && body.code === 0 && body.data) {
+      // 后端返回格式：{ success:true, data: {...}, message: "..." }
+      if (body && body.success === true && body.data) {
         mergeToLocal(body.data);
         return body.data;
-      } else if (body && body.code === 0 && body.data === null) {
+      } else if (body && body.success === true && body.data === null) {
         // 无同步数据，不覆盖本地
         return null;
       }
@@ -103,13 +103,15 @@
   }
 
   /**
-   * 将前端所有业务数据推送到后端。
-   * 自动收集所有功能的数据。
+   * 将前端数据推送到后端。
+   * @param {object} [fields] 可选：只推送指定字段，如 { todos: [...] }
+   *   不传则自动收集所有业务字段全量推送。
+   *   后端是部分更新（$set 传入字段），不会覆盖其他设备保存的字段。
    */
-  async function save() {
+  async function save(fields) {
     const url = getAPI('dataSave');
     if (!url) { console.warn('[sync] dataSave URL not configured'); return; }
-    const data = collectLocalData();
+    const data = fields || collectLocalData();
     try {
       await fetch(url, {
         method: 'PUT',
@@ -119,7 +121,7 @@
         },
         body: JSON.stringify(data),
       });
-      // 后端成功返回 { code:0, message: "..." }
+      // 后端成功返回 { success:true, message: "..." }
     } catch (e) {
       console.warn('[sync] save error:', e);
     }

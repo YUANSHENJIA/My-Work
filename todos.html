@@ -129,7 +129,7 @@
 
     function saveTodos(list) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
-      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save();
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ todos: list });
     }
 
     let todos = loadTodos();
@@ -248,7 +248,7 @@
 
     // 多端同步：页面加载时从后端拉取最新数据
     if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
+      MyWorkSync.load().then(() => { try { todos = loadTodos(); render(); } catch(e) {} }).catch(() => {});
     }
   </script>
 

@@ -143,9 +143,9 @@
     const INTERVAL_KEY = 'monolith.waterInterval';
 
     function loadLog() { try { return JSON.parse(localStorage.getItem(WATER_KEY) || '{}'); } catch(e) { return {}; } }
-    function saveLog(log) { try { localStorage.setItem(WATER_KEY, JSON.stringify(log)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save(); }
+    function saveLog(log) { try { localStorage.setItem(WATER_KEY, JSON.stringify(log)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ waterLog: log }); }
     function getGoal() { return parseInt(localStorage.getItem(GOAL_KEY) || '2000', 10); }
-    function setGoal(v) { try { localStorage.setItem(GOAL_KEY, String(v)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save(); }
+    function setGoal(v) { try { localStorage.setItem(GOAL_KEY, String(v)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ waterGoal: v }); }
 
     function getToday() {
       const log = loadLog();
@@ -216,12 +216,12 @@
     slider.addEventListener('input', () => {
       valueLabel.textContent = `${slider.value} 分钟`;
       localStorage.setItem(INTERVAL_KEY, slider.value);
-      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save();
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ waterInterval: Number(slider.value) });
     });
 
     render();
 
-    // 多端同步：页面加载时从后端拉取最新数据
+    // 多端同步：页面加载时从后端拉取最新数据（render 内部会重新读 localStorage）
     if (typeof MyWorkSync !== 'undefined') {
       MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
     }

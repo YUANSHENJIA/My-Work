@@ -160,7 +160,7 @@
 
     function saveEntries() {
       try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); } catch(e) {}
-      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save();
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ excerpts: entries });
     }
 
     function cardHtml(e) {
@@ -231,7 +231,7 @@
 
     // 多端同步：页面加载时从后端拉取最新数据
     if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
+      MyWorkSync.load().then(() => { try { entries = loadEntries(); render(); } catch(e) {} }).catch(() => {});
     }
 
     // 删除单条摘录
