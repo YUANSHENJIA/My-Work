@@ -634,7 +634,16 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
 .header-ticker {
   position: relative;
   overflow: hidden;
-  height: 28px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-ticker p {
+  line-height: 1.1;
+  margin: 0;
+  padding: 0 4px;
+  width: 100%;
 }
 .ticker-item {
   position: absolute;

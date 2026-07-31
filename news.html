@@ -112,8 +112,6 @@
           '<div class="flex items-center justify-between mt-auto pt-3" style="border-top: 1px solid var(--outline-variant);">' +
             '<a href="' + escapeHtml(n.link) + '" target="_blank" rel="noopener noreferrer" class="text-xs text-on-surface-variant hover:text-on-surface no-underline">阅读全文 →</a>' +
             '<div class="flex gap-1">' +
-              '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="收藏"><span class="material-symbols-outlined" style="font-size:18px;">bookmark</span></button>' +
-              '<button class="p-1.5 hover:bg-surface-container rounded-full transition-colors" aria-label="分享"><span class="material-symbols-outlined" style="font-size:18px;">share</span></button>' +
               '<button class="news-delete p-1.5 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant" data-link="' + escapeHtml(n.link) + '" aria-label="删除"><span class="material-symbols-outlined" style="font-size:18px;">delete</span></button>' +
             '</div>' +
           '</div>' +
@@ -183,24 +181,11 @@
         list.innerHTML = '<p class="text-center text-on-surface-variant col-span-full py-10">' + (((window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{}).newsLoadFail || '资讯加载失败，请稍后再试。') + '<br/><span class="text-xs">' + e.message + '</span></p>';
       }
 
-      // 手动刷新按钮（强制绕过缓存）
-      const header = document.querySelector('.eyebrow');
-      const refreshBtn = document.createElement('button');
-      const dictN=(window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{};
-      refreshBtn.className = 'chip ml-auto flex items-center gap-1';
-      const refreshTxt = dictN.refresh || '刷新';
-      refreshBtn.innerHTML = `<span class="material-symbols-outlined text-sm">refresh</span> ${refreshTxt}`;
-      refreshBtn.addEventListener('click', async () => {
-        refreshBtn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">refresh</span> ${dictN.refreshing || '刷新中...'}`;
-        try {
-          await load(true);
-        } catch (e) {
-          console.error(e);
-        }
-        refreshBtn.innerHTML = '<span class="material-symbols-outlined text-sm">refresh</span> 刷新';
-        refreshBtn.animate([{transform:'rotate(360deg)'}], {duration:300});
-      });
-      header.parentElement.appendChild(refreshBtn);
+      // 静态提示：每天 9 点自动更新（替换原手动刷新按钮）
+      const autoHint = document.createElement('p');
+      autoHint.className = 'text-xs text-on-surface-variant mt-3 flex items-center gap-1';
+      autoHint.innerHTML = '<span class="material-symbols-outlined text-sm">schedule</span> 每天9点自动更新';
+      document.querySelector('.eyebrow').parentElement.appendChild(autoHint);
     })();
   </script>
 

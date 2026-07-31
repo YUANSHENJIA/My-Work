@@ -282,34 +282,20 @@
       </div>
     </section>
 
-    <!-- Tabs -->
-    <section class="flex gap-2 overflow-x-auto no-scrollbar mb-6">
-      <button class="chip active">全部</button>
-      <button class="chip">每日一学</button>
-      <button class="chip">微信读书</button>
-      <button class="chip">Medium</button>
-      <button class="chip">Notion Lib</button>
-    </section>
+    <!-- Tabs（动态：根据用户已添加书籍的来源自动生成） -->
+    <section id="book-tabs" class="flex gap-2 overflow-x-auto no-scrollbar mb-6"></section>
 
     <!-- 我收藏的书籍 -->
     <a href="https://yuanshenjia.github.io/meiriyixue/" target="_blank" rel="noopener noreferrer" class="card fade-in mb-6 block no-underline hover-lift" style="background: linear-gradient(135deg, var(--surface-container-low) 0%, var(--surface-container) 100%); padding: 32px;">
       <div class="flex items-center gap-6">
-        <div class="shrink-0 w-32 h-32 rounded-xl shadow-xl flex items-center justify-center relative" style="background: linear-gradient(135deg, #1a1c1c 0%, #3a3a3a 100%);">
-          <div class="text-center px-2">
-            <span class="material-symbols-outlined" style="font-size: 36px; color: rgba(255,255,255,0.4);">menu_book</span>
-            <p class="text-[10px] tracking-widest font-mono mt-1" style="color: rgba(255,255,255,0.7);">每日一字</p>
-          </div>
-          <div class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg" style="background: var(--primary); color: var(--on-primary);">
-            <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
-          </div>
+        <div class="shrink-0 w-40 h-40 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #1a1c1c 0%, #3a3a3a 100%);">
+          <span class="material-symbols-outlined" style="font-size: 120px; color: rgba(255,255,255,0.85); font-variation-settings: 'wght' 200;">menu_book</span>
         </div>
         <div class="flex-1 min-w-0">
           <span class="chip mb-3" data-i18n="importFrom">每日一学 · 收藏书籍</span>
-          <h2 class="headline-lg mb-2" style="color: var(--on-surface);" data-i18n="browseFull">浏览每日一学完整书单</h2>
+          <h2 class="headline-lg mb-2" style="color: var(--on-surface);" data-i18n="browseFull">你今天学习了吗？</h2>
           <p class="body-md text-on-surface-variant mb-3">
             <span data-i18n="browseHint">点击 + 号可从书单导入，导入后点击书籍卡片进入详情页阅读。</span>
-            <br>
-            <span class="text-xs font-mono text-on-surface-variant opacity-70">yuanshenjia.github.io/meiriyixue</span>
           </p>
           <div class="flex items-center gap-3 flex-wrap">
             <span class="chip" data-i18n="externalLink">外部链接</span>
@@ -426,9 +412,29 @@
       '</article>';
     }
 
+    // ===== 动态标签：根据用户已添加书籍的来源自动生成 =====
+    let currentSourceFilter = '全部';
+    function renderTabs() {
+      const tabsEl = document.getElementById('book-tabs');
+      if (!tabsEl) return;
+      const sources = [...new Set(books.map(b => b.source).filter(Boolean))];
+      const items = ['全部', ...sources];
+      tabsEl.innerHTML = items.map(src =>
+        '<button class="chip' + (src === currentSourceFilter ? ' active' : '') + '" data-src="' + escapeHtml(src) + '">' + escapeHtml(src) + '</button>'
+      ).join('');
+      tabsEl.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentSourceFilter = btn.dataset.src;
+          render();
+        });
+      });
+    }
+
     function render() {
-      document.getElementById('books-grid').innerHTML = books.map(bookCard).join('');
+      const shown = currentSourceFilter === '全部' ? books : books.filter(b => b.source === currentSourceFilter);
+      document.getElementById('books-grid').innerHTML = shown.map(bookCard).join('');
       updateTotal();
+      renderTabs();
     }
 
     // ===== 从 meiriyixue 加载并解析 =====

@@ -111,7 +111,6 @@
             <p class="eyebrow mb-1">History</p>
             <h2 class="headline-lg" data-i18n="historyReview">历史复盘</h2>
           </div>
-          <a href="#" class="text-sm text-on-surface-variant hover:text-on-surface" data-i18n="viewAll">查看全部</a>
         </div>
         <div id="history-list" class="flex flex-col gap-3"></div>
       </section>
@@ -237,6 +236,10 @@
       btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span><span>已保存 ✓</span>';
       btn.animate([{transform:'scale(1)'},{transform:'scale(0.95)'},{transform:'scale(1)'}], {duration:280,easing:'ease-out'});
       setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+      // 保存后清空输入框
+      document.getElementById('review-q1').value = '';
+      document.getElementById('review-q2').value = '';
+      document.getElementById('review-q3').value = '';
       renderHistory(); // 刷新历史列表
     });
 

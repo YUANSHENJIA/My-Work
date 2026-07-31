@@ -532,6 +532,41 @@ document.addEventListener('DOMContentLoaded', () => {
     pending.forEach((r, i) => setTimeout(() => showReminderModal(r), i * 300));
   }
 
+  // 闹钟音效（Web Audio API 生成，无需音频文件）
+  let _alarmCtx = null;
+  function playAlarmSound() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!_alarmCtx) _alarmCtx = new Ctx();
+      const ctx = _alarmCtx;
+      // 如果 AudioContext 被挂起（无用户手势），尝试恢复；恢复失败则静默返回
+      if (ctx.state === 'suspended') {
+        try { ctx.resume(); } catch(e) {}
+        if (ctx.state === 'suspended') return;
+      }
+      // 三声"哔-哔-哔"闹钟
+      const beep = (startAt, freq) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = freq || 880;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.18, startAt + 0.02);
+        gain.gain.setValueAtTime(0.18, startAt + 0.18);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.22);
+        osc.start(startAt);
+        osc.stop(startAt + 0.24);
+      };
+      const t0 = ctx.currentTime + 0.02;
+      beep(t0, 880);
+      beep(t0 + 0.45, 880);
+      beep(t0 + 0.90, 1100);
+    } catch(e) {}
+  }
+
   function showReminderModal(reminder) {
     // 如果已有弹窗，挂到队列后面
     if (document.getElementById('reminder-modal')) {
@@ -556,6 +591,8 @@ document.addEventListener('DOMContentLoaded', () => {
         '<button id="reminder-dismiss" class="btn-primary" style="width:100%;padding:12px;">知道了</button>' +
       '</div>';
     document.body.appendChild(wrap);
+    // 触发闹钟音效
+    playAlarmSound();
     document.getElementById('reminder-dismiss').addEventListener('click', () => {
       wrap.remove();
     });
