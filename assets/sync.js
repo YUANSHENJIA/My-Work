@@ -44,6 +44,11 @@
     try { data.waterInterval = parseInt(localStorage.getItem(NS + 'waterInterval') || '30', 10); } catch (e) { data.waterInterval = 30; }
     try { data.books = JSON.parse(localStorage.getItem(NS + 'books') || '[]'); } catch (e) { data.books = []; }
     try { data.reviews = JSON.parse(localStorage.getItem(NS + 'reviews') || '[]'); } catch (e) { data.reviews = []; }
+    try { data.strategies = JSON.parse(localStorage.getItem(NS + 'strategies') || '[]'); } catch (e) { data.strategies = []; }
+    try { data.streak = parseInt(localStorage.getItem(NS + 'streak') || '0', 10); } catch (e) { data.streak = 0; }
+    try { data.signedToday = localStorage.getItem(NS + 'signedToday') || ''; } catch (e) { data.signedToday = ''; }
+    try { data.signedDays = JSON.parse(localStorage.getItem(NS + 'signedDays') || '{}'); } catch (e) { data.signedDays = {}; }
+    try { data.lastSignedDate = localStorage.getItem(NS + 'lastSignedDate') || ''; } catch (e) { data.lastSignedDate = ''; }
     return data;
   }
 
@@ -58,6 +63,11 @@
       waterInterval: 'waterInterval',
       books: 'books',
       reviews: 'reviews',
+      strategies: 'strategies',
+      streak: 'streak',
+      signedToday: 'signedToday',
+      signedDays: 'signedDays',
+      lastSignedDate: 'lastSignedDate',
     };
     let changed = false;
     for (const [k, storeKey] of Object.entries(map)) {
@@ -258,7 +268,8 @@
     const businessKeys = [
       NS + 'todos', NS + 'excerpts', NS + 'favorites',
       NS + 'waterLog', NS + 'waterGoal', NS + 'waterInterval',
-      NS + 'books', NS + 'reviews'
+      NS + 'books', NS + 'reviews',
+      NS + 'strategies', NS + 'streak', NS + 'signedToday', NS + 'signedDays', NS + 'lastSignedDate'
     ];
     if (!businessKeys.includes(e.key)) return;
     dispatch('sync:localchange', { key: e.key, newValue: e.newValue, oldValue: e.oldValue });

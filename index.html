@@ -199,7 +199,14 @@
         MyWorkSync.load().then(() => { renderHomeStats(); }).catch(() => {});
         window.addEventListener('sync:loaded', renderHomeStats);
         window.addEventListener('storage', e => {
-          if (e.key && (e.key.startsWith('monolith.todos') || e.key.startsWith('monolith.waterLog') || e.key.startsWith('monolith.books'))) {
+          if (e.key && (
+            e.key.startsWith('monolith.todos') ||
+            e.key.startsWith('monolith.waterLog') ||
+            e.key.startsWith('monolith.books') ||
+            e.key.startsWith('monolith.strategies') ||
+            e.key === 'monolith.streak' ||
+            e.key === 'monolith.signedToday'
+          )) {
             renderHomeStats();
           }
         });

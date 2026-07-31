@@ -105,23 +105,47 @@ function loginGuard() {
   const SIGNED_TODAY_KEY = 'monolith.signedToday';
 
   function initSignIn() {
-    let streak = 0, signedToday = '';
-    try {
-      streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
-      signedToday = localStorage.getItem(SIGNED_TODAY_KEY) || '';
-    } catch (e) {}
-
     const today = todayKey();
     const btn = document.getElementById('sign-in-btn');
     const streakEl = document.getElementById('streak-count');
-    if (streakEl) streakEl.textContent = streak;
+
+    function readState() {
+      let s = 0, st = '';
+      try {
+        s = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+        st = localStorage.getItem(SIGNED_TODAY_KEY) || '';
+      } catch (e) {}
+      return { streak: s, signedToday: st };
+    }
+
+    function signLabel() {
+      const dict = (window.I18N || {})[window.getCurrentLang ? window.getCurrentLang() : 'zh'] || {};
+      return dict.signIn || '打卡签到';
+    }
+
+    function refreshUI() {
+      const { streak, signedToday } = readState();
+      if (streakEl) streakEl.textContent = streak;
+      if (!btn) return;
+      if (signedToday === today) {
+        btn.textContent = '已签到 ✓';
+        btn.style.opacity = '0.6';
+        btn.style.pointerEvents = 'none';
+      } else {
+        btn.textContent = signLabel();
+        btn.style.opacity = '';
+        btn.style.pointerEvents = '';
+      }
+    }
+
+    refreshUI();
     if (!btn) return;
 
-    if (signedToday === today) {
-      btn.textContent = '已签到 ✓';
-      btn.style.opacity = '0.6';
-      btn.style.pointerEvents = 'none';
-    }
+    // 多端同步：拉取到云端签到数据后刷新 UI
+    window.addEventListener('sync:loaded', refreshUI);
+    window.addEventListener('storage', (e) => {
+      if (e.key && [STREAK_KEY, SIGNED_TODAY_KEY, 'monolith.signedDays', 'monolith.lastSignedDate'].includes(e.key)) refreshUI();
+    });
 
     // Save signed days for calendar
     btn.addEventListener('click', () => {
@@ -129,6 +153,7 @@ function loginGuard() {
         let lastSigned = localStorage.getItem('monolith.lastSignedDate');
         const yd = new Date(Date.now() - 86400000);
         const yKey = `${yd.getFullYear()}-${String(yd.getMonth()+1).padStart(2,'0')}-${String(yd.getDate()).padStart(2,'0')}`;
+        const { streak } = readState();
         let newStreak;
         if (lastSigned === yKey) newStreak = streak + 1;
         else if (lastSigned === today) newStreak = streak;
@@ -144,11 +169,13 @@ function loginGuard() {
         signedDays[today] = true;
         try { localStorage.setItem('monolith.signedDays', JSON.stringify(signedDays)); } catch(e) {}
 
-        if (streakEl) streakEl.textContent = newStreak;
-        btn.textContent = '已签到 ✓';
-        btn.style.opacity = '0.6';
-        btn.style.pointerEvents = 'none';
+        refreshUI();
         btn.animate([{transform:'scale(1)'},{transform:'scale(0.95)'},{transform:'scale(1)'}], {duration:280,easing:'ease-out'});
+
+        // 多端同步：推送签到数据到云端
+        if (typeof MyWorkSync !== 'undefined') {
+          MyWorkSync.save({ streak: newStreak, signedToday: today, signedDays, lastSignedDate: today });
+        }
       } catch (e) {}
     });
   }

@@ -135,11 +135,16 @@
 
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/api-config.js"></script>
+  <script src="assets/sync.js"></script>
   <script>
     const STORAGE_KEY = 'monolith.strategies';
 
     function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; } }
-    function save(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {} }
+    function save(list) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {}
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ strategies: list });
+    }
 
     let strategies = load();
 
@@ -217,6 +222,18 @@
     });
 
     render();
+
+    // 多端同步：页面加载时从云端拉取策略，并实时监听变更
+    function refreshFromStorage() {
+      try { strategies = load(); render(); } catch(e) {}
+    }
+    function initSync() {
+      if (typeof MyWorkSync === 'undefined') return;
+      MyWorkSync.load().then(() => { refreshFromStorage(); }).catch(() => {});
+    }
+    initSync();
+    window.addEventListener('storage', e => { if (e.key === STORAGE_KEY) refreshFromStorage(); });
+    window.addEventListener('sync:loaded', refreshFromStorage);
   </script>
 
   <style>
