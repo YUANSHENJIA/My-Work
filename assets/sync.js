@@ -77,6 +77,13 @@
 
   // ===== 认证 / API =====
 
+  // 兜底 URL：即使页面漏加载 api-config.js，同步也能工作
+  // （与 app/assets/api-config.js 保持一致，改 URL 时两边都要改）
+  const FALLBACK_ENDPOINTS = {
+    dataLoad: 'https://data-load-xdafojegjo.cn-hongkong.fcapp.run',
+    dataSave: 'https://data-save-inxeojegjo.cn-hongkong.fcapp.run',
+  };
+
   function getToken() {
     try { return localStorage.getItem(NS + 'authToken') || ''; } catch (e) { return ''; }
   }
@@ -89,8 +96,11 @@
 
   function getAPI(name) {
     const cfg = window.API_CONFIG;
-    if (!cfg || typeof cfg.url !== 'function') return null;
-    return cfg.url(name);
+    if (cfg && typeof cfg.url === 'function') {
+      const u = cfg.url(name);
+      if (u) return u;
+    }
+    return FALLBACK_ENDPOINTS[name] || null;
   }
 
   // ===== 事件通知 =====

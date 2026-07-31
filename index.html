@@ -147,47 +147,63 @@
   <script src="assets/auth.js"></script>
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/sync.js"></script>
   <script>
     (function () {
-      const todayKey = new Date().toISOString().slice(0, 10);
-      try {
-        const todos = JSON.parse(localStorage.getItem('monolith.todos') || '[]');
-        const todayTodos = todos.filter(t => t.date === todayKey);
-        const done = todayTodos.filter(t => t.done).length;
-        const stat = document.getElementById('home-todo-stat');
-        const bar = document.getElementById('home-todo-bar');
-        if (stat) stat.textContent = `${done} / ${todayTodos.length || 0}`;
-        if (bar) bar.style.width = todayTodos.length ? `${(done / todayTodos.length) * 100}%` : '0%';
-      } catch (e) {}
-      try {
-        const waterLog = JSON.parse(localStorage.getItem('monolith.waterLog') || '{}');
-        const today = waterLog[todayKey] || 0;
-        const goal = parseInt(localStorage.getItem('monolith.waterGoal') || '2000', 10);
-        const ws = document.getElementById('home-water-stat');
-        const wb = document.getElementById('home-water-bar');
-        if (ws) ws.textContent = today;
-        if (wb) wb.style.width = `${Math.min(100, (today / goal) * 100)}%`;
-      } catch (e) {}
-      // 正在阅读：当前进行中（progress > 0 且 < 100）的书
-      try {
-        const books = JSON.parse(localStorage.getItem('monolith.books') || '[]');
-        const inProgress = books.filter(b => b.progress > 0 && b.progress < 100);
-        const el = document.getElementById('home-reading-stat');
-        const bar = document.getElementById('home-reading-bar');
-        if (el) el.textContent = inProgress.length;
-        if (bar) {
-          const avg = inProgress.length ? Math.round(inProgress.reduce((s,b) => s + (b.progress || 0), 0) / inProgress.length) : 0;
-          bar.style.width = avg + '%';
-        }
-      } catch (e) {}
-      // 策略归档：今天创建的策略数
-      try {
-        const strats = JSON.parse(localStorage.getItem('monolith.strategies') || '[]');
-        const dayStart = new Date(); dayStart.setHours(0,0,0,0);
-        const todayCount = strats.filter(s => s.createdAt && s.createdAt >= dayStart.getTime()).length;
-        const el = document.getElementById('home-strategy-stat');
-        if (el) el.textContent = todayCount;
-      } catch (e) {}
+      function renderHomeStats() {
+        const todayKey = new Date().toISOString().slice(0, 10);
+        try {
+          const todos = JSON.parse(localStorage.getItem('monolith.todos') || '[]');
+          const todayTodos = todos.filter(t => t.date === todayKey);
+          const done = todayTodos.filter(t => t.done).length;
+          const stat = document.getElementById('home-todo-stat');
+          const bar = document.getElementById('home-todo-bar');
+          if (stat) stat.textContent = `${done} / ${todayTodos.length || 0}`;
+          if (bar) bar.style.width = todayTodos.length ? `${(done / todayTodos.length) * 100}%` : '0%';
+        } catch (e) {}
+        try {
+          const waterLog = JSON.parse(localStorage.getItem('monolith.waterLog') || '{}');
+          const today = waterLog[todayKey] || 0;
+          const goal = parseInt(localStorage.getItem('monolith.waterGoal') || '2000', 10);
+          const ws = document.getElementById('home-water-stat');
+          const wb = document.getElementById('home-water-bar');
+          if (ws) ws.textContent = today;
+          if (wb) wb.style.width = `${Math.min(100, (today / goal) * 100)}%`;
+        } catch (e) {}
+        // 正在阅读：当前进行中（progress > 0 且 < 100）的书
+        try {
+          const books = JSON.parse(localStorage.getItem('monolith.books') || '[]');
+          const inProgress = books.filter(b => b.progress > 0 && b.progress < 100);
+          const el = document.getElementById('home-reading-stat');
+          const bar = document.getElementById('home-reading-bar');
+          if (el) el.textContent = inProgress.length;
+          if (bar) {
+            const avg = inProgress.length ? Math.round(inProgress.reduce((s,b) => s + (b.progress || 0), 0) / inProgress.length) : 0;
+            bar.style.width = avg + '%';
+          }
+        } catch (e) {}
+        // 策略归档：今天创建的策略数
+        try {
+          const strats = JSON.parse(localStorage.getItem('monolith.strategies') || '[]');
+          const dayStart = new Date(); dayStart.setHours(0,0,0,0);
+          const todayCount = strats.filter(s => s.createdAt && s.createdAt >= dayStart.getTime()).length;
+          const el = document.getElementById('home-strategy-stat');
+          if (el) el.textContent = todayCount;
+        } catch (e) {}
+      }
+
+      renderHomeStats();
+
+      // 多端同步：拉取云端最新数据后刷新工作台统计
+      if (typeof MyWorkSync !== 'undefined') {
+        MyWorkSync.load().then(() => { renderHomeStats(); }).catch(() => {});
+        window.addEventListener('sync:loaded', renderHomeStats);
+        window.addEventListener('storage', e => {
+          if (e.key && (e.key.startsWith('monolith.todos') || e.key.startsWith('monolith.waterLog') || e.key.startsWith('monolith.books'))) {
+            renderHomeStats();
+          }
+        });
+      }
     })();
   </script>
 
