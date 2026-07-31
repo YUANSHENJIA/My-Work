@@ -47,7 +47,7 @@
     <section class="mb-6 fade-in">
       <p class="eyebrow mb-2">WORKSPACE / HOME</p>
       <h1 class="greeting-title" id="greeting-title">
-        <span id="greeting-text">早安</span>，<span id="greeting-name">小袁</span>！
+        <span id="greeting-text">早安</span>，<span id="greeting-name"></span>！
       </h1>
       <p class="greeting-subtitle text-on-surface-variant">
         <span id="greeting-date">今天是 2026 年 7 月 25 日，星期六</span>，<span id="greeting-time" class="font-mono">00:00</span>。
@@ -406,9 +406,9 @@
     }
     function updateGreeting() {
       const d = new Date();
-      const userName = (localStorage.getItem('monolith.userName') || '小袁').toString();
+      const userName = (localStorage.getItem('monolith.userName') || '').toString();
       document.getElementById('greeting-text').textContent = holidayGreetingToday() || getGreeting();
-      document.getElementById('greeting-name').textContent = userName;
+      document.getElementById('greeting-name').textContent = userName || '朋友';
       document.getElementById('greeting-date').textContent = window.applyI18N && (()=>{
         const lang=window.getCurrentLang();
         const m=d.getMonth()+1, dd=d.getDate(), w=WEEKDAYS[d.getDay()];
