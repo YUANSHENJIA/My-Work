@@ -221,10 +221,18 @@
 
     render();
 
-    // 多端同步：页面加载时从后端拉取最新数据（render 内部会重新读 localStorage）
-    if (typeof MyWorkSync !== 'undefined') {
+    // 多端同步：先拉取云端，并实时监听变更
+    function initSync() {
+      if (typeof MyWorkSync === 'undefined') return;
       MyWorkSync.load().then(() => { try { render(); } catch(e) {} }).catch(() => {});
     }
+
+    initSync();
+
+    window.addEventListener('storage', e => {
+      if (e.key === WATER_KEY || e.key === GOAL_KEY || e.key === INTERVAL_KEY) render();
+    });
+    window.addEventListener('sync:loaded', () => { try { render(); } catch(e) {} });
   </script>
 
   <style>

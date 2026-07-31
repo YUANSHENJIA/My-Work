@@ -92,10 +92,13 @@
     function save(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ favorites: list }); }
 
     let favs = load();
-    // If first time, seed with examples so user sees something
-    if (favs.length === 0) {
-      favs = seed;
-      save(favs);
+
+    function seedIfEmpty() {
+      // 仅本地为空时才 seed，且绝不自动推送到后端，避免覆盖其他设备数据
+      if (load().length === 0) {
+        favs = seed;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favs)); } catch(e) {}
+      }
     }
 
     function escapeHtml(s) {
@@ -172,10 +175,33 @@
 
     render();
 
-    // 多端同步：页面加载时从后端拉取最新数据
-    if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { favs = load(); render(); } catch(e) {} }).catch(() => {});
+    // 多端同步：先拉取云端数据，无数据才 seed，并监听其他标签/设备变更
+    function refreshFromStorage() {
+      try { favs = load(); render(); } catch(e) {}
     }
+
+    function initSync() {
+      if (typeof MyWorkSync === 'undefined') {
+        seedIfEmpty();
+        return;
+      }
+      MyWorkSync.load().then(res => {
+        refreshFromStorage();
+        // 云端也无数据时才使用演示数据
+        if (!res.ok || !res.data || !res.data.favorites || res.data.favorites.length === 0) {
+          seedIfEmpty();
+          render();
+        }
+      }).catch(() => {
+        seedIfEmpty();
+      });
+    }
+
+    initSync();
+
+    // 其他标签修改了 localStorage，或同步模块拉取到新数据时，实时刷新
+    window.addEventListener('storage', e => { if (e.key === STORAGE_KEY) refreshFromStorage(); });
+    window.addEventListener('sync:loaded', refreshFromStorage);
   </script>
 
   <style>

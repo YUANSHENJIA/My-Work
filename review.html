@@ -298,20 +298,30 @@
     // Initial history render
     renderHistory();
 
-    // 多端同步：页面加载时从后端拉取最新数据
-    if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => {
-        try {
-          const sv = (loadReviews())[todayKey()];
-          if (sv) {
-            if (sv.q1) document.getElementById('review-q1').value = sv.q1;
-            if (sv.q2) document.getElementById('review-q2').value = sv.q2;
-            if (sv.q3) document.getElementById('review-q3').value = sv.q3;
-          }
-          renderFocusReading(); renderDoneAndWater(); renderHistory();
-        } catch(e) {}
-      }).catch(() => {});
+    // 多端同步：先拉取云端，并实时监听变更
+    function refreshFromStorage() {
+      try {
+        const sv = (loadReviews())[todayKey()];
+        if (sv) {
+          if (sv.q1) document.getElementById('review-q1').value = sv.q1;
+          if (sv.q2) document.getElementById('review-q2').value = sv.q2;
+          if (sv.q3) document.getElementById('review-q3').value = sv.q3;
+        }
+        renderFocusReading(); renderDoneAndWater(); renderHistory();
+      } catch(e) {}
     }
+
+    function initSync() {
+      if (typeof MyWorkSync === 'undefined') return;
+      MyWorkSync.load().then(() => { refreshFromStorage(); }).catch(() => {});
+    }
+
+    initSync();
+
+    window.addEventListener('storage', e => {
+      if (e.key === REVIEW_KEY || e.key === 'monolith.waterLog' || e.key === 'monolith.todos') refreshFromStorage();
+    });
+    window.addEventListener('sync:loaded', refreshFromStorage);
   </script>
 <style>
     .flex-col { flex-direction: column; }

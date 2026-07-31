@@ -775,10 +775,20 @@
 
     render();
 
-    // 多端同步：页面加载时从后端拉取最新数据
-    if (typeof MyWorkSync !== 'undefined') {
-      MyWorkSync.load().then(() => { try { books = loadBooks(); render(); } catch(e) {} }).catch(() => {});
+    // 多端同步：先拉取云端，并实时监听变更
+    function refreshFromStorage() {
+      try { books = loadBooks(); render(); } catch(e) {}
     }
+
+    function initSync() {
+      if (typeof MyWorkSync === 'undefined') return;
+      MyWorkSync.load().then(() => { refreshFromStorage(); }).catch(() => {});
+    }
+
+    initSync();
+
+    window.addEventListener('storage', e => { if (e.key === BOOKS_KEY) refreshFromStorage(); });
+    window.addEventListener('sync:loaded', refreshFromStorage);
   </script>
 
   <style>
