@@ -141,7 +141,23 @@
 
   <script src="assets/sidebar.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/api-config.js"></script>
+  <script src="assets/sync.js"></script>
   <script>
+    // 清理旧版演示待办（t1-t4），避免日历页显示默认任务
+    try {
+      const _raw = localStorage.getItem('monolith.todos');
+      if (_raw) {
+        const _list = JSON.parse(_raw);
+        if (Array.isArray(_list)) {
+          const _cleaned = _list.filter(t => !(t && ['t1','t2','t3','t4'].includes(t.id)));
+          if (_cleaned.length !== _list.length) {
+            localStorage.setItem('monolith.todos', JSON.stringify(_cleaned));
+          }
+        }
+      }
+    } catch(e) {}
+
     // 2026 中国法定节假日 / 重要节日
     const HOLIDAYS = {
       '2026-01-01': '元旦',
@@ -306,6 +322,19 @@
     renderCalendar();
     renderDayDetail();
 
+    // 多端同步：页面加载时从云端拉取待办，并实时监听变更
+    function refreshFromSync() {
+      renderCalendar();
+      renderDayDetail();
+    }
+    function initSync() {
+      if (typeof MyWorkSync === 'undefined') return;
+      MyWorkSync.load().then(() => { refreshFromSync(); }).catch(() => {});
+    }
+    initSync();
+    window.addEventListener('storage', e => { if (e.key === 'monolith.todos') refreshFromSync(); });
+    window.addEventListener('sync:loaded', refreshFromSync);
+
     // Calendar quick add todo
     document.getElementById('cal-add-todo').addEventListener('click', () => {
       document.getElementById('cal-quick-todo').style.display = 'block';
@@ -325,6 +354,8 @@
       try { allTodos = JSON.parse(localStorage.getItem('monolith.todos') || '[]'); } catch(e) { allTodos = []; }
       allTodos.push({ id: 't' + Date.now(), text, tag, done: false, date: k, createdAt: Date.now() });
       try { localStorage.setItem('monolith.todos', JSON.stringify(allTodos)); } catch(e) {}
+      // 多端同步：推送到云端
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ todos: allTodos });
       document.getElementById('cal-quick-todo').style.display = 'none';
       input.value = '';
       renderCalendar();

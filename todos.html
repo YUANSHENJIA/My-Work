@@ -109,32 +109,29 @@
 
     const todayKey = () => new Date().toISOString().slice(0, 10);
 
-    const seedTodos = () => ([
-      { id: 't1', text: '深挖 AI 工作流自动化方案', tag: 'priority-high', done: false, date: todayKey(), createdAt: Date.now() - 3 * 3600_000, time: '09:30 AM' },
-      { id: 't2', text: '整理 2026 Q3 季度规划文档', tag: 'planning', done: false, date: todayKey(), createdAt: Date.now() - 2 * 3600_000, time: 'Updated 2h ago' },
-      { id: 't3', text: '每日健康饮水 (2000ml)', tag: 'routine', done: true, date: todayKey(), createdAt: Date.now() - 4 * 3600_000, time: '' },
-      { id: 't4', text: '回复核心客户关于项目进度的邮件', tag: 'communication', done: false, date: todayKey(), createdAt: Date.now() - 1 * 3600_000, time: '' }
-    ]);
+    // 旧版演示数据的 id 集合（用于清理本地残留）
+    const LEGACY_SEED_IDS = new Set(['t1', 't2', 't3', 't4']);
 
     function loadTodos() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return [];
-        return JSON.parse(raw);
+        const list = JSON.parse(raw);
+        // 清理旧版演示数据（保留用户真实添加的待办）
+        if (Array.isArray(list)) {
+          const cleaned = list.filter(t => !(t && LEGACY_SEED_IDS.has(t.id)));
+          if (cleaned.length !== list.length) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned)); } catch(e) {}
+          }
+          return cleaned;
+        }
+        return [];
       } catch (e) { return []; }
     }
 
     function saveTodos(list) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
       if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ todos: list });
-    }
-
-    function seedIfEmpty() {
-      // 仅本地为空时才写入演示数据，且不自动推送，避免覆盖云端
-      if (loadTodos().length === 0) {
-        const seed = seedTodos();
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(seed)); } catch(e) {}
-      }
     }
 
     let todos = loadTodos();
@@ -257,19 +254,17 @@
     }
 
     function initSync() {
-      if (typeof MyWorkSync === 'undefined') {
-        seedIfEmpty();
-        return;
-      }
+      if (typeof MyWorkSync === 'undefined') return;
       MyWorkSync.load().then(res => {
         refreshFromStorage();
-        if (!res.ok || !res.data || !res.data.todos || res.data.todos.length === 0) {
-          seedIfEmpty();
-          refreshFromStorage();
+        // 本地清理旧演示数据后自动推回云端，避免云端残留
+        if (res && res.ok && res.data && Array.isArray(res.data.todos) && res.data.todos.length > 0) {
+          const after = loadTodos();
+          if (after.length !== res.data.todos.length) {
+            MyWorkSync.save({ todos: after });
+          }
         }
-      }).catch(() => {
-        seedIfEmpty();
-      });
+      }).catch(() => {});
     }
 
     initSync();

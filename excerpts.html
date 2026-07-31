@@ -146,22 +146,24 @@
     function loadEntries() {
       try {
         const raw = localStorage.getItem(ENTRIES_KEY);
-        if (raw) return JSON.parse(raw);
+        if (!raw) return [];
+        const list = JSON.parse(raw);
+        // 清理旧版演示摘录（date|title 精确匹配），保留用户真实内容
+        if (Array.isArray(list)) {
+          const demoKeys = new Set([
+            '2026.07.25|大语言模型幻觉问题的深度复盘',
+            '2026.07.24|《黑客与画家》片段摘录',
+            '2026.07.23|新项目成本效益分析'
+          ]);
+          const cleaned = list.filter(e => !(e && demoKeys.has(e.date + '|' + e.title)));
+          if (cleaned.length !== list.length) {
+            try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(cleaned)); } catch(e) {}
+          }
+          return cleaned;
+        }
+        return [];
       } catch(e) {}
       return [];
-    }
-
-    const SEED_ENTRIES = [
-      { date: '2026.07.25', title: '大语言模型幻觉问题的深度复盘', excerpt: '今天在处理复杂逻辑推理时，发现模型在多层嵌套条件下容易出现事实性错误。引入 COT 引导模型分步思考，显著降低了逻辑错误率。', tags: ['#AI', '#工作'], active: true },
-      { date: '2026.07.24', title: '《黑客与画家》片段摘录', excerpt: '"创造优美事物的方式，往往是修复丑陋的事物。" 这句话对设计系统开发的启发非常大：真正的搜索应当观察记录来看是一个被反复优化的实验。', tags: ['#阅读', '#灵感'] },
-      { date: '2026.07.23', title: '新项目成本效益分析', excerpt: '初步估算显示，自动化工作流可以将重复性劳动的资源占用降低约40%。把语言模型与端到端工具结合，使搜索能扩展为主语境的"媒介"。', tags: ['#工作'] }
-    ];
-
-    function seedIfEmpty() {
-      // 仅本地为空时才写入演示数据，且不自动推送，避免覆盖云端
-      if (loadEntries().length === 0) {
-        try { localStorage.setItem(ENTRIES_KEY, JSON.stringify(SEED_ENTRIES)); } catch(e) {}
-      }
     }
 
     let entries = loadEntries();
@@ -243,19 +245,17 @@
     }
 
     function initSync() {
-      if (typeof MyWorkSync === 'undefined') {
-        seedIfEmpty();
-        return;
-      }
+      if (typeof MyWorkSync === 'undefined') return;
       MyWorkSync.load().then(res => {
         refreshFromStorage();
-        if (!res.ok || !res.data || !res.data.excerpts || res.data.excerpts.length === 0) {
-          seedIfEmpty();
-          refreshFromStorage();
+        // 本地清理旧演示摘录后自动推回云端，避免云端残留
+        if (res && res.ok && res.data && Array.isArray(res.data.excerpts) && res.data.excerpts.length > 0) {
+          const after = loadEntries();
+          if (after.length !== res.data.excerpts.length) {
+            MyWorkSync.save({ excerpts: after });
+          }
         }
-      }).catch(() => {
-        seedIfEmpty();
-      });
+      }).catch(() => {});
     }
 
     initSync();

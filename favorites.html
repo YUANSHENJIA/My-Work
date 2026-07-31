@@ -83,24 +83,24 @@
   <script src="assets/sync.js"></script>
   <script>
     const STORAGE_KEY = 'monolith.favorites';
-    const seed = [
-      { url: 'https://example.com/article-1', title: 'The Future of Personal Knowledge Management', source: 'medium.com', addedAt: Date.now() - 86400000, icon: 'description' },
-      { url: 'https://example.com/tweet-1', title: 'GPT-5 Architecture Deep Dive', source: 'twitter.com', addedAt: Date.now() - 2 * 86400000, icon: 'alternate_email' },
-      { url: 'https://example.com/youtube-1', title: '深度工作：在分心的世界里构建专注力', source: 'youtube.com', addedAt: Date.now() - 3 * 86400000, icon: 'play_circle' }
-    ];
 
-    function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || []; } catch(e) { return []; } }
+    function load() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || [];
+        // 清理旧版演示链接（example.com 开头），保留用户真实收藏
+        if (Array.isArray(raw)) {
+          const cleaned = raw.filter(f => !(f && f.url && f.url.startsWith('https://example.com/')));
+          if (cleaned.length !== raw.length) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned)); } catch(e) {}
+          }
+          return cleaned;
+        }
+        return [];
+      } catch(e) { return []; }
+    }
     function save(list) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {} if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ favorites: list }); }
 
     let favs = load();
-
-    function seedIfEmpty() {
-      // 仅本地为空时才 seed，且绝不自动推送到后端，避免覆盖其他设备数据
-      if (load().length === 0) {
-        favs = seed;
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(favs)); } catch(e) {}
-      }
-    }
 
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -182,20 +182,17 @@
     }
 
     function initSync() {
-      if (typeof MyWorkSync === 'undefined') {
-        seedIfEmpty();
-        return;
-      }
+      if (typeof MyWorkSync === 'undefined') return;
       MyWorkSync.load().then(res => {
         refreshFromStorage();
-        // 云端也无数据时才使用演示数据
-        if (!res.ok || !res.data || !res.data.favorites || res.data.favorites.length === 0) {
-          seedIfEmpty();
-          render();
+        // 本地清理旧演示链接后自动推回云端，避免云端残留
+        if (res && res.ok && res.data && Array.isArray(res.data.favorites) && res.data.favorites.length > 0) {
+          const after = load();
+          if (after.length !== res.data.favorites.length) {
+            MyWorkSync.save({ favorites: after });
+          }
         }
-      }).catch(() => {
-        seedIfEmpty();
-      });
+      }).catch(() => {});
     }
 
     initSync();
