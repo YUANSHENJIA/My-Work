@@ -1,48 +1,30 @@
-name: Fetch AI News Daily
+name: Fetch AI News Daily (FC fallback)
 
 on:
   # 北京时间每天 9:00 = UTC 1:00
+  # 通过 curl 触发阿里云 FC fetch-news 函数 → 函数抓量子位 RSS → 直接上传 OSS
   schedule:
     - cron: '0 1 * * *'
   # 允许手动触发（测试用）
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  fetch-news:
+  trigger-fc-fetch-news:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Fetch latest news from 量子位 RSS
-        run: node scripts/fetch-news.js
-
-      - name: Show diff summary
+      - name: Trigger FC fetch-news function
         run: |
-          echo "=== assets/news.json diff ==="
-          git diff --stat assets/news.json || true
-          echo "=== first 3 items preview ==="
-          node -e "const d=require('./assets/news.json');console.log('updated:', d.updated_at);d.items.slice(0,3).forEach(i=>console.log('-',i.category,'|',i.time,'|',i.title));"
-
-      - name: Commit & push if changed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/news.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            COMMIT_MSG="chore(news): auto-update from 量子位 RSS ($(date -u +'%Y-%m-%d %H:%M UTC'))"
-            git commit -m "$COMMIT_MSG"
-            git push
-            echo "Pushed: $COMMIT_MSG"
+          URL="https://fetch-news-izkwtkwmlf.cn-hongkong.fcapp.run"
+          RESP=$(curl -s -w $'\n%{http_code}' "$URL" --max-time 120)
+          BODY=$(echo "$RESP" | head -n -1)
+          CODE=$(echo "$RESP" | tail -n 1)
+          echo "HTTP status: $CODE"
+          echo "Response: $BODY"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::FC fetch-news failed with HTTP $CODE"
+            exit 1
           fi
+          # 验证 OSS 上 news.json 是否已更新
+          NEWS=$(curl -s "https://www.myworkbench.me/assets/news.json" --max-time 30 | python3 -c "import sys,json; d=json.load(sys.stdin); print('updated_at='+d.get('updated_at','?'), 'items='+str(d.get('item_count',0)))" 2>/dev/null || echo "news.json 读取失败")
+          echo "OSS news.json: $NEWS"
