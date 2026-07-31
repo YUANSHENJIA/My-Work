@@ -417,7 +417,6 @@ window.I18N = {
     newsLoading: 'Loading today\'s pulse...',
     favUrlPlaceholder: 'Paste a link — article / tweet / video / anything...',
     // ===== New keys added 2026-07-30 =====
-    autoSaved: 'Auto-saved to cloud',
     titlePlaceholder: 'Title...',
     excerpt_search: 'Search notes or tags...',
     filterAll: 'All',
