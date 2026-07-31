@@ -79,22 +79,14 @@
       let hidden = new Set();
       try { hidden = new Set(JSON.parse(localStorage.getItem(_hiddenStoreKey) || '[]')); } catch(e) {}
       function persistHidden() { try { localStorage.setItem(_hiddenStoreKey, JSON.stringify([...hidden])); } catch(e) {} }
-      // 清理旧数据：删除无日期的旧 key 和 7 天前的日期 key（避免 localStorage 膨胀）
+      // 清理旧数据：当天之前的数据全部清除，只保留今天的隐藏记录
       try {
         const oldKeys = [];
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
           if (k && k.startsWith('monolith.news.hidden')) oldKeys.push(k);
         }
-        const cutoff = Date.now() - 7 * 86400000;
-        oldKeys.forEach(k => {
-          const keep = k === _hiddenStoreKey;
-          if (!keep && k === 'monolith.news.hidden') { localStorage.removeItem(k); return; }
-          const d = k.replace('monolith.news.hidden.', '');
-          if (!keep && /^\d{4}-\d{2}-\d{2}$/.test(d) && new Date(d + 'T00:00:00Z').getTime() < cutoff) {
-            localStorage.removeItem(k);
-          }
-        });
+        oldKeys.forEach(k => { if (k !== _hiddenStoreKey) localStorage.removeItem(k); });
       } catch(e) {}
 
       function escapeHtml(s) {
