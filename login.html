@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>登录 · My Work</title>
+  <title>My Work · 我的工作台</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -304,9 +304,8 @@
         errorEl.textContent = '';
       }
 
-      // ====== 已登录则直接跳首页 ======
+      // ====== 已登录则直接跳首页（不再触发资料弹窗） ======
       if (window.Auth && window.Auth.isLoggedIn()) {
-        window.Auth.markShowProfileOnLoad();
         location.replace('index.html');
       }
 
@@ -323,9 +322,7 @@
         btn.textContent = '进入中...';
         try {
           await window.Auth.login(email, password);
-          // 跳首页，标记首页要弹资料窗
-          window.Auth.markShowProfileOnLoad();
-          window.Auth.clearShowProfileAfter = true; // 备用，兼容旧代码
+          // 普通登录：直接跳首页，不弹资料窗
           setTimeout(() => { location.href = 'index.html'; }, 250);
         } catch (err) {
           btn.disabled = false;
