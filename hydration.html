@@ -246,6 +246,34 @@
       return Math.max(5, parseInt(intervalSlider ? intervalSlider.value : '45', 10) || 45);
     }
 
+    // 3 秒循环闹钟音效（Web Audio API 生成，无需音频文件）
+    function playWaterAlarm() {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        // 浏览器自动播放策略：若被挂起则尝试恢复（页面有过用户手势后即可播放）
+        if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+        const beep = (startAt, freq) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.value = freq || 880;
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.0001, startAt);
+          gain.gain.exponentialRampToValueAtTime(0.16, startAt + 0.02);
+          gain.gain.setValueAtTime(0.16, startAt + 0.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.24);
+          osc.start(startAt);
+          osc.stop(startAt + 0.26);
+        };
+        const t0 = ctx.currentTime + 0.02;
+        // 每 0.5s 一声，约 3 秒（6 声）
+        for (let i = 0; i < 6; i++) beep(t0 + i * 0.5, i % 2 === 0 ? 880 : 1100);
+      } catch (e) {}
+    }
+
     function showWaterReminderModal() {
       // 多标签防抖：距上次提醒不足 interval 则跳过
       try {
@@ -268,6 +296,7 @@
           '<button id="water-reminder-dismiss" class="btn-primary" style="width:100%;padding:12px;border:none;cursor:pointer;">好的，马上去喝</button>' +
         '</div>';
       document.body.appendChild(wrap);
+      playWaterAlarm(); // 触发 3 秒循环闹钟声音
       document.getElementById('water-reminder-dismiss').addEventListener('click', () => { wrap.remove(); });
       wrap.addEventListener('click', e => { if (e.target === wrap) wrap.remove(); });
     }
