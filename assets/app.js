@@ -329,48 +329,115 @@ function loginGuard() {
     }
   }
 
-  function fetchWeatherInline(wElem) {
-    try {
-      var x = new XMLHttpRequest();
-      x.open('GET', 'https://wttr.in/?format=%C+%t&lang=zh', true);
-      x.setRequestHeader('Accept', 'text/plain');
-      x.timeout = 6000;
-      x.onload = function() {
-        if (x.status === 200) {
-          var t = (x.responseText || '').trim();
-          if (t && t.length < 80 && t.indexOf('<') === -1) {
-            wElem.textContent = '☁️ ' + t;
-            return;
-          }
-        }
-        wttrFallbackMeta(wElem);
-      };
-      x.onerror = function() { wttrFallbackMeta(wElem); };
-      x.ontimeout = function() { wttrFallbackMeta(wElem); };
-      x.send();
-    } catch(e) { wttrFallbackMeta(wElem); }
+  // WMO 天气代码 → 中文现象 + emoji
+  function weatherCodeToText(code) {
+    var map = {
+      0: '☀️ 晴', 1: '🌤️ 晴间多云', 2: '⛅ 多云', 3: '☁️ 阴',
+      45: '🌫️ 雾', 48: '🌫️ 雾凇',
+      51: '🌦️ 毛毛雨', 53: '🌦️ 毛毛雨', 55: '🌦️ 毛毛雨', 56: '🌧️ 冻毛毛雨', 57: '🌧️ 冻毛毛雨',
+      61: '🌧️ 小雨', 63: '🌧️ 中雨', 65: '🌧️ 大雨',
+      66: '🌧️ 冻雨', 67: '🌧️ 冻雨',
+      71: '🌨️ 小雪', 73: '🌨️ 中雪', 75: '❄️ 大雪', 77: '🌨️ 米雪',
+      80: '🌦️ 阵雨', 81: '🌦️ 阵雨', 82: '⛈️ 强阵雨',
+      85: '🌨️ 阵雪', 86: '❄️ 强阵雪',
+      95: '⛈️ 雷阵雨', 96: '⛈️ 雷阵雨伴冰雹', 99: '⛈️ 雷阵雨伴冰雹'
+    };
+    return map[code] || '☁️ 未知';
   }
 
-  function wttrFallbackMeta(wElem) {
+  // 据坐标反查城市名：主源 BigDataCloud（公网可用、返回中文），兜底 wttr.in 默认域 %l
+  function reverseGeocode(lat, lon, cb) {
+    var done = false;
+    var finish = function(name) { if (!done) { done = true; cb(name || '本地'); } };
+    // 主源：BigDataCloud 客户端反向地理编码（免费、无需 key）
     try {
       var x = new XMLHttpRequest();
-      x.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=22.5&longitude=114.0&current_weather=true&timezone=Asia%2FShanghai', true);
+      x.open('GET', 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=zh', true);
       x.timeout = 6000;
       x.onload = function() {
-        if (x.status === 200) {
+        try {
+          if (x.status === 200) {
+            var d = JSON.parse(x.responseText);
+            var name = d.city || d.locality || d.principalSubdivision || '';
+            if (name) { finish(name); return; }
+          }
+        } catch (e) {}
+        finish(null); // 交给兜底
+      };
+      x.onerror = function() { finish(null); };
+      x.ontimeout = function() { finish(null); };
+      x.send();
+    } catch (e) { finish(null); }
+    // 兜底：wttr.in 默认域（已验证可达）取位置名
+    setTimeout(function() {
+      if (done) return;
+      try {
+        var y = new XMLHttpRequest();
+        y.open('GET', 'https://wttr.in/?format=%l&lang=zh', true);
+        y.setRequestHeader('Accept', 'text/plain');
+        y.timeout = 5000;
+        y.onload = function() {
           try {
+            if (y.status === 200) {
+              var n = (y.responseText || '').trim();
+              if (n && n.length < 60 && n.indexOf('<') === -1) { finish(n); return; }
+            }
+          } catch (e) {}
+          finish(null);
+        };
+        y.onerror = function() { finish(null); };
+        y.ontimeout = function() { finish(null); };
+        y.send();
+      } catch (e) { finish(null); }
+    }, 1200);
+  }
+
+  // 按坐标取天气（open-meteo，免费、无需 key）
+  function fetchWeatherByCoords(wElem, lat, lon, cityName) {
+    try {
+      var x = new XMLHttpRequest();
+      x.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true&timezone=Asia%2FShanghai', true);
+      x.timeout = 6000;
+      x.onload = function() {
+        try {
+          if (x.status === 200) {
             var d = JSON.parse(x.responseText);
             if (d && d.current_weather) {
-              wElem.textContent = '☁️ ' + d.current_weather.temperature + '°C';
+              var txt = weatherCodeToText(d.current_weather.weathercode);
+              wElem.textContent = (cityName || '本地') + ' ' + txt + ' ' + d.current_weather.temperature + '°C';
               return;
             }
-          } catch(e) {}
-        }
-        wElem.textContent = '☀️ 暂无天气数据';
+          }
+        } catch (e) {}
+        wElem.textContent = (cityName || '本地') + ' ☀️ 暂无天气数据';
       };
-      x.onerror = function() { wElem.textContent = '☀️ 暂无天气数据'; };
+      x.onerror = function() { wElem.textContent = (cityName || '本地') + ' ☀️ 暂无天气数据'; };
+      x.ontimeout = function() { wElem.textContent = (cityName || '本地') + ' ☀️ 暂无天气数据'; };
       x.send();
-    } catch(e) { wElem.textContent = '☀️ 暂无天气数据'; }
+    } catch (e) { wElem.textContent = (cityName || '本地') + ' ☀️ 暂无天气数据'; }
+  }
+
+  function fetchWeatherInline(wElem) {
+    try {
+      // 默认回退坐标（中国香港）
+      var FALLBACK = { lat: 22.5, lon: 114.0, name: '香港' };
+      if (navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          var lat = pos.coords.latitude, lon = pos.coords.longitude;
+          // 先反查城市名，再取天气（城市名作为前缀）
+          reverseGeocode(lat, lon, function(cityName) {
+            fetchWeatherByCoords(wElem, lat, lon, cityName);
+          });
+        }, function() {
+          // 用户拒绝定位 → 回退香港
+          fetchWeatherByCoords(wElem, FALLBACK.lat, FALLBACK.lon, FALLBACK.name);
+        }, { timeout: 8000, maximumAge: 600000 });
+      } else {
+        fetchWeatherByCoords(wElem, FALLBACK.lat, FALLBACK.lon, FALLBACK.name);
+      }
+    } catch (e) {
+      fetchWeatherByCoords(wElem, 22.5, 114.0, '香港');
+    }
   }
 
   // 短句库：每天从 dayOfYear 对应的句子开始，之后每 5s 轮换到下一句
