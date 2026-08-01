@@ -103,6 +103,8 @@
 input, select, button, textarea { font-family: inherit; }
 input, select, textarea { -webkit-appearance: none; appearance: none; }
 input, select { border: none; background: transparent; color: inherit; }
+/* 去掉浏览器默认按钮边框；需要边框的按钮（如 .btn-secondary）会通过 class 显式覆盖 */
+button { border: none; background: transparent; cursor: pointer; color: inherit; padding: 0; }
 /* 覆盖 Chromium select 原生指示符 — 用自定义箭头替代 */
 select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E") !important;
@@ -324,6 +326,14 @@ body {
   cursor: pointer; transition: opacity 0.2s ease;
 }
 .btn-primary:hover { opacity: 0.85; }
+
+/* 分享/正操作图标按钮：填充色调风格，使用主容器色，跟设计规范协调 */
+.btn-icon-primary {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  transition: background 0.2s ease;
+}
+.btn-icon-primary:hover { background: var(--surface-container-high); }
 
 .btn-secondary {
   display: inline-flex; align-items: center; justify-content: center;

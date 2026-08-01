@@ -147,6 +147,9 @@
           <a href="${escapeHtml(f.url)}" target="_blank" class="p-2 hover:bg-surface-container rounded-full transition-colors" aria-label="打开">
             <span class="material-symbols-outlined">open_in_new</span>
           </a>
+          <button class="share-fav btn-icon-primary p-2 rounded-full transition-colors" data-url="${escapeHtml(f.url)}" aria-label="分享" title="复制链接">
+            <span class="material-symbols-outlined">ios_share</span>
+          </button>
           <button class="remove-fav p-2 hover:bg-surface-container rounded-full transition-colors text-on-surface-variant" data-id="${escapeHtml(f.url)}" aria-label="删除">
             <span class="material-symbols-outlined">delete</span>
           </button>
@@ -166,6 +169,31 @@
     });
 
     document.getElementById('favs-list').addEventListener('click', e => {
+      const shareBtn = e.target.closest('.share-fav');
+      if (shareBtn) {
+        const url = shareBtn.dataset.url;
+        const copy = async () => {
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(url);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); document.body.removeChild(ta);
+            }
+            // 短暂反馈：图标换成 ✓
+            const icon = shareBtn.querySelector('.material-symbols-outlined');
+            const orig = icon.textContent;
+            icon.textContent = 'check';
+            setTimeout(() => { icon.textContent = orig; }, 1200);
+          } catch (err) {
+            alert('复制失败，请手动复制：\n' + url);
+          }
+        };
+        copy();
+        return;
+      }
       const btn = e.target.closest('.remove-fav');
       if (!btn) return;
       const url = btn.dataset.id;
