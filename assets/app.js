@@ -6,6 +6,17 @@
   'use strict';
 
   // =================================================================
+  // MOBILE ZOOM LOCK
+  // iOS Safari 会忽略 viewport 里的 user-scalable=no，
+  // 用 JS 拦截 gesture 事件兜底禁止双指捏合缩放
+  // （双击缩放已由 CSS touch-action: manipulation 处理）
+  // =================================================================
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('gesturechange', e => e.preventDefault());
+  document.addEventListener('gestureend', e => e.preventDefault());
+  document.addEventListener('dblclick', e => e.preventDefault());
+
+  // =================================================================
   // HELPER
   // =================================================================
   function todayKey() {
@@ -96,6 +107,46 @@ function loginGuard() {
         document.body.classList.remove('sidebar-closed');
       }
     });
+
+    // 手机端：点击侧边栏外部空白区域收回侧边栏
+    document.addEventListener('click', e => {
+      if (window.innerWidth > 768) return;           // 仅移动端生效
+      if (!sidebar.classList.contains('open')) return; // 侧边栏未展开时忽略
+      if (sidebar.contains(e.target)) return;        // 点侧边栏内部不关闭（导航/打卡等正常使用）
+      if (toggle.contains(e.target)) return;         // 点菜单按钮不关闭（由 toggle 自己控制）
+      sidebar.classList.remove('open');              // 点空白区域收回
+    });
+
+    // 手机端：在屏幕任意区域向右滑动打开侧边栏
+    let swipeStartX = null, swipeStartY = null, swipeTracking = false;
+    const OPEN_DIST = 60;   // 触发打开的最小右滑距离 (px)
+    document.addEventListener('touchstart', e => {
+      if (window.innerWidth > 768) return;
+      if (sidebar.classList.contains('open')) return;  // 已打开不重复触发
+      const t = e.touches[0];
+      if (!t) return;
+      swipeStartX = t.clientX;
+      swipeStartY = t.clientY;
+      swipeTracking = true;                            // 任意起点都追踪
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (!swipeTracking || swipeStartX === null) return;
+      const t = e.touches[0];
+      if (!t) return;
+      const dx = t.clientX - swipeStartX;
+      const dy = t.clientY - swipeStartY;
+      // 右滑且水平方向占主导 → 打开侧边栏（一次性触发后停止追踪）
+      if (dx > OPEN_DIST && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        sidebar.classList.add('open');
+        swipeTracking = false;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      swipeTracking = false;
+      swipeStartX = null;
+    }, { passive: true });
   }
 
   // =================================================================
@@ -235,7 +286,7 @@ function loginGuard() {
 
       // 诗句槽
       var q = document.createElement('div');
-      q.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity 0.5s;opacity:1;font-size:16px;line-height:32px;';
+      q.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity 0.5s;opacity:1;font-size:clamp(11px,3.2vw,16px);line-height:1.4;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
       // 从「今日对应的句子」开始，之后每 5s 切到下一句
       var _qd = new Date();
       var _qs = new Date(_qd.getFullYear(), 0, 0);
@@ -245,7 +296,7 @@ function loginGuard() {
 
       // 天气槽
       var w = document.createElement('div');
-      w.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity 0.5s;opacity:0;font-size:16px;line-height:32px;';
+      w.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity 0.5s;opacity:0;font-size:clamp(11px,3.2vw,16px);line-height:1.4;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
       w.textContent = '☁️ 获取天气中...';
       c.appendChild(w);
 

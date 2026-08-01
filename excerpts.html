@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>My Work · 我的工作台</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,11 +59,8 @@
             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
           </div>
           <div id="excerpt-tags-bar" class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+            <!-- 标签由 renderTags() 根据用户实际录入的摘录自动生成 -->
             <span class="chip active" data-tag="">全部</span>
-            <span class="chip" data-tag="#工作">#工作</span>
-            <span class="chip" data-tag="#AI">#AI</span>
-            <span class="chip" data-tag="#灵感">#灵感</span>
-            <span class="chip" data-tag="#阅读">#阅读</span>
           </div>
         </div>
 
@@ -179,11 +176,46 @@
         + '</div>'
         + '<h3 class="text-xl font-semibold mb-2 line-clamp-1">' + escapeHtml(e.title) + '</h3>'
         + '<p class="text-sm text-on-surface-variant line-clamp-2 mb-3">' + escapeHtml((e.excerpt || '').substring(0, 50) + ((e.excerpt || '').length > 50 ? '...' : '')) + '</p>'
-        + '<div class="flex gap-2">' + e.tags.map(function(t) { return '<span class="text-xs font-mono text-on-surface-variant">' + escapeHtml(t) + '</span>'; }).join('') + '</div>'
+        + '<div class="flex gap-2 flex-wrap">' + (e.tags || []).map(function(t) { return '<span class="chip excerpt-tag" data-tag="' + escapeHtml(t) + '" style="cursor:pointer">' + escapeHtml(t) + '</span>'; }).join('') + '</div>'
       + '</div>';
     }
 
+    // 从所有摘录里收集去重标签，并按使用频次降序排序
+    function collectTags() {
+      const counts = new Map();
+      entries.forEach(function(e) {
+        (e.tags || []).forEach(function(t) {
+          if (!t) return;
+          counts.set(t, (counts.get(t) || 0) + 1);
+        });
+      });
+      return Array.from(counts.entries())
+        .sort(function(a, b) { return b[1] - a[1] || a[0].localeCompare(b[0]); })
+        .map(function(x) { return x[0]; });
+    }
+
+    // 把标签栏重渲染为：全部 + 用户实际使用过的标签
+    function renderTags() {
+      const bar = document.getElementById('excerpt-tags-bar');
+      if (!bar) return;
+      const tags = collectTags();
+      bar.innerHTML = '';
+      const allChip = document.createElement('span');
+      allChip.className = 'chip' + (currentTag ? '' : ' active');
+      allChip.dataset.tag = '';
+      allChip.textContent = '全部';
+      bar.appendChild(allChip);
+      tags.forEach(function(t) {
+        const chip = document.createElement('span');
+        chip.className = 'chip' + (currentTag === t ? ' active' : '');
+        chip.dataset.tag = t;
+        chip.textContent = t;
+        bar.appendChild(chip);
+      });
+    }
+
     function render() {
+      renderTags();
       const q = (currentQuery || '').trim().toLowerCase();
       let pool = entries.slice();
       if (currentTag) {
@@ -224,12 +256,30 @@
       if (!chip) return;
       const tag = chip.dataset.tag || '';
       currentTag = (currentTag === tag && tag !== '') ? '' : tag; // 再次点同一标签取消
-      // 更新 active 样式
-      document.querySelectorAll('#excerpt-tags-bar .chip').forEach(c => {
-        c.classList.toggle('active', (c.dataset.tag || '') === (currentTag || ''));
-      });
-      // "全部" 始终保持视觉一致
-      document.querySelector('#excerpt-tags-bar .chip[data-tag=""]').classList.toggle('active', !currentTag);
+      render();
+    });
+
+    // 卡片上的标签点击：直接按该标签筛选（不打开详情弹窗）
+    document.getElementById('entries-list').addEventListener('click', e => {
+      const tagChip = e.target.closest('.excerpt-tag');
+      if (tagChip) {
+        e.stopPropagation();
+        const tag = tagChip.dataset.tag || '';
+        if (!tag) return;
+        currentTag = (currentTag === tag) ? '' : tag;
+        render();
+        return;
+      }
+    });
+
+    // 详情弹窗里的标签点击：关闭弹窗并按该标签筛选
+    document.getElementById('detail-tags').addEventListener('click', e => {
+      const chip = e.target.closest('.chip[data-tag]');
+      if (!chip) return;
+      const tag = chip.dataset.tag || '';
+      if (!tag) return;
+      currentTag = tag;
+      window.closeModal('detail-modal');
       render();
     });
 
@@ -280,7 +330,7 @@
       document.getElementById('detail-title').textContent = entry.title;
       document.getElementById('detail-date').textContent = entry.date;
       document.getElementById('detail-content').textContent = entry.excerpt || '(无内容)';
-      document.getElementById('detail-tags').innerHTML = entry.tags.map(t => '<span class="chip">' + escapeHtml(t) + '</span>').join('');
+      document.getElementById('detail-tags').innerHTML = entry.tags.map(t => '<span class="chip" data-tag="' + escapeHtml(t) + '" style="cursor:pointer" title="点击按此标签筛选">' + escapeHtml(t) + '</span>').join('');
       window.openModal('detail-modal');
     });
 

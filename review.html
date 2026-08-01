@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>My Work · 我的工作台</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -291,26 +291,21 @@
       return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     }
 
+    // 默认空：页面加载时不再自动回填已保存的复盘（历史区仍可查看）
     // Load today's saved review if exists
-    const saved = (loadReviews())[todayKey()];
+    /* const saved = (loadReviews())[todayKey()];
     if (saved) {
       if (saved.q1) document.getElementById('review-q1').value = saved.q1;
       if (saved.q2) document.getElementById('review-q2').value = saved.q2;
       if (saved.q3) document.getElementById('review-q3').value = saved.q3;
-    }
+    } */
 
     // Initial history render
     renderHistory();
 
-    // 多端同步：先拉取云端，并实时监听变更
+    // 多端同步：拉取云端后只刷新统计/历史，不再回填输入框
     function refreshFromStorage() {
       try {
-        const sv = (loadReviews())[todayKey()];
-        if (sv) {
-          if (sv.q1) document.getElementById('review-q1').value = sv.q1;
-          if (sv.q2) document.getElementById('review-q2').value = sv.q2;
-          if (sv.q3) document.getElementById('review-q3').value = sv.q3;
-        }
         renderFocusReading(); renderDoneAndWater(); renderHistory();
       } catch(e) {}
     }

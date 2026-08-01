@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>My Work · 我的工作台</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,51 +57,51 @@
     </section>
 
     <!-- Stat cards grid (no underline) -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <a href="todos.html" class="card hover-lift block no-underline">
-        <div class="flex items-center justify-between mb-3">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-6">
+      <a href="todos.html" class="card stat-card hover-lift block no-underline">
+        <div class="flex items-center justify-between mb-2">
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">check_circle</span>
           <span class="chip">TODAY</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardTodos">今日待办</p>
-        <p class="text-3xl font-semibold text-on-surface" id="home-todo-stat">— / —</p>
-        <div class="progress-bar mt-3">
+        <p class="text-sm text-on-surface-variant" data-i18n="cardTodos">今日待办</p>
+        <p class="text-2xl font-semibold text-on-surface" id="home-todo-stat">— / —</p>
+        <div class="progress-bar mt-2">
           <div id="home-todo-bar" class="progress-fill" style="width: 0%"></div>
         </div>
       </a>
 
-      <a href="hydration.html" class="card hover-lift block no-underline">
-        <div class="flex items-center justify-between mb-3">
+      <a href="hydration.html" class="card stat-card hover-lift block no-underline">
+        <div class="flex items-center justify-between mb-2">
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">water_drop</span>
           <span class="chip">HYDRATION</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardWater">今日饮水</p>
-        <p class="text-3xl font-semibold text-on-surface"><span id="home-water-stat">0</span><span class="text-base text-on-surface-variant ml-1">ml</span></p>
-        <div class="progress-bar mt-3">
+        <p class="text-sm text-on-surface-variant" data-i18n="cardWater">今日饮水</p>
+        <p class="text-2xl font-semibold text-on-surface"><span id="home-water-stat">0</span><span class="text-base text-on-surface-variant ml-1">ml</span></p>
+        <div class="progress-bar mt-2">
           <div id="home-water-bar" class="progress-fill" style="width: 0%"></div>
         </div>
       </a>
 
-      <a href="bookshelf.html" class="card hover-lift block no-underline">
-        <div class="flex items-center justify-between mb-3">
+      <a href="bookshelf.html" class="card stat-card hover-lift block no-underline">
+        <div class="flex items-center justify-between mb-2">
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">menu_book</span>
           <span class="chip">READING</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardReading">正在阅读</p>
-        <p class="text-3xl font-semibold text-on-surface"><span id="home-reading-stat">0</span><span class="text-base text-on-surface-variant ml-1" data-i18n="bookUnit">本</span></p>
-        <div class="progress-bar mt-3">
+        <p class="text-sm text-on-surface-variant" data-i18n="cardReading">正在阅读</p>
+        <p class="text-2xl font-semibold text-on-surface"><span id="home-reading-stat">0</span><span class="text-base text-on-surface-variant ml-1" data-i18n="bookUnit">本</span></p>
+        <div class="progress-bar mt-2">
           <div id="home-reading-bar" class="progress-fill" style="width: 0%"></div>
         </div>
       </a>
 
-      <a href="strategy.html" class="card hover-lift block no-underline">
-        <div class="flex items-center justify-between mb-3">
+      <a href="strategy.html" class="card stat-card hover-lift block no-underline">
+        <div class="flex items-center justify-between mb-2">
           <span class="material-symbols-outlined text-on-surface-variant text-2xl">payments</span>
           <span class="chip">STRATEGY</span>
         </div>
-        <p class="text-sm text-on-surface-variant mb-1" data-i18n="cardArchive">策略归档</p>
-        <p class="text-3xl font-semibold text-on-surface"><span id="home-strategy-stat">0</span><span class="text-base text-on-surface-variant ml-1" data-i18n="itemUnit">条</span></p>
-        <div class="progress-bar mt-3">
+        <p class="text-sm text-on-surface-variant" data-i18n="cardArchive">策略归档</p>
+        <p class="text-2xl font-semibold text-on-surface"><span id="home-strategy-stat">0</span><span class="text-base text-on-surface-variant ml-1" data-i18n="itemUnit">条</span></p>
+        <div class="progress-bar mt-2">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
       </a>
