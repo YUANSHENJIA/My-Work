@@ -343,7 +343,10 @@
   <script>
     const BOOKS_KEY = 'monolith.books';
     const MEIRIYIXUE_BASE = 'https://yuanshenjia.github.io/meiriyixue/';
-    const INDEX_URL = MEIRIYIXUE_BASE;
+    // 后端代理（解决浏览器跨域 CORS）：前端 fetch 这条路径，FC 服务端代为请求 github.io
+    const PROXY_BASE = 'https://proxy-miriyixue-cgbpnsesbd.cn-hongkong.fcapp.run/';
+    const proxyUrl = (u) => PROXY_BASE + '?url=' + encodeURIComponent(u);
+    const INDEX_URL = proxyUrl(MEIRIYIXUE_BASE);
 
     function escapeHtml(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -507,7 +510,8 @@
 
     // ===== 解析书籍详情 =====
     async function fetchAndParseBook(url) {
-      const res = await fetch(url);
+      // 经后端代理（避免浏览器直接请求 github.io 的 CORS 拦截）
+      const res = await fetch(proxyUrl(url));
       if (!res.ok) throw new Error('获取内容失败 ' + res.status);
       const html = await res.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
