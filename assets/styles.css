@@ -327,14 +327,6 @@ body {
 }
 .btn-primary:hover { opacity: 0.85; }
 
-/* 分享/正操作图标按钮：填充色调风格，使用主容器色，跟设计规范协调 */
-.btn-icon-primary {
-  background: var(--primary-container);
-  color: var(--on-primary-container);
-  transition: background 0.2s ease;
-}
-.btn-icon-primary:hover { background: var(--surface-container-high); }
-
 .btn-secondary {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; padding: 12px 24px;
