@@ -509,6 +509,134 @@
     }
 
     // ===== 解析书籍详情 =====
+    // 从 meiriyixue 抽取思维导图版数据（新版：JS 渲染的交互式思维导图）
+    function extractMindmapData(html) {
+      try {
+        const scripts = html.match(/<script[\s\S]*?<\/script>/g) || [];
+        const js = scripts.map(s => s.replace(/<script[^>]*>/, '').replace(/<\/script>/, '')).join('\n');
+
+        // quote-aware 配对括号
+        function findBalanced(src, startOffset, open, close) {
+          let depth = 0, inStr = null, escape = false;
+          for (let i = startOffset; i < src.length; i++) {
+            const c = src[i];
+            if (escape) { escape = false; continue; }
+            if (inStr) {
+              if (c === '\\') { escape = true; continue; }
+              if (c === inStr) inStr = null;
+              continue;
+            }
+            if (c === '"' || c === "'" || c === '`') { inStr = c; continue; }
+            if (c === open) depth++;
+            if (c === close) { depth--; if (depth === 0) return i; }
+          }
+          return -1;
+        }
+        function safeEvalObj(src, exprStart) {
+          // 找到匹配右括号/右大括号
+          const first = src[exprStart];
+          const pair = first === '[' ? [']', '['] : first === '{' ? ['}', '{'] : null;
+          if (!pair) return null;
+          const end = findBalanced(src, exprStart, pair[1], pair[0]);
+          if (end < 0) return null;
+          let raw = src.substring(exprStart, end + 1);
+          // 容错：meiriyixue 部分书的 JS 源码含未转义内层单引号（如 detail: '..."成功"...'）
+          // 这里扫描 raw，把「出现在字符串内、但后面不是结构分隔符的 '」自动转义
+          raw = escapeInnerQuotes(raw);
+          // 占位常见画图坐标变量，避免 eval 时引用未定义报错
+          try {
+            return (new Function('var centerX=0, centerY=0; return (' + raw + ')'))();
+          } catch (e) { return null; }
+        }
+
+        function escapeInnerQuotes(raw) {
+          let out = '', inStr = null, esc = false;
+          for (let i = 0; i < raw.length; i++) {
+            const c = raw[i];
+            if (esc) { out += c; esc = false; continue; }
+            if (inStr) {
+              if (c === '\\') { out += c; esc = true; continue; }
+              if (c === inStr) {
+                // 看后面是否紧跟结构性分隔符（, } ] ) ; 或换行+这些）
+                let j = i + 1;
+                while (j < raw.length && /\s/.test(raw[j])) j++;
+                if (j >= raw.length || raw[j] === ',' || raw[j] === '}' || raw[j] === ']' || raw[j] === ')' || raw[j] === ';') {
+                  inStr = null;
+                  out += c;
+                } else {
+                  // 不是字符串真正结束 → 转义它
+                  out += '\\' + c;
+                }
+                continue;
+              }
+              out += c;
+              continue;
+            }
+            if (c === '"' || c === "'" || c === '`') { inStr = c; out += c; continue; }
+            out += c;
+          }
+          return out;
+        }
+
+        // 抽取 centerNode
+        const cnIdx = js.search(/const\s+centerNode\s*=\s*\{/);
+        let center = null;
+        if (cnIdx > -1) {
+          const braceStart = js.indexOf('{', cnIdx);
+          center = safeEvalObj(js, braceStart);
+        }
+        // 抽取 branches
+        const bsIdx = js.search(/const\s+branches\s*=\s*\[/);
+        let branches = [];
+        if (bsIdx > -1) {
+          const arrStart = js.indexOf('[', bsIdx);
+          branches = safeEvalObj(js, arrStart) || [];
+        }
+        return { center, branches };
+      } catch (e) {
+        return { center: null, branches: [] };
+      }
+    }
+
+    function renderMindmapBody(center, branches) {
+      // 1. 核心概念
+      let insightHtml = '';
+      if (center && (center.label || center.detail)) {
+        const label = (center.label || '').replace(/\\n/g, ' ').trim();
+        insightHtml = '<div class="book-reader-section"><h3><span class="section-bar"></span>核心概念</h3>' +
+          '<div class="insight-box">' +
+            (label ? '<div style="font-size:17px;font-weight:600;margin-bottom:8px;color:var(--primary);">' + escapeHtml(label) + '</div>' : '') +
+            '<div style="white-space:pre-wrap;">' + escapeHtml(center.detail || '') + '</div>' +
+          '</div></div>';
+      }
+      // 2. 思维导图分支
+      if (!branches.length) return insightHtml;
+      const branchHtml = '<div class="book-reader-section"><h3><span class="section-bar"></span>思维导图（' + branches.length + ' 个分支）</h3><div class="branch-grid">' +
+        branches.map(b => {
+          const bLabel = (b.label || '').replace(/\\n/g, ' ').trim();
+          const kids = Array.isArray(b.children) ? b.children : [];
+          return '<div class="branch-card">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+              '<div style="width:10px;height:10px;border-radius:50%;background:' + escapeHtml(b.color || '#888') + ';"></div>' +
+              '<div class="title" style="margin-bottom:0;">' + escapeHtml(bLabel) + '</div>' +
+            '</div>' +
+            (b.detail ? '<div class="desc">' + escapeHtml(b.detail) + '</div>' : '') +
+            (kids.length ? '<details style="margin-top:10px;"><summary style="cursor:pointer;color:var(--primary);font-size:13px;font-weight:500;list-style:none;padding:6px 0;">▸ 展开 ' + kids.length + ' 个子主题</summary>' +
+              '<div style="margin-top:8px;">' +
+                kids.map(c => {
+                  const cLabel = (c.label || '').replace(/\\n/g, ' ').trim();
+                  return '<div style="margin-bottom:12px;padding:10px 12px;background:var(--surface-container-lowest);border-left:2px solid var(--outline-variant);border-radius:0 8px 8px 0;">' +
+                    (cLabel ? '<div style="font-weight:600;font-size:14px;margin-bottom:4px;">' + escapeHtml(cLabel) + '</div>' : '') +
+                    (c.detail ? '<div style="font-size:13px;color:var(--on-surface-variant);line-height:1.6;">' + escapeHtml(c.detail) + '</div>' : '') +
+                  '</div>';
+                }).join('') +
+              '</div></details>' : '') +
+          '</div>';
+        }).join('') +
+        '</div></div>';
+      return insightHtml + branchHtml;
+    }
+
     async function fetchAndParseBook(url) {
       // 经后端代理（避免浏览器直接请求 github.io 的 CORS 拦截）
       const res = await fetch(proxyUrl(url));
@@ -520,7 +648,21 @@
       const subtitle = (doc.querySelector('.subtitle') || {}).textContent?.trim() || '';
       const dateBadge = (doc.querySelector('.date-badge') || {}).textContent?.trim() || '';
 
-      // 核心洞见
+      // 检测新版（思维导图版）：<div id="mindmap-container">
+      const isMindmap = !!doc.querySelector('#mindmap-container');
+      let bodyHtml = '';
+      let insightHtml = '', branchHtml = '', charsHtml = '', knowHtml = '', quoteHtml = '', actionHtml = '';
+
+      if (isMindmap) {
+        const data = extractMindmapData(html);
+        if (data && (data.center || data.branches.length)) {
+          bodyHtml = '<div class="book-reader-body">' + renderMindmapBody(data.center, data.branches) + '</div>';
+        } else {
+          // 数据抽取失败——给个清晰提示，避免空白页
+          bodyHtml = '<div class="book-reader-body"><div class="book-reader-section"><h3><span class="section-bar"></span>提示</h3>' +
+            '<div class="insight-box">此页面采用新版思维导图格式，解析失败。请点击顶部「原网页」查看完整内容。</div></div></div>';
+        }
+      } else {
       let insight = '';
       // 新结构：section.summary 下 h3=核心洞见 后面的 <p>
       const sumIns = doc.querySelector('section.summary h3');
@@ -557,7 +699,7 @@
           desc: b.querySelector('.branch-desc')?.textContent?.trim() || ''
         };
       }).filter(b => b.title || b.desc);
-      const branchHtml = branches.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>思维导图</h3><div class="branch-grid">' +
+      branchHtml = branches.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>思维导图</h3><div class="branch-grid">' +
         branches.map(b => '<div class="branch-card"><div class="title">' + escapeHtml(b.title) + '</div><div class="desc">' + escapeHtml(b.desc) + '</div></div>').join('') +
         '</div></div>' : '';
 
@@ -679,7 +821,8 @@
           '</div>' +
         '</div>';
 
-      const bodyHtml = '<div class="book-reader-body">' + insight + branchHtml + charsHtml + knowHtml + quoteHtml + actionHtml + '</div>';
+      bodyHtml = '<div class="book-reader-body">' + insight + branchHtml + charsHtml + knowHtml + quoteHtml + actionHtml + '</div>';
+      }
 
       return { title, subtitle, dateBadge, headerHtml, bodyHtml, fullHtml: headerHtml + bodyHtml };
     }
