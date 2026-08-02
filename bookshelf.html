@@ -650,11 +650,24 @@
 
       // 检测新版（思维导图版）：<div id="mindmap-container">
       const isMindmap = !!doc.querySelector('#mindmap-container');
+      let headerHtml = '';
       let bodyHtml = '';
       let insightHtml = '', branchHtml = '', charsHtml = '', knowHtml = '', quoteHtml = '', actionHtml = '';
 
       if (isMindmap) {
         const data = extractMindmapData(html);
+        headerHtml =
+          '<div class="book-reader-header">' +
+            (dateBadge ? '<span class="chip mb-2">' + escapeHtml(dateBadge.replace(/\s+/g, ' ')) + '</span>' : '') +
+            '<h2 class="headline-xl mb-2" style="margin-top:8px;">' + escapeHtml(title) + '</h2>' +
+            (subtitle ? '<p class="body-md text-on-surface-variant">' + escapeHtml(subtitle) + '</p>' : '') +
+            '<div class="flex items-center gap-3 mt-4">' +
+              '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none;">' +
+                '<span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">open_in_new</span> ' +
+                '原网页' +
+              '</a>' +
+            '</div>' +
+          '</div>';
         if (data && (data.center || data.branches.length)) {
           bodyHtml = '<div class="book-reader-body">' + renderMindmapBody(data.center, data.branches) + '</div>';
         } else {
@@ -710,7 +723,7 @@
         type: c.querySelector('.char-type')?.textContent?.trim() || '',
         desc: c.querySelector('.char-desc')?.textContent?.trim() || ''
       }));
-      const charsHtml = chars.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>核心要素</h3><div class="branch-grid">' +
+      charsHtml = chars.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>核心要素</h3><div class="branch-grid">' +
         chars.map(c => '<div class="branch-card"><div class="icon">' + escapeHtml(c.emoji) + '</div><div class="title">' + escapeHtml(c.name) + '</div><div class="desc"><em style="opacity:.7;">' + escapeHtml(c.type) + '</em><br>' + escapeHtml(c.desc) + '</div></div>').join('') +
         '</div></div>' : '';
 
@@ -735,7 +748,7 @@
           desc: k.querySelector('p') ? k.querySelector('p').textContent.trim() : ''
         })).filter(k => k.title || k.desc);
       }
-      const knowHtml = knowledges.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>主要知识点</h3><div class="branch-grid">' +
+      knowHtml = knowledges.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>主要知识点</h3><div class="branch-grid">' +
         knowledges.map(k => '<div class="branch-card">' + (k.title ? '<div class="title">' + escapeHtml(k.title) + '</div>' : '') + '<div class="desc">' + escapeHtml(k.desc) + '</div></div>').join('') +
         '</div></div>' : '';
 
@@ -776,7 +789,7 @@
           }
         }
       }
-      const quoteHtml = quotes.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>经典金句</h3>' +
+      quoteHtml = quotes.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>经典金句</h3>' +
         quotes.map(q => '<div class="quote-card"><div class="text">' + escapeHtml(q.text) + '</div>' + (q.source ? '<div class="source">' + escapeHtml(q.source) + '</div>' : '') + '</div>').join('') +
         '</div>' : '';
 
@@ -804,11 +817,11 @@
           desc: a.querySelector('p')?.textContent?.trim() || ''
         }));
       }
-      const actionHtml = actions.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>行动建议</h3>' +
+      actionHtml = actions.length ? '<div class="book-reader-section"><h3><span class="section-bar"></span>行动建议</h3>' +
         actions.map(a => '<div class="action-card"><div class="num">●</div><div class="content">' + (a.title ? '<h4>' + escapeHtml(a.title) + '</h4>' : '') + '<p>' + escapeHtml(a.desc) + '</p></div></div>').join('') +
         '</div>' : '';
 
-      const headerHtml =
+      headerHtml =
         '<div class="book-reader-header">' +
           (dateBadge ? '<span class="chip mb-2">' + escapeHtml(dateBadge.replace(/\s+/g, ' ')) + '</span>' : '') +
           '<h2 class="headline-xl mb-2" style="margin-top:8px;">' + escapeHtml(title) + '</h2>' +
