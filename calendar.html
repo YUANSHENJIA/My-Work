@@ -297,6 +297,9 @@
               ${t.done ? '<span class="material-symbols-outlined" style="font-size:12px;line-height:1;color:var(--on-primary);">check</span>' : ''}
             </button>
             <span class="flex-1 ${t.done ? 'line-through text-on-surface-variant' : ''}">${escapeHtml(t.text)}</span>
+            <button class="cal-todo-delete text-on-surface-variant hover:text-on-surface" aria-label="删除">
+              <span class="material-symbols-outlined text-lg">delete</span>
+            </button>
           </li>
         `).join('');
       }
@@ -346,17 +349,25 @@
       document.getElementById('cal-quick-todo').style.display = 'none';
     });
 
-    // 日历日详情：点击复选框切换 done（同步到 localStorage + 云端）
+    // 日历日详情：点击复选框切换 done / 点击删除按钮移除（同步到 localStorage + 云端）
     document.getElementById('day-tasks').addEventListener('click', e => {
       const li = e.target.closest('li[data-id]');
       if (!li) return;
-      if (!e.target.closest('.cal-todo-check')) return;
       const id = li.dataset.id;
       let allTodos = [];
       try { allTodos = JSON.parse(localStorage.getItem('monolith.todos') || '[]'); } catch (err) { allTodos = []; }
-      const t = allTodos.find(x => x.id === id);
-      if (!t) return;
-      t.done = !t.done;
+
+      if (e.target.closest('.cal-todo-delete')) {
+        // 删除：从待办列表移除该项
+        allTodos = allTodos.filter(x => x.id !== id);
+      } else if (e.target.closest('.cal-todo-check')) {
+        const t = allTodos.find(x => x.id === id);
+        if (!t) return;
+        t.done = !t.done;
+      } else {
+        return;
+      }
+
       try { localStorage.setItem('monolith.todos', JSON.stringify(allTodos)); } catch (err) {}
       if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ todos: allTodos });
       renderCalendar();
