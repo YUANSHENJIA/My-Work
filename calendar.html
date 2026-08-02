@@ -117,7 +117,6 @@
         <div class="flex items-center gap-2">
           <button id="cal-add-todo" class="btn-secondary text-sm py-2 px-4"><span class="material-symbols-outlined text-sm">add_task</span><span data-i18n="addTodo">添加待办</span></button>
           <button id="cal-add-reminder" class="btn-secondary text-sm py-2 px-4"><span class="material-symbols-outlined text-sm">notifications</span><span data-i18n="reminder">提醒</span></button>
-          <a href="todos.html" class="btn-secondary text-sm py-2 px-4 no-underline" data-i18n="manageAll">管理全部</a>
         </div>
       </div>
       <ul id="day-tasks" class="flex flex-col gap-2"></ul>
@@ -127,9 +126,10 @@
           <input type="text" id="cal-todo-input" placeholder="输入待办内容..." autocomplete="off"
                  class="flex-1 px-4 py-2.5 rounded-xl outline-none text-sm" style="background:var(--surface-container-low);color:var(--on-surface);border:1px solid var(--outline-variant);">
           <select id="cal-todo-priority" class="bg-surface-container rounded-lg px-3 py-2.5 text-sm outline-none cursor-pointer">
-            <option value="priority-high">HIGH</option>
-            <option value="planning">PLANNING</option>
-            <option value="routine">ROUTINE</option>
+            <option value="priority-high">P1</option>
+            <option value="planning">P2</option>
+            <option value="routine">P3</option>
+            <option value="communication">P4</option>
           </select>
           <button type="submit" class="btn-primary text-sm py-2.5 px-4">添加</button>
           <button type="button" id="cal-todo-cancel" class="btn-secondary text-sm py-2.5 px-4">取消</button>
@@ -292,11 +292,11 @@
         tasks.innerHTML = '<li class="text-on-surface-variant text-sm">' + (((window.I18N||{})[window.getCurrentLang?window.getCurrentLang():'zh']||{}).noTasks || '这一天还没有待办。') + '</li>';
       } else {
         tasks.innerHTML = dayTodos.map(t => `
-          <li class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-low">
-            <span class="w-5 h-5 rounded-md border-2 ${t.done ? 'bg-primary border-primary text-on-primary' : 'border-outline-variant'} flex items-center justify-center text-xs">
-              ${t.done ? '✓' : ''}
-            </span>
-            <span class="${t.done ? 'line-through text-on-surface-variant' : ''}">${escapeHtml(t.text)}</span>
+          <li class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-low" data-id="${t.id}">
+            <button class="cal-todo-check shrink-0 w-5 h-5 rounded-full ${t.done ? 'bg-primary' : 'border-2 border-outline-variant bg-transparent'} flex items-center justify-center transition-all" aria-label="勾选">
+              ${t.done ? '<span class="material-symbols-outlined" style="font-size:12px;line-height:1;color:var(--on-primary);">check</span>' : ''}
+            </button>
+            <span class="flex-1 ${t.done ? 'line-through text-on-surface-variant' : ''}">${escapeHtml(t.text)}</span>
           </li>
         `).join('');
       }
@@ -344,6 +344,23 @@
     });
     document.getElementById('cal-todo-cancel').addEventListener('click', () => {
       document.getElementById('cal-quick-todo').style.display = 'none';
+    });
+
+    // 日历日详情：点击复选框切换 done（同步到 localStorage + 云端）
+    document.getElementById('day-tasks').addEventListener('click', e => {
+      const li = e.target.closest('li[data-id]');
+      if (!li) return;
+      if (!e.target.closest('.cal-todo-check')) return;
+      const id = li.dataset.id;
+      let allTodos = [];
+      try { allTodos = JSON.parse(localStorage.getItem('monolith.todos') || '[]'); } catch (err) { allTodos = []; }
+      const t = allTodos.find(x => x.id === id);
+      if (!t) return;
+      t.done = !t.done;
+      try { localStorage.setItem('monolith.todos', JSON.stringify(allTodos)); } catch (err) {}
+      if (typeof MyWorkSync !== 'undefined') MyWorkSync.save({ todos: allTodos });
+      renderCalendar();
+      renderDayDetail();
     });
     document.getElementById('cal-todo-form').addEventListener('submit', (e) => {
       e.preventDefault();
